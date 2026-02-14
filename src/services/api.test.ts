@@ -16,7 +16,7 @@ import {
   ApiError,
 } from './api';
 
-// Mock localStorage
+// Mock localStorage (for API URL - non-sensitive)
 const localStorageMock = {
   data: {} as Record<string, string>,
   getItem: vi.fn((key: string) => localStorageMock.data[key] || null),
@@ -33,29 +33,72 @@ const localStorageMock = {
   key: vi.fn(),
 };
 
+// Mock sessionStorage (for tokens - secure)
+const sessionStorageMock = {
+  data: {} as Record<string, string>,
+  getItem: vi.fn((key: string) => sessionStorageMock.data[key] || null),
+  setItem: vi.fn((key: string, value: string) => {
+    sessionStorageMock.data[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete sessionStorageMock.data[key];
+  }),
+  clear: vi.fn(() => {
+    sessionStorageMock.data = {};
+  }),
+  length: 0,
+  key: vi.fn(),
+};
+
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+Object.defineProperty(global, 'sessionStorage', { value: sessionStorageMock });
 
 describe('API Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.data = {};
+    sessionStorageMock.data = {};
   });
 
   describe('Token Management', () => {
-    it('should store and retrieve token', () => {
+    it('should store and retrieve token from sessionStorage', () => {
       const token = 'test-token-123';
       setToken(token);
       expect(getToken()).toBe(token);
+      // Verify it's in sessionStorage, not localStorage
+      expect(sessionStorageMock.data['forgecomply360-reporter-token']).toBe(token);
+      expect(localStorageMock.data['forgecomply360-reporter-token']).toBeUndefined();
     });
 
     it('should return null when no token exists', () => {
       expect(getToken()).toBeNull();
     });
 
-    it('should clear token', () => {
+    it('should clear token from both storage locations', () => {
       setToken('test-token');
       clearToken();
       expect(getToken()).toBeNull();
+    });
+
+    it('should migrate token from localStorage to sessionStorage', () => {
+      // Simulate old token in localStorage (from older version)
+      localStorageMock.data['forgecomply360-reporter-token'] = 'old-token';
+
+      // getToken should migrate it
+      const token = getToken();
+      expect(token).toBe('old-token');
+
+      // Should now be in sessionStorage
+      expect(sessionStorageMock.data['forgecomply360-reporter-token']).toBe('old-token');
+      // And removed from localStorage
+      expect(localStorageMock.data['forgecomply360-reporter-token']).toBeUndefined();
+    });
+
+    it('should prefer sessionStorage over localStorage', () => {
+      sessionStorageMock.data['forgecomply360-reporter-token'] = 'session-token';
+      localStorageMock.data['forgecomply360-reporter-token'] = 'local-token';
+
+      expect(getToken()).toBe('session-token');
     });
   });
 

@@ -1,6 +1,10 @@
 /**
  * ForgeComply 360 Reporter - API Client
  * Handles communication with the main ForgeComply 360 backend
+ *
+ * Security: Auth tokens are stored in sessionStorage (not localStorage) to reduce
+ * XSS vulnerability. sessionStorage is cleared when the tab closes and is not
+ * accessible from other tabs, limiting the attack surface.
  */
 
 // Storage keys
@@ -11,38 +15,55 @@ const API_URL_KEY = 'forgecomply360-reporter-api-url';
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || '';
 
 /**
- * Get the configured API URL
+ * Get the configured API URL (stored in localStorage for persistence)
  */
 export function getApiUrl(): string {
   return localStorage.getItem(API_URL_KEY) || DEFAULT_API_URL;
 }
 
 /**
- * Set the API URL
+ * Set the API URL (non-sensitive, can persist in localStorage)
  */
 export function setApiUrl(url: string): void {
   localStorage.setItem(API_URL_KEY, url);
 }
 
 /**
- * Get the stored auth token
+ * Get the stored auth token (from sessionStorage for security)
+ * Falls back to localStorage for migration from older versions
  */
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  // Check sessionStorage first (secure)
+  const sessionToken = sessionStorage.getItem(TOKEN_KEY);
+  if (sessionToken) return sessionToken;
+
+  // Fallback: migrate from localStorage if present (older versions)
+  const localToken = localStorage.getItem(TOKEN_KEY);
+  if (localToken) {
+    // Migrate to sessionStorage and remove from localStorage
+    sessionStorage.setItem(TOKEN_KEY, localToken);
+    localStorage.removeItem(TOKEN_KEY);
+    return localToken;
+  }
+
+  return null;
 }
 
 /**
- * Store the auth token
+ * Store the auth token (in sessionStorage for XSS protection)
  */
 export function setToken(token: string): void {
-  localStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(TOKEN_KEY, token);
+  // Ensure old localStorage token is cleared
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 /**
- * Clear the auth token
+ * Clear the auth token (from both storage locations)
  */
 export function clearToken(): void {
-  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(TOKEN_KEY); // Clear any migrated tokens
 }
 
 /**
