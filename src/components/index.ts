@@ -11,3 +11,4 @@ export * from './Footer';
 export * from './ExportModal';
 export * from './ImportModal';
 export * from './AIAssist';
+export * from './ErrorBoundary';

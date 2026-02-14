@@ -6,7 +6,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { C } from './config/colors';
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
-import { Sidebar, Header, Footer, ExportModal, ImportModal } from './components';
+import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary } from './components';
 import { SECTION_RENDERERS } from './sections';
 import { validateSSP, type ValidationResult } from './utils/validation';
 import { generatePDF, downloadPDF } from './utils/pdfExport';
@@ -448,7 +448,11 @@ function App() {
             className="animate-slideIn"
             key={currentSection}
           >
-            {Renderer && <Renderer d={data} sf={setField} />}
+            {Renderer && (
+              <SectionErrorBoundary sectionName={currentSectionInfo?.label || 'Section'}>
+                <Renderer d={data} sf={setField} />
+              </SectionErrorBoundary>
+            )}
           </div>
         </div>
 
