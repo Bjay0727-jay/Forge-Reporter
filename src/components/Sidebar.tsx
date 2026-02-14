@@ -78,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               fontWeight: 600,
               letterSpacing: '.07em',
             }}>
-              REPORTER \u2014 FISMA SSP
+              REPORTER — FISMA SSP
             </div>
           </div>
         )}
@@ -237,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       fontFamily: "'Fira Code', monospace",
                       color: pct === 100 ? C.success : pct > 0 ? C.primary : C.textMuted,
                     }}>
-                      {pct > 0 ? `${pct}%` : '\u2014'}
+                      {pct > 0 ? `${pct}%` : '—'}
                     </div>
                   </>
                 )}
@@ -264,7 +264,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             padding: 4,
           }}
         >
-          {collapsed ? '\u25b6' : '\u25c0'}
+          {collapsed ? '▶' : '◀'}
         </button>
       </div>
     </div>

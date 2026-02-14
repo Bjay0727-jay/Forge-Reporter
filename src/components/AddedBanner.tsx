@@ -27,7 +27,7 @@ export const AddedBanner: React.FC<AddedBannerProps> = ({ tag, ref: nistRef, tex
       textTransform: 'uppercase',
       letterSpacing: '.05em',
     }}>
-      {tag === 'fisma' ? '\ud83d\udd34' : '\u2726'} {tag === 'fisma' ? 'NEW \u2014 FISMA/RMF Requirement' : 'FEDRAMP ADDITION'} \u2014 {nistRef}
+      {tag === 'fisma' ? '🔴' : '✦'} {tag === 'fisma' ? 'NEW — FISMA/RMF Requirement' : 'FEDRAMP ADDITION'} — {nistRef}
     </div>
     <div style={{
       fontSize: 12,

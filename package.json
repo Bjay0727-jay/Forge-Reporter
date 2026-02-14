@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "ajv": "^8.18.0",
+    "ajv-formats": "^3.0.1",
     "html2canvas": "^1.4.1",
+    "js2xmlparser": "^5.0.0",
     "jspdf": "^4.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

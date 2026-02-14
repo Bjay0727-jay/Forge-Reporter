@@ -81,7 +81,7 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
                     boxSizing: 'border-box',
                   }}
                 >
-                  <option value="">\u2014</option>
+                  <option value="">—</option>
                   {c.opts?.map(o => (
                     <option key={o} value={o}>{o}</option>
                   ))}
@@ -123,7 +123,7 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
             onMouseEnter={(e) => (e.target as HTMLElement).style.opacity = '1'}
             onMouseLeave={(e) => (e.target as HTMLElement).style.opacity = '0.5'}
           >
-            \u2715
+            ✕
           </button>
         </div>
       ))}

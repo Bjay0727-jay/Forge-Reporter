@@ -570,7 +570,7 @@ export const Chk: React.FC<ChkProps> = ({ checked, onChange, label }) => (
       }}
     >
       {checked && (
-        <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>\u2713</span>
+        <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>✓</span>
       )}
     </div>
     {label}

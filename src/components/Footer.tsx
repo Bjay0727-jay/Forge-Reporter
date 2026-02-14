@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({
           opacity: isFirst ? 0.5 : 1,
         }}
       >
-        \u2190 Previous
+        ← Previous
       </button>
 
       {/* Section Counter */}
@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({
           color: isLast ? C.textSecondary : '#fff',
         }}
       >
-        {isLast ? 'Final' : 'Next \u2192'}
+        {isLast ? 'Final' : 'Next →'}
       </button>
     </div>
   );

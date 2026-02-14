@@ -6,11 +6,17 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { C } from './config/colors';
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
-import { Sidebar, Header, Footer, ExportModal } from './components';
+import { Sidebar, Header, Footer, ExportModal, ImportModal } from './components';
 import { SECTION_RENDERERS } from './sections';
 import { validateSSP, type ValidationResult } from './utils/validation';
 import { generatePDF, downloadPDF } from './utils/pdfExport';
-import { exportToOscalJson } from './utils/oscalExport';
+import {
+  generateValidatedOscalSSP,
+  downloadOscalJson,
+  downloadOscalXml,
+  type ValidatedOscalExportResult
+} from './utils/oscalExport';
+import type { OscalImportResult } from './utils/oscalImport';
 import { useAuth } from './hooks/useAuth';
 import { useSync } from './hooks/useSync';
 import './index.css';
@@ -39,6 +45,7 @@ function App() {
 
   // UI state
   const [showExport, setShowExport] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -52,16 +59,31 @@ function App() {
 
   // Load data from server if authenticated with an SSP ID
   useEffect(() => {
+    console.log('[Reporter] App: Load effect triggered', {
+      isAuthenticated: authState.isAuthenticated,
+      sspId: authState.sspId,
+      initialLoadDone,
+      isLoading: authState.isLoading
+    });
+
     if (authState.isAuthenticated && authState.sspId && !initialLoadDone) {
+      console.log('[Reporter] App: Starting server load for SSP:', authState.sspId);
       setInitialLoadDone(true);
       skipDirtyRef.current = true;
 
       syncActions.loadFromServer(authState.sspId).then((serverData) => {
+        console.log('[Reporter] App: Server data received:', serverData);
         if (serverData) {
           setData(serverData);
           // Also save to localStorage for offline access
           localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
+          console.log('[Reporter] App: Data loaded and saved to localStorage');
+        } else {
+          console.warn('[Reporter] App: No data received from server');
         }
+        skipDirtyRef.current = false;
+      }).catch((err) => {
+        console.error('[Reporter] App: Error loading from server:', err);
         skipDirtyRef.current = false;
       });
     }
@@ -164,18 +186,78 @@ function App() {
     }
   };
 
-  // Export handler
-  const handleExport = async (format: string) => {
+  // Export handler - returns validation result for OSCAL
+  const handleExport = async (format: string): Promise<ValidatedOscalExportResult | void> => {
     console.log('Exporting as:', format);
 
     if (format === 'OSCAL JSON') {
-      // Generate OSCAL JSON
-      exportToOscalJson({
+      // Generate and validate OSCAL JSON
+      const result = generateValidatedOscalSSP({
         data,
         documentTitle: data.sysName ? `System Security Plan - ${data.sysName}` : undefined,
         orgName: data.owningAgency,
         version: '1.0',
       });
+
+      console.log('OSCAL Validation Result:', result.summary);
+
+      // If valid, download automatically
+      if (result.success) {
+        const filename = `${data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.json`;
+        downloadOscalJson(result.document, filename);
+      }
+
+      // Return result for UI to display validation errors
+      return result;
+    } else if (format === 'OSCAL JSON (force)') {
+      // Force export even with validation errors
+      const result = generateValidatedOscalSSP({
+        data,
+        documentTitle: data.sysName ? `System Security Plan - ${data.sysName}` : undefined,
+        orgName: data.owningAgency,
+        version: '1.0',
+      });
+
+      // Download regardless of validation
+      const filename = `${data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.json`;
+      downloadOscalJson(result.document, filename);
+
+      console.log('OSCAL exported with validation warnings/errors (user forced)');
+      return result;
+    } else if (format === 'OSCAL XML') {
+      // Generate and validate OSCAL XML
+      const result = generateValidatedOscalSSP({
+        data,
+        documentTitle: data.sysName ? `System Security Plan - ${data.sysName}` : undefined,
+        orgName: data.owningAgency,
+        version: '1.0',
+      });
+
+      console.log('OSCAL XML Validation Result:', result.summary);
+
+      // If valid, download automatically as XML
+      if (result.success) {
+        const filename = `${data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.xml`;
+        downloadOscalXml(result.document, filename);
+      }
+
+      // Return result for UI to display validation errors
+      return result;
+    } else if (format === 'OSCAL XML (force)') {
+      // Force export XML even with validation errors
+      const result = generateValidatedOscalSSP({
+        data,
+        documentTitle: data.sysName ? `System Security Plan - ${data.sysName}` : undefined,
+        orgName: data.owningAgency,
+        version: '1.0',
+      });
+
+      // Download as XML regardless of validation
+      const filename = `${data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.xml`;
+      downloadOscalXml(result.document, filename);
+
+      console.log('OSCAL XML exported with validation warnings/errors (user forced)');
+      return result;
     } else if (format === 'PDF Report') {
       // Generate PDF
       const blob = await generatePDF({ data, progress });
@@ -243,6 +325,30 @@ function App() {
     syncActions.clearSync();
   };
 
+  // Import handler - receives data from ImportModal
+  const handleImport = (result: OscalImportResult) => {
+    if (result.success && result.data) {
+      // Merge imported data with existing data (imported data takes precedence)
+      setData((prev) => ({
+        ...prev,
+        ...result.data,
+      }));
+
+      // Update validation
+      setValidation(validateSSP(result.data));
+
+      // Show success message
+      const controlCount = result.data.ctrlData ? Object.keys(result.data.ctrlData).length : 0;
+      alert(
+        `Successfully imported "${result.documentInfo.title}"\n\n` +
+        `• Format: OSCAL ${result.documentInfo.oscalVersion} (${result.sourceFormat.toUpperCase()})\n` +
+        `• System: ${result.data.sysName || 'Unnamed'}\n` +
+        `• Controls: ${controlCount}\n\n` +
+        `${result.warnings.length} import note(s)`
+      );
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -275,6 +381,7 @@ function App() {
           saving={saving}
           lastSaved={lastSaved}
           onExport={() => setShowExport(true)}
+          onImport={() => setShowImport(true)}
           onValidate={handleValidate}
           onClearData={handleClearData}
           syncStatus={syncState.status}
@@ -289,6 +396,13 @@ function App() {
           onClose={() => setShowExport(false)}
           onExport={handleExport}
           validation={validation}
+        />
+
+        {/* Import Modal */}
+        <ImportModal
+          isOpen={showImport}
+          onClose={() => setShowImport(false)}
+          onImport={handleImport}
         />
 
         {/* Loading indicator when fetching from server */}

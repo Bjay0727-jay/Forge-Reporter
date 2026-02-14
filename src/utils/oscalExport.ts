@@ -1,6 +1,9 @@
 /**
  * ForgeComply 360 Reporter - OSCAL SSP Export
  * Generates NIST OSCAL 1.1.2 compliant SSP JSON from Reporter SSPData
+ * Includes schema validation against official NIST schemas
+ *
+ * @see https://github.com/usnistgov/OSCAL
  */
 
 import type { SSPData } from '../types';
@@ -21,6 +24,14 @@ import type {
   OscalImplementedRequirement,
   OscalByComponent,
 } from '../types/oscal';
+import {
+  validateOscalSSP,
+  type OscalValidationResult,
+  formatValidationErrors,
+  formatValidationWarnings,
+  getValidationSummary,
+} from './oscalValidator';
+import { parse as js2xml } from 'js2xmlparser';
 
 // =============================================================================
 // UUID Generation
@@ -212,6 +223,7 @@ function buildSystemCharacteristics(
       informationTypes.push({
         uuid: generateUUID(),
         title: it.name || 'Information Type',
+        description: `Information type: ${it.name || 'General'}. NIST ID: ${it.nistId || 'Not specified'}.`, // Required by OSCAL schema
         categorizations: it.nistId
           ? [
               {
@@ -226,10 +238,11 @@ function buildSystemCharacteristics(
       });
     }
   } else {
-    // Default information type if none specified
+    // Default information type if none specified - description is required by OSCAL
     informationTypes.push({
       uuid: generateUUID(),
       title: 'System Information',
+      description: 'General information processed, stored, or transmitted by the system.',
       'confidentiality-impact': { base: impactLevel },
       'integrity-impact': { base: impactLevel },
       'availability-impact': { base: impactLevel },
@@ -239,14 +252,20 @@ function buildSystemCharacteristics(
   // Determine system status
   const statusState = data.opDate ? 'operational' : 'under-development';
 
+  // Build props - only include if non-empty (OSCAL requires at least 1 item if present)
+  const props = buildSystemProps(data);
+
+  // system-ids is REQUIRED by OSCAL schema - provide a default if not specified
+  const systemIds = data.fismaId
+    ? [{ 'identifier-type': 'https://fedramp.gov', id: data.fismaId }]
+    : [{ 'identifier-type': 'https://ietf.org/rfc/rfc4122', id: generateUUID() }]; // Use UUID as fallback
+
   return {
-    'system-ids': data.fismaId
-      ? [{ 'identifier-type': 'https://fedramp.gov', id: data.fismaId }]
-      : undefined,
+    'system-ids': systemIds,
     'system-name': data.sysName || 'Untitled System',
     'system-name-short': data.sysAcronym,
     description: data.sysDesc || 'No description provided.',
-    props: buildSystemProps(data),
+    props: props.length > 0 ? props : undefined, // Omit if empty (OSCAL requires min 1 item)
     'security-sensitivity-level': impactLevel,
     'system-information': { 'information-types': informationTypes },
     'security-impact-level': {
@@ -277,7 +296,9 @@ function buildSystemProps(data: SSPData): Array<{ name: string; value: string }>
   if (data.opDate) props.push({ name: 'operational-date', value: data.opDate });
   if (data.fedrampId) props.push({ name: 'fedramp-id', value: data.fedrampId });
 
-  return props.length > 0 ? props : [];
+  // OSCAL schema requires props array to have at least 1 item if present
+  // Return the array as-is (caller will omit if empty)
+  return props;
 }
 
 // =============================================================================
@@ -527,10 +548,261 @@ export function downloadOscalJson(doc: OscalSSPDocument, filename?: string): voi
 }
 
 /**
- * Generate and download OSCAL SSP in one step
+ * Generate and download OSCAL SSP in one step (legacy - no validation)
  */
 export function exportToOscalJson(options: OscalExportOptions, filename?: string): void {
   const doc = generateOscalSSP(options);
   const defaultFilename = `${options.data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.json`;
   downloadOscalJson(doc, filename || defaultFilename);
 }
+
+// =============================================================================
+// Validated Export (New)
+// =============================================================================
+
+/**
+ * Result of a validated OSCAL export
+ */
+export interface ValidatedOscalExportResult {
+  success: boolean;
+  document: OscalSSPDocument;
+  validation: OscalValidationResult;
+  formattedErrors: string[];
+  formattedWarnings: string[];
+  summary: string;
+}
+
+/**
+ * Generate OSCAL SSP with schema validation
+ * Returns the document and validation results - does NOT auto-download
+ *
+ * @param options - Export options including SSP data
+ * @returns Export result with document and validation info
+ */
+export function generateValidatedOscalSSP(options: OscalExportOptions): ValidatedOscalExportResult {
+  // Generate the OSCAL document
+  const document = generateOscalSSP(options);
+
+  // Validate against NIST OSCAL 1.1.2 schema
+  const validation = validateOscalSSP(document);
+
+  // Format for display
+  const formattedErrors = formatValidationErrors(validation);
+  const formattedWarnings = formatValidationWarnings(validation);
+  const summary = getValidationSummary(validation);
+
+  return {
+    success: validation.valid,
+    document,
+    validation,
+    formattedErrors,
+    formattedWarnings,
+    summary,
+  };
+}
+
+/**
+ * Export OSCAL with validation - only downloads if valid (or user confirms)
+ *
+ * @param options - Export options
+ * @param filename - Optional filename override
+ * @param skipValidation - If true, downloads even if validation fails
+ * @returns The export result for UI handling
+ */
+export function exportValidatedOscalJson(
+  options: OscalExportOptions,
+  filename?: string,
+  skipValidation = false
+): ValidatedOscalExportResult {
+  const result = generateValidatedOscalSSP(options);
+
+  // Only auto-download if valid or user wants to skip validation
+  if (result.success || skipValidation) {
+    const defaultFilename = `${options.data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.json`;
+    downloadOscalJson(result.document, filename || defaultFilename);
+  }
+
+  return result;
+}
+
+// =============================================================================
+// XML Export Functions
+// =============================================================================
+
+/**
+ * OSCAL XML namespace configuration
+ */
+const OSCAL_XML_NAMESPACE = 'http://csrc.nist.gov/ns/oscal/1.0';
+
+/**
+ * Convert OSCAL JSON key names to XML-compatible element names
+ * Handles hyphenated names and nested structures
+ */
+function transformKeyForXml(key: string): string {
+  // OSCAL uses hyphenated keys in JSON, same in XML
+  return key;
+}
+
+/**
+ * Recursively transform OSCAL JSON structure for XML serialization
+ * Handles arrays, objects, and special OSCAL patterns
+ */
+function transformForXml(obj: unknown, parentKey?: string): unknown {
+  if (obj === null || obj === undefined) {
+    return undefined;
+  }
+
+  if (Array.isArray(obj)) {
+    // For arrays, we need to return items individually for js2xmlparser
+    return obj.map(item => transformForXml(item, parentKey));
+  }
+
+  if (typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+      if (value === undefined || value === null) continue;
+
+      const xmlKey = transformKeyForXml(key);
+
+      if (Array.isArray(value)) {
+        // Handle arrays - each item becomes a separate element with singular name
+        const singularKey = getSingularKey(xmlKey);
+        if (value.length > 0) {
+          result[singularKey] = value.map(item => transformForXml(item, singularKey));
+        }
+      } else {
+        result[xmlKey] = transformForXml(value, xmlKey);
+      }
+    }
+
+    return result;
+  }
+
+  // Primitive values
+  return obj;
+}
+
+/**
+ * Get singular form of array key names for XML elements
+ */
+function getSingularKey(key: string): string {
+  const singularMap: Record<string, string> = {
+    'roles': 'role',
+    'parties': 'party',
+    'responsible-parties': 'responsible-party',
+    'party-uuids': 'party-uuid',
+    'email-addresses': 'email-address',
+    'system-ids': 'system-id',
+    'information-types': 'information-type',
+    'information-type-ids': 'information-type-id',
+    'categorizations': 'categorization',
+    'props': 'prop',
+    'users': 'user',
+    'components': 'component',
+    'protocols': 'protocol',
+    'port-ranges': 'port-range',
+    'authorized-privileges': 'authorized-privilege',
+    'functions-performed': 'function-performed',
+    'implemented-requirements': 'implemented-requirement',
+    'by-components': 'by-component',
+    'statements': 'statement',
+    'links': 'link',
+    'remarks': 'remarks',
+    'diagrams': 'diagram',
+  };
+
+  return singularMap[key] || key;
+}
+
+/**
+ * Convert OSCAL SSP JSON document to OSCAL XML format
+ * Follows NIST OSCAL 1.1.2 XML schema conventions
+ */
+export function oscalToXml(doc: OscalSSPDocument): string {
+  // Transform the document for XML serialization
+  const ssp = doc['system-security-plan'];
+
+  // Build XML structure with proper OSCAL namespace
+  const xmlDoc = {
+    '@': {
+      'xmlns': OSCAL_XML_NAMESPACE,
+      'uuid': ssp.uuid,
+    },
+    ...transformForXml(ssp) as Record<string, unknown>,
+  };
+
+  // Remove the uuid from nested since it's now an attribute
+  delete (xmlDoc as Record<string, unknown>)['uuid'];
+
+  // Generate XML using js2xmlparser
+  const options = {
+    declaration: {
+      include: true,
+      encoding: 'UTF-8',
+      version: '1.0',
+    },
+    format: {
+      doubleQuotes: true,
+      indent: '  ',
+      newline: '\n',
+      pretty: true,
+    },
+    useSelfClosingTagIfEmpty: true,
+  };
+
+  return js2xml('system-security-plan', xmlDoc, options);
+}
+
+/**
+ * Download OSCAL XML as file
+ */
+export function downloadOscalXml(doc: OscalSSPDocument, filename?: string): void {
+  const xml = oscalToXml(doc);
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename || `ssp-oscal-${new Date().toISOString().split('T')[0]}.xml`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Export OSCAL with validation in XML format
+ *
+ * @param options - Export options
+ * @param filename - Optional filename override
+ * @param skipValidation - If true, downloads even if validation fails
+ * @returns The export result for UI handling
+ */
+export function exportValidatedOscalXml(
+  options: OscalExportOptions,
+  filename?: string,
+  skipValidation = false
+): ValidatedOscalExportResult {
+  const result = generateValidatedOscalSSP(options);
+
+  // Only auto-download if valid or user wants to skip validation
+  if (result.success || skipValidation) {
+    const defaultFilename = `${options.data.sysAcronym || 'SSP'}_OSCAL_${new Date().toISOString().split('T')[0]}.xml`;
+    downloadOscalXml(result.document, filename || defaultFilename);
+  }
+
+  return result;
+}
+
+// Re-export validation utilities for use in components
+export {
+  validateOscalSSP,
+  type OscalValidationResult,
+  type OscalValidationError,
+  type OscalValidationWarning,
+  formatValidationErrors,
+  formatValidationWarnings,
+  getValidationSummary,
+} from './oscalValidator';

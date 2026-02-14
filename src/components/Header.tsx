@@ -11,6 +11,7 @@ interface HeaderProps {
   saving: boolean;
   lastSaved: Date | null;
   onExport: () => void;
+  onImport: () => void;
   onValidate: () => void;
   onClearData?: () => void;
   // Sync props
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   saving,
   lastSaved,
   onExport,
+  onImport,
   onValidate,
   onClearData,
   syncStatus,
@@ -51,11 +53,11 @@ export const Header: React.FC<HeaderProps> = ({
         gap: 6,
       }}>
         <span style={{ fontSize: 10.5, color: C.textMuted }}>ForgeComply 360</span>
-        <span style={{ color: C.borderDark }}>\u203a</span>
+        <span style={{ color: C.borderDark }}>›</span>
         <span style={{ fontSize: 10.5, color: C.textSecondary, fontWeight: 600 }}>FISMA SSP</span>
         {sspTitle && (
           <>
-            <span style={{ color: C.borderDark }}>\u203a</span>
+            <span style={{ color: C.borderDark }}>›</span>
             <span style={{
               fontSize: 10.5,
               color: C.primary,
@@ -69,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </>
         )}
-        <span style={{ color: C.borderDark }}>\u203a</span>
+        <span style={{ color: C.borderDark }}>›</span>
         <span style={{ fontSize: 10.5, color: C.primary, fontWeight: 600 }}>
           {currentSection?.label}
         </span>
@@ -154,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 title="Disconnect and work offline"
               >
-                \u2715
+                ✕
               </button>
             )}
           </div>
@@ -167,11 +169,11 @@ export const Header: React.FC<HeaderProps> = ({
             color: C.warning,
             animation: 'pulse 1s infinite',
           }}>
-            \u25cf Saving\u2026
+            ● Saving…
           </span>
         ) : lastSaved ? (
           <span style={{ fontSize: 10.5, color: C.success }}>
-            \u2713 {lastSaved.toLocaleTimeString()}
+            ✓ {lastSaved.toLocaleTimeString()}
           </span>
         ) : null}
 
@@ -190,9 +192,30 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             title="Clear all SSP data"
           >
-            \ud83d\uddd1\ufe0f Clear
+            🗑️ Clear
           </button>
         )}
+
+        {/* Import Button */}
+        <button
+          onClick={onImport}
+          style={{
+            padding: '5px 12px',
+            background: 'none',
+            border: `1px solid ${C.border}`,
+            borderRadius: 6,
+            color: C.textSecondary,
+            fontSize: 11.5,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+          title="Import OSCAL SSP"
+        >
+          📤 Import
+        </button>
 
         {/* Export Button */}
         <button
@@ -211,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
             gap: 4,
           }}
         >
-          \ud83d\udce5 Export
+          📥 Export
         </button>
 
         {/* Validate Button */}
@@ -231,7 +254,7 @@ export const Header: React.FC<HeaderProps> = ({
             gap: 4,
           }}
         >
-          \ud83d\udd0d Validate
+          🔍 Validate
         </button>
       </div>
     </div>
