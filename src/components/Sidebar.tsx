@@ -268,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           justifyContent: collapsed ? 'center' : 'flex-start',
         }}
       >
-        {/* ForgeComply 360 Shield Logo */}
+        {/* ForgeComply 360 Shield Logo - Double shield with gear */}
         <div
           style={{
             width: 44,
@@ -282,45 +282,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <defs>
               <linearGradient id="shieldOuter" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#c0c0c0" />
-                <stop offset="50%" stopColor="#808080" />
-                <stop offset="100%" stopColor="#a0a0a0" />
+                <stop offset="0%" stopColor="#e0e0e0" />
+                <stop offset="30%" stopColor="#a0a0a0" />
+                <stop offset="70%" stopColor="#c0c0c0" />
+                <stop offset="100%" stopColor="#909090" />
               </linearGradient>
-              <linearGradient id="shieldInner" x1="0%" y1="0%" x2="0%" y2="100%">
+              <linearGradient id="shieldLime" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#a3e635" />
+                <stop offset="100%" stopColor="#65a30d" />
+              </linearGradient>
+              <linearGradient id="shieldNavy" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#1a2744" />
                 <stop offset="100%" stopColor="#0f172a" />
               </linearGradient>
             </defs>
-            {/* Outer silver shield */}
+            {/* Outer silver/chrome shield */}
             <path
-              d="M22 2 L41 9 L41 23 C41 34 32 41 22 44 C12 41 3 34 3 23 L3 9 Z"
+              d="M22 1 L42 8 L42 24 C42 35 32 42 22 44 C12 42 2 35 2 24 L2 8 Z"
               fill="url(#shieldOuter)"
+            />
+            {/* Middle lime green shield */}
+            <path
+              d="M22 4 L39 10 L39 24 C39 33 30 39 22 41 C14 39 5 33 5 24 L5 10 Z"
+              fill="url(#shieldLime)"
             />
             {/* Inner navy shield */}
             <path
-              d="M22 5 L38 11 L38 23 C38 32 30 38 22 40 C14 38 6 32 6 23 L6 11 Z"
-              fill="url(#shieldInner)"
+              d="M22 7 L36 12 L36 24 C36 31 28 36 22 38 C16 36 8 31 8 24 L8 12 Z"
+              fill="url(#shieldNavy)"
             />
-            {/* "360" arc with lime accent */}
-            <circle
-              cx="22"
-              cy="22"
-              r="10"
-              fill="none"
-              stroke="#84cc16"
-              strokeWidth="2"
-              strokeDasharray="50 13"
-              transform="rotate(-90 22 22)"
-            />
-            {/* Shield checkmark */}
-            <path
-              d="M17 22 L20 25 L27 18"
-              fill="none"
-              stroke="#84cc16"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            {/* Gear/Cog icon */}
+            <g transform="translate(22, 22)">
+              {/* Outer gear teeth */}
+              <path
+                d="M0 -9 L1.5 -9 L2 -7 L4 -7.5 L5.5 -8.5 L6.5 -7 L5 -5.5 L5.5 -4 L7 -3 L7 -1.5 L5 -1 L5 1 L7 1.5 L7 3 L5.5 4 L5 5.5 L6.5 7 L5.5 8.5 L4 7.5 L2 7 L1.5 9 L-1.5 9 L-2 7 L-4 7.5 L-5.5 8.5 L-6.5 7 L-5 5.5 L-5.5 4 L-7 3 L-7 1.5 L-5 1 L-5 -1 L-7 -1.5 L-7 -3 L-5.5 -4 L-5 -5.5 L-6.5 -7 L-5.5 -8.5 L-4 -7.5 L-2 -7 L-1.5 -9 Z"
+                fill="#1a2744"
+                stroke="#84cc16"
+                strokeWidth="0.5"
+              />
+              {/* Inner gear circle */}
+              <circle cx="0" cy="0" r="4" fill="#1a2744" stroke="#84cc16" strokeWidth="1" />
+              {/* Center dot */}
+              <circle cx="0" cy="0" r="1.5" fill="#84cc16" />
+            </g>
           </svg>
         </div>
         {!collapsed && (
