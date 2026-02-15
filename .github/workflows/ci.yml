@@ -96,6 +96,16 @@ jobs:
           name: dist
           path: dist/
 
+      - name: List dist contents
+        run: ls -la dist/
+
+      - name: Test Cloudflare authentication
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: whoami
+
       - name: Deploy to Cloudflare Pages (Production)
         uses: cloudflare/wrangler-action@v3
         with:
