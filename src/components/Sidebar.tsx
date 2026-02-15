@@ -268,56 +268,86 @@ export const Sidebar: React.FC<SidebarProps> = ({
           justifyContent: collapsed ? 'center' : 'flex-start',
         }}
       >
-        {/* Shield Logo */}
+        {/* Forge Cyber Defense Shield Logo */}
         <div
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
+            width: 44,
+            height: 44,
             flexShrink: 0,
-            background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(20, 184, 166, 0.3)',
           }}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+            <defs>
+              <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#5eead4" />
+                <stop offset="100%" stopColor="#14b8a6" />
+              </linearGradient>
+            </defs>
+            {/* Outer shield */}
             <path
-              d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z"
-              fill="white"
-              fillOpacity="0.9"
+              d="M22 3 L40 10 L40 22 C40 32 31 39 22 42 C13 39 4 32 4 22 L4 10 Z"
+              fill="url(#shieldGradient)"
             />
+            {/* Inner dark shield */}
             <path
-              d="M10 12l2 2 4-4"
-              stroke={C.tealDark}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d="M22 7 L36 13 L36 22 C36 30 28 36 22 38 C16 36 8 30 8 22 L8 13 Z"
+              fill="#1e3a5f"
             />
+            {/* Small shield icon */}
+            <path
+              d="M22 12 L30 16 L30 22 C30 27 26 30 22 31 C18 30 14 27 14 22 L14 16 Z"
+              fill="none"
+              stroke="#14b8a6"
+              strokeWidth="1.5"
+            />
+            {/* Speed lines */}
+            <g stroke="#a0a0a0" strokeWidth="1" strokeLinecap="round">
+              <line x1="11" y1="26" x2="17" y2="26" />
+              <line x1="12" y1="29" x2="18" y2="29" />
+              <line x1="11" y1="32" x2="16" y2="32" />
+            </g>
+            {/* Lock icon */}
+            <g transform="translate(22, 35)">
+              <rect x="-4" y="-2" width="8" height="6" rx="1" fill="#14b8a6" />
+              <path d="M-2 -2 L-2 -4 C-2 -6 2 -6 2 -4 L2 -2" fill="none" stroke="#14b8a6" strokeWidth="1.2" strokeLinecap="round" />
+            </g>
           </svg>
         </div>
         {!collapsed && (
           <div>
             <div
               style={{
-                fontSize: 15,
-                fontWeight: 600,
-                color: C.sidebarText,
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#e0e0e0',
+                letterSpacing: '0.05em',
                 lineHeight: 1.2,
               }}
             >
-              ForgeReporter
+              FORGE
             </div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 10,
                 color: C.teal,
-                fontWeight: 500,
-                marginTop: 2,
+                fontWeight: 600,
+                marginTop: 1,
+                letterSpacing: '0.03em',
               }}
             >
-              FISMA SSP Builder
+              CYBER DEFENSE
+            </div>
+            <div
+              style={{
+                fontSize: 9,
+                color: C.sidebarTextMuted,
+                marginTop: 4,
+              }}
+            >
+              ForgeReporter • SSP Builder
             </div>
           </div>
         )}

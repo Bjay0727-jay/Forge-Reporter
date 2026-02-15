@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForgeReporter Redesign Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            forge: {
+              navy: {
+                DEFAULT: '#1a2744',
+                900: '#1a2744',
+                800: '#243b53',
+                700: '#334e68',
+                600: '#486581',
+                50: '#f0f4f8',
+              },
+              green: {
+                DEFAULT: '#84cc16',
+                600: '#65a30d',
+                500: '#84cc16',
+                400: '#a3e635',
+              }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .sidebar-item:hover { background: rgba(255,255,255,0.08); }
+    .sidebar-item.active { background: rgba(101, 163, 13, 0.15); border-left: 3px solid #84cc16; }
+    .card { transition: all 0.2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Main Layout Container -->
+  <div class="flex h-screen">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="w-64 bg-forge-navy-900 text-white flex flex-col">
+
+      <!-- Logo Section -->
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-forge-green-500 to-forge-green-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">
+            F
+          </div>
+          <div>
+            <div class="font-semibold text-base">ForgeReporter</div>
+            <div class="text-xs text-gray-400">FISMA SSP Builder</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Document -->
+      <div class="px-4 py-3 mx-3 mt-4 bg-white/5 rounded-lg border border-white/10">
+        <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Current SSP</div>
+        <div class="font-medium text-sm truncate">SSP-2024-FISMA-001</div>
+        <div class="text-xs text-gray-400 mt-1">Last saved 2 min ago</div>
+      </div>
+
+      <!-- Navigation Groups -->
+      <nav class="flex-1 px-3 py-4 overflow-y-auto">
+
+        <!-- Group: Getting Started -->
+        <div class="mb-5">
+          <div class="text-xs text-gray-400 uppercase tracking-wider px-3 mb-2 font-medium">Getting Started</div>
+          <div class="space-y-1">
+            <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
+              <svg class="w-5 h-5 text-forge-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>System Information</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              <span>Security Categorization</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+              </svg>
+              <span>Information Types</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Group: System Architecture -->
+        <div class="mb-5">
+          <div class="text-xs text-gray-400 uppercase tracking-wider px-3 mb-2 font-medium">Architecture</div>
+          <div class="space-y-1">
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+              </svg>
+              <span>Authorization Boundary</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              <span>Data Flow</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+              </svg>
+              <span>Network Architecture</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span>Ports, Protocols & Services</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Group: Security Controls -->
+        <div class="mb-5">
+          <div class="text-xs text-gray-400 uppercase tracking-wider px-3 mb-2 font-medium">Security Controls</div>
+          <div class="space-y-1">
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <span>Access Controls</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+              </svg>
+              <span>Cryptography</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <span>Personnel Security</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Group: Policies & Plans -->
+        <div class="mb-5">
+          <div class="text-xs text-gray-400 uppercase tracking-wider px-3 mb-2 font-medium">Policies & Plans</div>
+          <div class="space-y-1">
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span>Security Policies</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <span>Contingency Plan</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>Incident Response</span>
+            </a>
+          </div>
+        </div>
+
+      </nav>
+
+      <!-- User Section -->
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-forge-green-600 rounded-full flex items-center justify-center text-sm font-medium">
+            SR
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium truncate">Stanley Riley</div>
+            <div class="text-xs text-gray-400">SSP Author</div>
+          </div>
+          <button class="p-2 hover:bg-white/10 rounded-lg transition">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+              <span>SSP-2024-FISMA-001</span>
+              <span class="text-gray-300">/</span>
+              <span>System Information</span>
+            </div>
+            <h1 class="text-xl font-semibold text-gray-900">System Information</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="flex items-center gap-2 text-sm text-gray-500">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              Auto-saved
+            </span>
+            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+              Preview
+            </button>
+            <button class="px-4 py-2 text-sm font-medium text-white bg-forge-navy-900 rounded-lg hover:bg-forge-navy-800 transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+              Export SSP
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+
+        <!-- Progress Overview Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-semibold text-gray-900">SSP Completion Progress</h2>
+            <span class="text-2xl font-bold text-forge-green-600">68%</span>
+          </div>
+          <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-forge-green-500 to-forge-green-400 rounded-full" style="width: 68%"></div>
+          </div>
+          <div class="flex justify-between mt-3 text-sm">
+            <span class="text-gray-500">14 of 21 sections complete</span>
+            <span class="text-gray-500">7 sections remaining</span>
+          </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">System Identification</h2>
+              <p class="text-sm text-gray-500 mt-1">Basic information about the information system</p>
+            </div>
+            <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">Complete</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <!-- System Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">System Name <span class="text-red-500">*</span></label>
+              <input type="text" value="ForgeComply Enterprise Platform" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-forge-navy-900 focus:border-transparent transition text-sm">
+            </div>
+
+            <!-- System Abbreviation -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">System Abbreviation</label>
+              <input type="text" value="FCEP" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-forge-navy-900 focus:border-transparent transition text-sm">
+            </div>
+
+            <!-- System Owner -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">System Owner <span class="text-red-500">*</span></label>
+              <input type="text" value="Chief Information Security Officer" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-forge-navy-900 focus:border-transparent transition text-sm">
+            </div>
+
+            <!-- Authorizing Official -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Authorizing Official <span class="text-red-500">*</span></label>
+              <input type="text" value="Deputy Director, IT Operations" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-forge-navy-900 focus:border-transparent transition text-sm">
+            </div>
+
+            <!-- System Description -->
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">System Description <span class="text-red-500">*</span></label>
+              <textarea rows="4" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-forge-navy-900 focus:border-transparent transition text-sm resize-none">The ForgeComply Enterprise Platform is a cloud-based governance, risk, and compliance (GRC) solution that enables federal agencies to manage their security authorization packages, track compliance status, and automate evidence collection for continuous monitoring requirements.</textarea>
+            </div>
+          </div>
+
+          <!-- Section Navigation -->
+          <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
+            <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Previous Section
+            </button>
+            <button class="px-5 py-2.5 text-sm font-medium text-white bg-forge-navy-900 rounded-lg hover:bg-forge-navy-800 transition flex items-center gap-2">
+              Next: Security Categorization
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+</body>
+</html>
