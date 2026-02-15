@@ -1,6 +1,6 @@
 /**
- * Forge Cyber Defense - ForgeReporter Color System
- * Clean, professional design with dark mode support
+ * ForgeComply 360 Reporter - Color System
+ * Matching ForgeComply 360 brand (Navy + Lime Green)
  */
 
 // Theme type
@@ -8,13 +8,13 @@ export type ThemeMode = 'light' | 'dark';
 
 // Light theme colors
 const lightColors = {
-  // Forge Cyber Defense Brand Colors
-  navy: '#1e3a5f',
-  navyLight: '#2d4a6f',
-  navyDark: '#152a4a',
-  teal: '#14b8a6',
-  tealLight: '#2dd4bf',
-  tealDark: '#0d9488',
+  // ForgeComply 360 Brand Colors
+  navy: '#1a2744',
+  navyLight: '#2a3a5c',
+  navyDark: '#0f172a',
+  teal: '#84cc16',      // Lime green (brand accent)
+  tealLight: '#a3e635', // Lighter lime
+  tealDark: '#65a30d',  // Darker lime
 
   // Backgrounds
   bg: '#f8fafc',
@@ -22,15 +22,15 @@ const lightColors = {
   surfaceAlt: '#f1f5f9',
   surfaceHover: '#e2e8f0',
 
-  // Primary Actions
-  primary: '#1e3a5f',
-  primaryDark: '#152a4a',
+  // Primary Actions (Navy)
+  primary: '#1a2744',
+  primaryDark: '#0f172a',
   primaryLight: '#e0f2fe',
 
-  // Accent
-  accent: '#14b8a6',
-  accentDark: '#0d9488',
-  accentLight: '#ccfbf1',
+  // Accent (Lime Green)
+  accent: '#84cc16',
+  accentDark: '#65a30d',
+  accentLight: '#ecfccb',
 
   // Status Colors
   success: '#22c55e',
@@ -58,19 +58,19 @@ const lightColors = {
   borderDark: '#cbd5e1',
   borderLight: '#f1f5f9',
 
-  // Card accent line
-  cardAccent: '#14b8a6',
+  // Card accent line (Lime Green)
+  cardAccent: '#84cc16',
 };
 
 // Dark theme colors
 const darkColors = {
-  // Forge Cyber Defense Brand Colors
+  // ForgeComply 360 Brand Colors
   navy: '#0f172a',
   navyLight: '#1e293b',
   navyDark: '#020617',
-  teal: '#14b8a6',
-  tealLight: '#2dd4bf',
-  tealDark: '#0d9488',
+  teal: '#84cc16',      // Lime green
+  tealLight: '#a3e635',
+  tealDark: '#65a30d',
 
   // Backgrounds
   bg: '#0f172a',
@@ -79,14 +79,14 @@ const darkColors = {
   surfaceHover: '#475569',
 
   // Primary Actions
-  primary: '#14b8a6',
-  primaryDark: '#0d9488',
-  primaryLight: '#134e4a',
+  primary: '#84cc16',
+  primaryDark: '#65a30d',
+  primaryLight: '#365314',
 
   // Accent
-  accent: '#14b8a6',
-  accentDark: '#0d9488',
-  accentLight: '#134e4a',
+  accent: '#84cc16',
+  accentDark: '#65a30d',
+  accentLight: '#365314',
 
   // Status Colors
   success: '#22c55e',
@@ -114,8 +114,8 @@ const darkColors = {
   borderDark: '#475569',
   borderLight: '#1e293b',
 
-  // Card accent line
-  cardAccent: '#14b8a6',
+  // Card accent line (Lime Green)
+  cardAccent: '#84cc16',
 };
 
 // Get current theme from localStorage or system preference

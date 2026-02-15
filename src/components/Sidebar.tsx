@@ -268,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           justifyContent: collapsed ? 'center' : 'flex-start',
         }}
       >
-        {/* Forge Cyber Defense Shield Logo */}
+        {/* ForgeComply 360 Shield Logo */}
         <div
           style={{
             width: 44,
@@ -281,73 +281,80 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
             <defs>
-              <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#5eead4" />
-                <stop offset="100%" stopColor="#14b8a6" />
+              <linearGradient id="shieldOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#c0c0c0" />
+                <stop offset="50%" stopColor="#808080" />
+                <stop offset="100%" stopColor="#a0a0a0" />
+              </linearGradient>
+              <linearGradient id="shieldInner" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1a2744" />
+                <stop offset="100%" stopColor="#0f172a" />
               </linearGradient>
             </defs>
-            {/* Outer shield */}
+            {/* Outer silver shield */}
             <path
-              d="M22 3 L40 10 L40 22 C40 32 31 39 22 42 C13 39 4 32 4 22 L4 10 Z"
-              fill="url(#shieldGradient)"
+              d="M22 2 L41 9 L41 23 C41 34 32 41 22 44 C12 41 3 34 3 23 L3 9 Z"
+              fill="url(#shieldOuter)"
             />
-            {/* Inner dark shield */}
+            {/* Inner navy shield */}
             <path
-              d="M22 7 L36 13 L36 22 C36 30 28 36 22 38 C16 36 8 30 8 22 L8 13 Z"
-              fill="#1e3a5f"
+              d="M22 5 L38 11 L38 23 C38 32 30 38 22 40 C14 38 6 32 6 23 L6 11 Z"
+              fill="url(#shieldInner)"
             />
-            {/* Small shield icon */}
-            <path
-              d="M22 12 L30 16 L30 22 C30 27 26 30 22 31 C18 30 14 27 14 22 L14 16 Z"
+            {/* "360" arc with lime accent */}
+            <circle
+              cx="22"
+              cy="22"
+              r="10"
               fill="none"
-              stroke="#14b8a6"
-              strokeWidth="1.5"
+              stroke="#84cc16"
+              strokeWidth="2"
+              strokeDasharray="50 13"
+              transform="rotate(-90 22 22)"
             />
-            {/* Speed lines */}
-            <g stroke="#a0a0a0" strokeWidth="1" strokeLinecap="round">
-              <line x1="11" y1="26" x2="17" y2="26" />
-              <line x1="12" y1="29" x2="18" y2="29" />
-              <line x1="11" y1="32" x2="16" y2="32" />
-            </g>
-            {/* Lock icon */}
-            <g transform="translate(22, 35)">
-              <rect x="-4" y="-2" width="8" height="6" rx="1" fill="#14b8a6" />
-              <path d="M-2 -2 L-2 -4 C-2 -6 2 -6 2 -4 L2 -2" fill="none" stroke="#14b8a6" strokeWidth="1.2" strokeLinecap="round" />
-            </g>
+            {/* Shield checkmark */}
+            <path
+              d="M17 22 L20 25 L27 18"
+              fill="none"
+              stroke="#84cc16"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         {!collapsed && (
           <div>
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#e0e0e0',
-                letterSpacing: '0.05em',
-                lineHeight: 1.2,
-              }}
-            >
-              FORGE
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                ForgeComply
+              </span>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#84cc16',
+                }}
+              >
+                360
+              </span>
             </div>
             <div
               style={{
-                fontSize: 10,
-                color: C.teal,
-                fontWeight: 600,
-                marginTop: 1,
-                letterSpacing: '0.03em',
-              }}
-            >
-              CYBER DEFENSE
-            </div>
-            <div
-              style={{
-                fontSize: 9,
+                fontSize: 11,
                 color: C.sidebarTextMuted,
-                marginTop: 4,
+                marginTop: 2,
+                fontWeight: 500,
               }}
             >
-              ForgeReporter • SSP Builder
+              Reporter • SSP Builder
             </div>
           </div>
         )}
