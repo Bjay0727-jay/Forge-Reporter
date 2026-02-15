@@ -7,6 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+  // Base configs with extends
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -19,6 +20,10 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+  },
+  // Custom rule overrides (MUST come after extends to take precedence)
+  {
+    files: ['**/*.{ts,tsx}'],
     rules: {
       // Allow underscore-prefixed variables to be unused (common pattern for reserved/future params)
       '@typescript-eslint/no-unused-vars': ['error', {
