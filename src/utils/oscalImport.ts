@@ -60,7 +60,7 @@ export async function importOscalSSP(file: File): Promise<OscalImportResult> {
     // Parse JSON directly
     try {
       oscalDoc = JSON.parse(content);
-    } catch (e) {
+    } catch {
       throw new Error('Invalid JSON format. Please ensure the file is valid OSCAL JSON.');
     }
   }

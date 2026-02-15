@@ -577,13 +577,15 @@ export const Chk: React.FC<ChkProps> = ({ checked, onChange, label }) => (
   </label>
 );
 
-// Grid layouts
+// Grid layout style constants (exported for use in section components)
+// eslint-disable-next-line react-refresh/only-export-components
 export const G2: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(2, 1fr)',
   gap: 16,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const G3: React.CSSProperties = {
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',

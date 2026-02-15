@@ -1,7 +1,7 @@
 /**
  * ForgeComply 360 Reporter - Sidebar Component (Light Theme)
  */
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { C, TAG_COLORS, TAG_LABELS } from '../config/colors';
 import { SECTIONS } from '../config/sections';
 import type { Section, SectionGroup } from '../config/sections';
@@ -23,9 +23,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   overall,
   collapsed,
   onToggleCollapse,
-  validationErrors: _validationErrors = {},
+  // validationErrors reserved for future use
 }) => {
-  let lastGrp: SectionGroup | '' = '';
+  // Pre-compute group headers using reduce to avoid variable reassignment
+  const sectionsWithGroups = useMemo(() => {
+    return SECTIONS.reduce<{
+      lastGrp: SectionGroup | '';
+      items: Array<{ section: Section; showGroupHeader: boolean; groupName: SectionGroup }>;
+    }>(
+      (acc, s) => {
+        const showGroupHeader = s.grp !== acc.lastGrp;
+        acc.items.push({ section: s, showGroupHeader, groupName: s.grp });
+        return { lastGrp: s.grp, items: acc.items };
+      },
+      { lastGrp: '', items: [] }
+    ).items;
+  }, []);
 
   return (
     <div style={{
@@ -146,28 +159,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         overflowY: 'auto',
         padding: '4px 0',
       }}>
-        {SECTIONS.map((s: Section) => {
+        {sectionsWithGroups.map(({ section: s, showGroupHeader, groupName }) => {
           const isActive = currentSection === s.id;
           const pct = progress[s.id] || 0;
           const tc = TAG_COLORS[s.tag];
 
           // Group header
-          let groupHeader = null;
-          if (!collapsed && s.grp !== lastGrp) {
-            lastGrp = s.grp;
-            groupHeader = (
-              <div style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: C.textMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '.08em',
-                padding: '10px 16px 2px',
-              }}>
-                {s.grp}
-              </div>
-            );
-          }
+          const groupHeader = (!collapsed && showGroupHeader) ? (
+            <div style={{
+              fontSize: 9,
+              fontWeight: 700,
+              color: C.textMuted,
+              textTransform: 'uppercase',
+              letterSpacing: '.08em',
+              padding: '10px 16px 2px',
+            }}>
+              {groupName}
+            </div>
+          ) : null;
 
           return (
             <Fragment key={s.id}>

@@ -179,7 +179,7 @@ export async function api<T = unknown>(
       ...options,
       headers,
     });
-  } catch (e) {
+  } catch {
     const error = new ApiError('Network error - unable to reach server', 0);
     notifyError(error);
     throw error;

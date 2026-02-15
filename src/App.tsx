@@ -46,7 +46,8 @@ function App() {
   // UI state
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
-  const [saving, setSaving] = useState(false);
+  // Saving state is derived from whether a save timer is pending
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'pending' | 'saved'>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
@@ -68,7 +69,8 @@ function App() {
 
     if (authState.isAuthenticated && authState.sspId && !initialLoadDone) {
       console.log('[Reporter] App: Starting server load for SSP:', authState.sspId);
-      setInitialLoadDone(true);
+      // Use ref to prevent duplicate calls instead of state
+      if (skipDirtyRef.current) return;
       skipDirtyRef.current = true;
 
       syncActions.loadFromServer(authState.sspId).then((serverData) => {
@@ -81,13 +83,13 @@ function App() {
         } else {
           console.warn('[Reporter] App: No data received from server');
         }
-        skipDirtyRef.current = false;
+        setInitialLoadDone(true);
       }).catch((err) => {
         console.error('[Reporter] App: Error loading from server:', err);
         skipDirtyRef.current = false;
       });
     }
-  }, [authState.isAuthenticated, authState.sspId, initialLoadDone, syncActions]);
+  }, [authState.isAuthenticated, authState.sspId, initialLoadDone, authState.isLoading, syncActions]);
 
   // Set field helper
   const setField = useCallback((key: string, value: unknown) => {
@@ -98,26 +100,43 @@ function App() {
     }
   }, [authState.isOnlineMode, syncActions]);
 
-  // Auto-save to localStorage and update validation
+  // Auto-save to localStorage with debounce
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Effect to handle debounced auto-save
   useEffect(() => {
     if (Object.keys(data).length === 0) return;
 
-    setSaving(true);
-    const timer = setTimeout(() => {
+    // Mark as pending when data changes
+    setSaveStatus('pending');
+
+    // Clear any pending save
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+
+    // Schedule save after debounce delay
+    saveTimerRef.current = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        setSaving(false);
         setLastSaved(new Date());
-        // Update validation after save
+        setSaveStatus('saved');
         setValidation(validateSSP(data));
       } catch (e) {
         console.error('Failed to save:', e);
-        setSaving(false);
+        setSaveStatus('idle');
       }
     }, 800);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
   }, [data]);
+
+  // Derive saving boolean from status for Header component
+  const saving = saveStatus === 'pending';
 
   // Calculate per-section progress
   const progress = useMemo(() => {

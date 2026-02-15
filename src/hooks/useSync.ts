@@ -3,7 +3,7 @@
  * Manages bidirectional synchronization between Reporter and Backend
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { SSPData } from '../types';
 import {
   loadSSPFromBackend,
@@ -77,25 +77,38 @@ export interface SyncActions {
  * Hook for managing sync state with backend
  */
 export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
-  const [state, setState] = useState<SyncState>({
+  const [state, setState] = useState<SyncState>(() => ({
     status: isOnlineMode ? 'idle' : 'offline',
     lastSyncedAt: null,
     sspId: null,
     sspTitle: null,
     error: null,
     pendingChanges: false,
-  });
+  }));
 
   // Track previous data for change detection
   const previousDataRef = useRef<SSPData | null>(null);
 
-  // Update status when online mode changes
-  useEffect(() => {
-    setState((prev) => ({
-      ...prev,
-      status: isOnlineMode ? (prev.status === 'offline' ? 'idle' : prev.status) : 'offline',
-    }));
-  }, [isOnlineMode]);
+  // Track previous online mode to detect changes
+  const previousOnlineModeRef = useRef(isOnlineMode);
+
+  // Derive effective status based on online mode changes
+  // This avoids calling setState in useEffect
+  const effectiveStatus = (() => {
+    if (previousOnlineModeRef.current !== isOnlineMode) {
+      previousOnlineModeRef.current = isOnlineMode;
+      // When mode changes, compute new status
+      if (!isOnlineMode) return 'offline' as const;
+      if (state.status === 'offline') return 'idle' as const;
+    }
+    return state.status;
+  })();
+
+  // Computed state with effective status
+  const computedState: SyncState = {
+    ...state,
+    status: effectiveStatus,
+  };
 
   const loadFromServer = useCallback(async (sspId: string): Promise<SSPData | null> => {
     setState((prev) => ({ ...prev, status: 'syncing', error: null }));
@@ -268,7 +281,7 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
     clearError,
   };
 
-  return [state, actions];
+  return [computedState, actions];
 }
 
 /**

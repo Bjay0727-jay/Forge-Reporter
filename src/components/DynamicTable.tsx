@@ -154,8 +154,10 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
 };
 
 // Hook for managing dynamic table data
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Exported separately for use by section components
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDT<T extends Record<string, unknown>>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any,
   key: string,
   setField: (key: string, value: T[]) => void
