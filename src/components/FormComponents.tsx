@@ -1,10 +1,73 @@
 /**
- * ForgeComply 360 Reporter - Form Components (Light Theme)
- * Updated with validation error display support and AI assistance
+ * Forge Cyber Defense - ForgeReporter Form Components
+ * Updated with validation error display, AI assistance, and card styling
  */
 import React, { useState } from 'react';
-import { C } from '../config/colors';
+import { C, lightTheme } from '../config/colors';
 import { generateSectionContent, type SystemContext } from '../services/ai';
+
+// Card component with teal accent line
+interface CardProps {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  accentColor?: string;
+  className?: string;
+}
+
+export const Card: React.FC<CardProps> = ({
+  children,
+  title,
+  subtitle,
+  accentColor = lightTheme.teal,
+}) => (
+  <div
+    style={{
+      background: C.surface,
+      borderRadius: 12,
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+      overflow: 'hidden',
+      marginBottom: 20,
+    }}
+  >
+    {/* Accent line at top */}
+    <div
+      style={{
+        height: 6,
+        background: `linear-gradient(90deg, ${accentColor}, ${lightTheme.tealLight})`,
+      }}
+    />
+    <div style={{ padding: 24 }}>
+      {title && (
+        <div style={{ marginBottom: subtitle ? 4 : 20 }}>
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 16,
+              fontWeight: 600,
+              color: C.text,
+            }}
+          >
+            {title}
+          </h3>
+          {subtitle && (
+            <p
+              style={{
+                margin: '6px 0 0',
+                fontSize: 13,
+                color: C.textMuted,
+                lineHeight: 1.5,
+              }}
+            >
+              {subtitle}
+            </p>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+  </div>
+);
 
 // Input base styles
 const inputStyle: React.CSSProperties = {
@@ -592,30 +655,58 @@ export const G3: React.CSSProperties = {
   gap: 16,
 };
 
-// Section Header
+// Section Header with accent line
 interface SHProps {
   title: string;
   sub?: string;
 }
 
 export const SH: React.FC<SHProps> = ({ title, sub }) => (
-  <div style={{ marginBottom: 22 }}>
-    <h3 style={{
-      margin: 0,
-      fontSize: 18,
-      fontWeight: 700,
-      color: C.text,
-      fontFamily: "'Playfair Display', serif",
-    }}>
-      {title}
-    </h3>
+  <div
+    style={{
+      marginBottom: 24,
+      paddingBottom: 16,
+      borderBottom: `1px solid ${C.border}`,
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        marginBottom: sub ? 8 : 0,
+      }}
+    >
+      {/* Accent bar */}
+      <div
+        style={{
+          width: 5,
+          height: 28,
+          borderRadius: 2,
+          background: `linear-gradient(180deg, ${lightTheme.teal}, ${lightTheme.tealDark})`,
+        }}
+      />
+      <h3
+        style={{
+          margin: 0,
+          fontSize: 18,
+          fontWeight: 600,
+          color: C.text,
+        }}
+      >
+        {title}
+      </h3>
+    </div>
     {sub && (
-      <p style={{
-        margin: '5px 0 0',
-        fontSize: 12.5,
-        color: C.textMuted,
-        lineHeight: 1.5,
-      }}>
+      <p
+        style={{
+          margin: 0,
+          paddingLeft: 16,
+          fontSize: 13,
+          color: C.textMuted,
+          lineHeight: 1.6,
+        }}
+      >
         {sub}
       </p>
     )}

@@ -31,11 +31,11 @@ export const SystemInfoSec: React.FC<Props> = ({ d, sf }) => {
     <div>
       <SH
         title="System Information"
-        sub="Core identification of the information system for FISMA authorization. Maps to SSP \u00a71-4 and eMASS/CSAM registration."
+        sub="Core identification of the information system for FISMA authorization. Maps to SSP §1-4 and eMASS/CSAM registration."
       />
       <AddedBanner
         tag="fedramp"
-        ref="SSP \u00a71-4"
+        ref="SSP §1-4"
         text="Every authorization package starts here. Without system identification, the AO cannot issue an authorization decision."
       />
       <div style={G2}>

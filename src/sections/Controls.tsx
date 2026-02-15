@@ -43,7 +43,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
 
   return (
     <div>
-      <SH title="Control Implementations" sub="RMF Step 4: Implement. Appendix A \u2014 Per NIST 800-53 Rev5 including PT and SR families." />
+      <SH title="Control Implementations" sub="RMF Step 4: Implement. Appendix A — Per NIST 800-53 Rev5 including PT and SR families." />
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(5, 1fr)',
@@ -55,11 +55,11 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
         border: `1px solid ${C.border}`,
       }}>
         {[
-          { l: 'Implemented', c: C.success, i: '\u2705' },
-          { l: 'Partial', c: C.warning, i: '\ud83d\udd36' },
-          { l: 'Planned', c: C.info, i: '\ud83d\udccb' },
-          { l: 'Inherited', c: '#8b5cf6', i: '\ud83d\udd17' },
-          { l: 'N/A', c: C.textMuted, i: '\u2796' },
+          { l: 'Implemented', c: C.success, i: '✅' },
+          { l: 'Partial', c: C.warning, i: '🔶' },
+          { l: 'Planned', c: C.info, i: '📋' },
+          { l: 'Inherited', c: '#8b5cf6', i: '🔗' },
+          { l: 'N/A', c: C.textMuted, i: '➖' },
         ].map((s) => (
           <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11.5, color: s.c }}>
             <span>{s.i}</span>{s.l}
@@ -125,7 +125,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                   {pct}%
                 </span>
                 <span style={{ fontSize: 12, color: C.textMuted, transform: exp === f.c ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
-                  \u25b6
+                  ▶
                 </span>
               </div>
             </div>
@@ -157,12 +157,12 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                             boxSizing: 'border-box',
                           }}
                         >
-                          <option value="">\u2014</option>
-                          <option value="implemented">\u2705 Impl</option>
-                          <option value="partial">\ud83d\udd36 Partial</option>
-                          <option value="planned">\ud83d\udccb Planned</option>
-                          <option value="inherited">\ud83d\udd17 Inherited</option>
-                          <option value="na">\u2796 N/A</option>
+                          <option value="">—</option>
+                          <option value="implemented">✅ Impl</option>
+                          <option value="partial">🔶 Partial</option>
+                          <option value="planned">📋 Planned</option>
+                          <option value="inherited">🔗 Inherited</option>
+                          <option value="na">➖ N/A</option>
                         </select>
                       </div>
                     );
@@ -182,8 +182,8 @@ export const PoliciesSec: React.FC<Props> = ({ d, sf }) => {
   const policyDocs = useDT(d, 'policyDocs', sf);
   return (
     <div>
-      <SH title="Security Policies & Procedures" sub="FedRAMP Appendix C / FISMA \u00a73544 \u2014 Every '-1' control requires documented policy and procedures." />
-      <AddedBanner tag="fisma" ref="Appendix C / All -1 Controls / FISMA \u00a73544" text="Missing policies = every '-1' control fails assessment. This is the #1 finding in FISMA audits. Each of the 20 control families requires at minimum one policy document." />
+      <SH title="Security Policies & Procedures" sub="FedRAMP Appendix C / FISMA §3544 — Every '-1' control requires documented policy and procedures." />
+      <AddedBanner tag="fisma" ref="Appendix C / All -1 Controls / FISMA §3544" text="Missing policies = every '-1' control fails assessment. This is the #1 finding in FISMA audits. Each of the 20 control families requires at minimum one policy document." />
       <DT
         cols={[
           { k: 'family', l: 'Family', type: 'select', opts: ['AC', 'AT', 'AU', 'CA', 'CM', 'CP', 'IA', 'IR', 'MA', 'MP', 'PE', 'PL', 'PM', 'PS', 'PT', 'RA', 'SA', 'SC', 'SI', 'SR'], w: '70px' },
@@ -208,7 +208,7 @@ export const PoliciesSec: React.FC<Props> = ({ d, sf }) => {
           ]} />
         </FF>
         <FF label="Policy Exception Process">
-          <TI value={d.policyException} onChange={(v) => sf('policyException', v)} placeholder="e.g., Exception requests submitted to ISSO \u2192 AO approval" />
+          <TI value={d.policyException} onChange={(v) => sf('policyException', v)} placeholder="e.g., Exception requests submitted to ISSO → AO approval" />
         </FF>
       </div>
     </div>
@@ -220,10 +220,10 @@ export const SCRMSec: React.FC<Props> = ({ d, sf }) => {
   const scrmSuppliers = useDT(d, 'scrmSuppliers', sf);
   return (
     <div>
-      <SH title="Supply Chain Risk Management" sub="NIST SP 800-161 Rev1, SR Control Family (Rev5), EO 14028 \u2014 Software supply chain transparency." />
+      <SH title="Supply Chain Risk Management" sub="NIST SP 800-161 Rev1, SR Control Family (Rev5), EO 14028 — Software supply chain transparency." />
       <AddedBanner tag="fisma" ref="SP 800-161 / SR Family / EO 14028" text="Rev5 added the SR family as mandatory for moderate/high baselines. EO 14028 requires SBOM for all software sold to the government." />
       <FF label="SCRM Plan Summary" req span={2}>
-        <TA value={d.scrmPlan} onChange={(v) => sf('scrmPlan', v)} rows={4} placeholder="The organization maintains a Supply Chain Risk Management Plan addressing procurement, development, integration, and maintenance of system components\u2026" />
+        <TA value={d.scrmPlan} onChange={(v) => sf('scrmPlan', v)} rows={4} placeholder="The organization maintains a Supply Chain Risk Management Plan addressing procurement, development, integration, and maintenance of system components…" />
       </FF>
       <Div />
       <SubH>Critical Suppliers & Components</SubH>
@@ -266,15 +266,15 @@ export const SCRMSec: React.FC<Props> = ({ d, sf }) => {
 // Section 18: Privacy Analysis
 export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
   <div>
-    <SH title="Privacy Analysis (PTA/PIA)" sub="E-Government Act \u00a7208, OMB M-03-22, SP 800-122 \u2014 Required for any system processing PII." />
-    <AddedBanner tag="fisma" ref="E-Government Act \u00a7208 / PT Family" text="FISMA mandates privacy analysis for PII systems. Rev5 added the PT (PII Processing & Transparency) family. A system processing PII without PTA/PIA will NOT receive a FISMA ATO." />
+    <SH title="Privacy Analysis (PTA/PIA)" sub="E-Government Act §208, OMB M-03-22, SP 800-122 — Required for any system processing PII." />
+    <AddedBanner tag="fisma" ref="E-Government Act §208 / PT Family" text="FISMA mandates privacy analysis for PII systems. Rev5 added the PT (PII Processing & Transparency) family. A system processing PII without PTA/PIA will NOT receive a FISMA ATO." />
     <SubH>Privacy Threshold Analysis (PTA)</SubH>
     <div style={{ background: C.surface, borderRadius: 10, padding: 16, border: `1px solid ${C.border}`, marginBottom: 16 }}>
       <div style={G2}>
         <FF label="Does the system collect, store, or process PII?" req>
           <Sel value={d.ptaCollectsPii} onChange={(v) => sf('ptaCollectsPii', v)} ph="Select" options={[
-            { v: 'yes', l: 'Yes \u2014 PII is collected/stored/processed' },
-            { v: 'no', l: 'No \u2014 No PII involved' },
+            { v: 'yes', l: 'Yes — PII is collected/stored/processed' },
+            { v: 'no', l: 'No — No PII involved' },
             { v: 'metadata', l: 'Metadata only (may contain PII)' },
           ]} />
         </FF>
@@ -288,8 +288,8 @@ export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
         </FF>
         <FF label="Is a full PIA required?">
           <Sel value={d.ptaPiaRequired} onChange={(v) => sf('ptaPiaRequired', v)} ph="Select" options={[
-            { v: 'yes', l: 'Yes \u2014 Full PIA required' },
-            { v: 'no', l: 'No \u2014 PTA sufficient' },
+            { v: 'yes', l: 'Yes — Full PIA required' },
+            { v: 'no', l: 'No — PTA sufficient' },
             { v: 'tbd', l: 'Under determination' },
           ]} />
         </FF>
@@ -299,7 +299,7 @@ export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
       <>
         <SubH>Privacy Impact Assessment (PIA)</SubH>
         {[
-          { k: 'piaAuthority', l: 'Authority to Collect', ph: 'Cite legal authority for PII collection (e.g., 5 USC \u00a7301)' },
+          { k: 'piaAuthority', l: 'Authority to Collect', ph: 'Cite legal authority for PII collection (e.g., 5 USC §301)' },
           { k: 'piaPurpose', l: 'Purpose of Collection', ph: 'Why is PII collected and how is it used?' },
           { k: 'piaMinimization', l: 'Data Minimization', ph: 'How do you ensure only necessary PII is collected?' },
           { k: 'piaRetention', l: 'Retention & Disposal', ph: 'How long is PII retained? NARA schedule reference?' },
@@ -318,7 +318,7 @@ export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
         <Sel value={d.sornStatus} onChange={(v) => sf('sornStatus', v)} ph="Select" options={[
           { v: 'published', l: 'Published in Federal Register' },
           { v: 'draft', l: 'Draft' },
-          { v: 'na', l: 'N/A \u2014 Not a Privacy Act SOR' },
+          { v: 'na', l: 'N/A — Not a Privacy Act SOR' },
           { v: 'update', l: 'Needs update' },
         ]} />
       </FF>

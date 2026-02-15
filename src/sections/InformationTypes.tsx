@@ -45,7 +45,7 @@ export const InformationTypesSec: React.FC<Props> = ({ d, sf }) => {
             value={d.infoTypeJust}
             onChange={(v) => sf('infoTypeJust', v)}
             rows={3}
-            placeholder="Information types selected per NIST SP 800-60 Volume II\u2026"
+            placeholder="Information types selected per NIST SP 800-60 Volume II…"
           />
         </FF>
       </div>

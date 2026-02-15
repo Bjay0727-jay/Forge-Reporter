@@ -13,13 +13,13 @@ interface Props {
 }
 
 const RMF_STEPS = [
-  { id: 'prepare', num: '1', name: 'Prepare', ref: 'SP 800-37 \u00a73.1', tasks: ['Define risk management roles', 'Establish risk management strategy', 'Identify common controls', 'Prioritize systems', 'Develop ISCM strategy'], color: '#8b5cf6' },
-  { id: 'categorize', num: '2', name: 'Categorize', ref: 'SP 800-37 \u00a73.2', tasks: ['Document system characteristics', 'Categorize system (FIPS 199)', 'Register system with agency'], color: '#3b82f6' },
-  { id: 'select', num: '3', name: 'Select', ref: 'SP 800-37 \u00a73.3', tasks: ['Select control baseline', 'Tailor controls', 'Allocate controls to system', 'Document in SSP'], color: '#14b8a6' },
-  { id: 'implement', num: '4', name: 'Implement', ref: 'SP 800-37 \u00a73.4', tasks: ['Implement selected controls', 'Document implementation in SSP', 'Collect evidence artifacts'], color: '#22c55e' },
-  { id: 'assess', num: '5', name: 'Assess', ref: 'SP 800-37 \u00a73.5', tasks: ['Develop SAP', 'Assess controls per SP 800-53A', 'Generate SAR', 'Conduct risk assessment', 'Generate POA&M'], color: '#f59e0b' },
-  { id: 'authorize', num: '6', name: 'Authorize', ref: 'SP 800-37 \u00a73.6', tasks: ['Prepare authorization package', 'Submit to AO', 'AO risk determination', 'Issue ATO/DATO/IATT'], color: '#f97316' },
-  { id: 'monitor', num: '7', name: 'Monitor', ref: 'SP 800-37 \u00a73.7', tasks: ['Implement ISCM strategy', 'Assess 1/3 controls annually', 'Manage POA&M monthly', 'Track significant changes', 'Ongoing authorization determination'], color: '#ef4444' },
+  { id: 'prepare', num: '1', name: 'Prepare', ref: 'SP 800-37 §3.1', tasks: ['Define risk management roles', 'Establish risk management strategy', 'Identify common controls', 'Prioritize systems', 'Develop ISCM strategy'], color: '#8b5cf6' },
+  { id: 'categorize', num: '2', name: 'Categorize', ref: 'SP 800-37 §3.2', tasks: ['Document system characteristics', 'Categorize system (FIPS 199)', 'Register system with agency'], color: '#3b82f6' },
+  { id: 'select', num: '3', name: 'Select', ref: 'SP 800-37 §3.3', tasks: ['Select control baseline', 'Tailor controls', 'Allocate controls to system', 'Document in SSP'], color: '#14b8a6' },
+  { id: 'implement', num: '4', name: 'Implement', ref: 'SP 800-37 §3.4', tasks: ['Implement selected controls', 'Document implementation in SSP', 'Collect evidence artifacts'], color: '#22c55e' },
+  { id: 'assess', num: '5', name: 'Assess', ref: 'SP 800-37 §3.5', tasks: ['Develop SAP', 'Assess controls per SP 800-53A', 'Generate SAR', 'Conduct risk assessment', 'Generate POA&M'], color: '#f59e0b' },
+  { id: 'authorize', num: '6', name: 'Authorize', ref: 'SP 800-37 §3.6', tasks: ['Prepare authorization package', 'Submit to AO', 'AO risk determination', 'Issue ATO/DATO/IATT'], color: '#f97316' },
+  { id: 'monitor', num: '7', name: 'Monitor', ref: 'SP 800-37 §3.7', tasks: ['Implement ISCM strategy', 'Assess 1/3 controls annually', 'Manage POA&M monthly', 'Track significant changes', 'Ongoing authorization determination'], color: '#ef4444' },
 ];
 
 const ARTIFACTS = [
@@ -42,7 +42,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
     <div>
       <SH
         title="RMF Lifecycle Tracker"
-        sub="NIST SP 800-37 Rev2 \u2014 All 7 Risk Management Framework steps with task completion tracking."
+        sub="NIST SP 800-37 Rev2 — All 7 Risk Management Framework steps with task completion tracking."
       />
       <AddedBanner
         tag="fisma"

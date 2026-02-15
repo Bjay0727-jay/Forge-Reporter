@@ -24,8 +24,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'sysinfo',
     label: 'System Information',
-    icon: '\ud83d\udccb',
-    ref: 'SSP \u00a71-4',
+    icon: '📋',
+    ref: 'SSP §1-4',
     grp: 'Frontmatter',
     tag: 'fedramp',
     rmf: 'Prepare',
@@ -35,7 +35,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'fips199',
     label: 'FIPS 199 Categorization',
-    icon: '\ud83c\udff7\ufe0f',
+    icon: '🏷️',
     ref: 'FIPS 199 / SP 800-60',
     grp: 'Frontmatter',
     tag: 'original',
@@ -45,7 +45,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'infotypes',
     label: 'Information Types',
-    icon: '\ud83d\udcc2',
+    icon: '📂',
     ref: 'Appendix K',
     grp: 'Frontmatter',
     tag: 'fedramp',
@@ -56,7 +56,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'baseline',
     label: 'Control Baseline',
-    icon: '\ud83c\udfaf',
+    icon: '🎯',
     ref: 'SP 800-53B',
     grp: 'Frontmatter',
     tag: 'original',
@@ -66,7 +66,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'rmf',
     label: 'RMF Lifecycle Tracker',
-    icon: '\ud83d\udd04',
+    icon: '🔄',
     ref: 'SP 800-37 Rev2',
     grp: 'Frontmatter',
     tag: 'fisma',
@@ -78,8 +78,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'boundary',
     label: 'Authorization Boundary',
-    icon: '\ud83d\uddfa\ufe0f',
-    ref: 'SSP \u00a78',
+    icon: '🗺️',
+    ref: 'SSP §8',
     grp: 'Architecture',
     tag: 'original',
     rmf: 'Implement',
@@ -88,8 +88,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'dataflow',
     label: 'Data Flow',
-    icon: '\ud83d\udd01',
-    ref: 'SSP \u00a78.2',
+    icon: '🔁',
+    ref: 'SSP §8.2',
     grp: 'Architecture',
     tag: 'original',
     rmf: 'Implement',
@@ -98,8 +98,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'network',
     label: 'Network Architecture',
-    icon: '\ud83c\udf10',
-    ref: 'SSP \u00a78.1',
+    icon: '🌐',
+    ref: 'SSP §8.1',
     grp: 'Architecture',
     tag: 'original',
     rmf: 'Implement',
@@ -108,8 +108,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'pps',
     label: 'Ports, Protocols & Services',
-    icon: '\ud83d\udd0c',
-    ref: 'SSP \u00a79',
+    icon: '🔌',
+    ref: 'SSP §9',
     grp: 'Architecture',
     tag: 'fedramp',
     rmf: 'Implement',
@@ -119,8 +119,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'intercon',
     label: 'System Interconnections',
-    icon: '\ud83d\udd17',
-    ref: 'SSP \u00a710-11',
+    icon: '🔗',
+    ref: 'SSP §10-11',
     grp: 'Architecture',
     tag: 'original',
     rmf: 'Implement',
@@ -129,7 +129,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'crypto',
     label: 'Cryptographic Modules',
-    icon: '\ud83d\udd10',
+    icon: '🔐',
     ref: 'Appendix Q',
     grp: 'Architecture',
     tag: 'fedramp',
@@ -141,8 +141,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'personnel',
     label: 'Personnel & Roles',
-    icon: '\ud83d\udc65',
-    ref: 'SSP \u00a79.1-9.4',
+    icon: '👥',
+    ref: 'SSP §9.1-9.4',
     grp: 'Personnel',
     tag: 'original',
     rmf: 'Prepare',
@@ -151,7 +151,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'identity',
     label: 'Digital Identity',
-    icon: '\ud83e\udeaa',
+    icon: '🪪',
     ref: 'Appendix E / SP 800-63',
     grp: 'Personnel',
     tag: 'fedramp',
@@ -162,7 +162,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'sepduty',
     label: 'Separation of Duties',
-    icon: '\u2696\ufe0f',
+    icon: '⚖️',
     ref: 'AC-5 / FISMA',
     grp: 'Personnel',
     tag: 'fisma',
@@ -174,7 +174,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'controls',
     label: 'Control Implementations',
-    icon: '\ud83d\udee1\ufe0f',
+    icon: '🛡️',
     ref: 'Appendix A',
     grp: 'Controls',
     tag: 'original',
@@ -184,7 +184,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'policies',
     label: 'Security Policies & Procedures',
-    icon: '\ud83d\udcdc',
+    icon: '📜',
     ref: 'Appendix C / All -1 Controls',
     grp: 'Controls',
     tag: 'fisma',
@@ -195,7 +195,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'scrm',
     label: 'Supply Chain Risk Mgmt',
-    icon: '\ud83c\udfed',
+    icon: '🏭',
     ref: 'SP 800-161 / SR Family',
     grp: 'Controls',
     tag: 'fisma',
@@ -206,8 +206,8 @@ export const SECTIONS: Section[] = [
   {
     id: 'privacy',
     label: 'Privacy Analysis (PTA/PIA)',
-    icon: '\ud83d\udc41\ufe0f',
-    ref: 'E-Gov Act \u00a7208 / PT Family',
+    icon: '👁️',
+    ref: 'E-Gov Act §208 / PT Family',
     grp: 'Controls',
     tag: 'fisma',
     rmf: 'Implement',
@@ -218,7 +218,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'conplan',
     label: 'Contingency Plan',
-    icon: '\ud83d\udd03',
+    icon: '🔃',
     ref: 'Appendix G / SP 800-34',
     grp: 'Plans',
     tag: 'original',
@@ -228,7 +228,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'irplan',
     label: 'Incident Response',
-    icon: '\ud83d\udea8',
+    icon: '🚨',
     ref: 'Appendix I / SP 800-61',
     grp: 'Plans',
     tag: 'original',
@@ -238,7 +238,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'cmplan',
     label: 'Configuration Management',
-    icon: '\u2699\ufe0f',
+    icon: '⚙️',
     ref: 'Appendix H',
     grp: 'Plans',
     tag: 'fedramp',
@@ -250,7 +250,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'conmon',
     label: 'Continuous Monitoring & ISCM',
-    icon: '\ud83d\udce1',
+    icon: '📡',
     ref: 'SP 800-137 / RMF Step 7',
     grp: 'Post-Auth',
     tag: 'original',
@@ -260,7 +260,7 @@ export const SECTIONS: Section[] = [
   {
     id: 'poam',
     label: 'POA&M',
-    icon: '\ud83d\udcca',
+    icon: '📊',
     ref: 'Appendix O',
     grp: 'Post-Auth',
     tag: 'fedramp',

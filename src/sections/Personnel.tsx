@@ -17,10 +17,10 @@ interface Props {
 export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
   const addContacts = useDT(d, 'addContacts', sf);
   const roles = [
-    { k: 'so', l: 'System Owner', ref: '\u00a79.1' },
-    { k: 'ao', l: 'Authorizing Official (AO)', ref: '\u00a79.2' },
-    { k: 'isso', l: 'ISSO', ref: '\u00a79.3' },
-    { k: 'issm', l: 'ISSM', ref: '\u00a79.4' },
+    { k: 'so', l: 'System Owner', ref: '§9.1' },
+    { k: 'ao', l: 'Authorizing Official (AO)', ref: '§9.2' },
+    { k: 'isso', l: 'ISSO', ref: '§9.3' },
+    { k: 'issm', l: 'ISSM', ref: '§9.4' },
     { k: 'sca', l: 'Security Control Assessor (SCA)', ref: 'SP 800-37' },
     { k: 'po', l: 'Privacy Officer', ref: 'E-Gov Act' },
   ];
@@ -76,22 +76,22 @@ export const IdentitySec: React.FC<Props> = ({ d, sf }) => (
     <div style={G2}>
       <FF label="IAL" req hint="Identity proofing">
         <Sel value={d.ial} onChange={(v) => sf('ial', v)} ph="Select" options={[
-          { v: '1', l: 'IAL1 \u2014 Self-asserted' },
-          { v: '2', l: 'IAL2 \u2014 Remote/in-person proofing' },
-          { v: '3', l: 'IAL3 \u2014 In-person + verification' },
+          { v: '1', l: 'IAL1 — Self-asserted' },
+          { v: '2', l: 'IAL2 — Remote/in-person proofing' },
+          { v: '3', l: 'IAL3 — In-person + verification' },
         ]} />
       </FF>
       <FF label="AAL" req hint="Authentication">
         <Sel value={d.aal} onChange={(v) => sf('aal', v)} ph="Select" options={[
-          { v: '1', l: 'AAL1 \u2014 Single-factor' },
-          { v: '2', l: 'AAL2 \u2014 MFA' },
-          { v: '3', l: 'AAL3 \u2014 Hardware crypto' },
+          { v: '1', l: 'AAL1 — Single-factor' },
+          { v: '2', l: 'AAL2 — MFA' },
+          { v: '3', l: 'AAL3 — Hardware crypto' },
         ]} />
       </FF>
       <FF label="FAL" hint="Federation">
         <Sel value={d.fal} onChange={(v) => sf('fal', v)} ph="Select" options={[
-          { v: '1', l: 'FAL1 \u2014 Bearer' },
-          { v: '2', l: 'FAL2 \u2014 Holder-of-key' },
+          { v: '1', l: 'FAL1 — Bearer' },
+          { v: '2', l: 'FAL2 — Holder-of-key' },
           { v: 'na', l: 'N/A' },
         ]} />
       </FF>
@@ -101,7 +101,7 @@ export const IdentitySec: React.FC<Props> = ({ d, sf }) => (
     </div>
     <Div />
     <FF label="Digital Identity Narrative" span={2}>
-      <TA value={d.idNarr} onChange={(v) => sf('idNarr', v)} rows={4} placeholder="AAL2 multi-factor authentication with TOTP + WebAuthn\u2026" />
+      <TA value={d.idNarr} onChange={(v) => sf('idNarr', v)} rows={4} placeholder="AAL2 multi-factor authentication with TOTP + WebAuthn…" />
     </FF>
   </div>
 );
@@ -111,7 +111,7 @@ export const SepDutySec: React.FC<Props> = ({ d, sf }) => {
   const sepDutyMatrix = useDT(d, 'sepDutyMatrix', sf);
   return (
     <div>
-      <SH title="Separation of Duties" sub="AC-5 \u2014 Document role separation to prevent conflicts of interest. Required for FISMA authorization packages." />
+      <SH title="Separation of Duties" sub="AC-5 — Document role separation to prevent conflicts of interest. Required for FISMA authorization packages." />
       <AddedBanner tag="fisma" ref="AC-5 / FISMA" text="Assessors verify no single person holds conflicting roles (e.g., developer + deployer + auditor). FISMA audits consistently flag missing separation of duties documentation." />
       <SubH>Role Separation Matrix</SubH>
       <DT
@@ -129,10 +129,10 @@ export const SepDutySec: React.FC<Props> = ({ d, sf }) => {
       <Div />
       <div style={G2}>
         <FF label="Dual-Control Operations" hint="Operations requiring two-person integrity">
-          <TA value={d.dualControl} onChange={(v) => sf('dualControl', v)} rows={3} placeholder="\u2022 Encryption key ceremonies require two key custodians\n\u2022 Production deployments require developer + separate approver\n\u2022 Database schema changes require DBA + ISSO approval" />
+          <TA value={d.dualControl} onChange={(v) => sf('dualControl', v)} rows={3} placeholder="• Encryption key ceremonies require two key custodians\n• Production deployments require developer + separate approver\n• Database schema changes require DBA + ISSO approval" />
         </FF>
         <FF label="Privileged Access Justification" hint="Why privileged accounts exist and how they're controlled">
-          <TA value={d.privAccess} onChange={(v) => sf('privAccess', v)} rows={3} placeholder="Privileged accounts are limited to System Admins and Security Admins. All privileged access uses MFA, session recording, and just-in-time provisioning\u2026" />
+          <TA value={d.privAccess} onChange={(v) => sf('privAccess', v)} rows={3} placeholder="Privileged accounts are limited to System Admins and Security Admins. All privileged access uses MFA, session recording, and just-in-time provisioning…" />
         </FF>
       </div>
     </div>

@@ -52,7 +52,7 @@ export const ControlBaselineSec: React.FC<Props> = ({ d, sf }) => {
           value={d.baseJust}
           onChange={(v) => sf('baseJust', v)}
           rows={4}
-          placeholder="FedRAMP Moderate was selected because the system processes federal CUI\u2026"
+          placeholder="FedRAMP Moderate was selected because the system processes federal CUI…"
         />
       </FF>
       <Div />

@@ -1,9 +1,9 @@
 /**
- * ForgeComply 360 Reporter - Main Application
- * Standalone FISMA SSP Reporting Engine
+ * Forge Cyber Defense - ForgeReporter Main Application
+ * Standalone FISMA SSP Reporting Engine with Dark Mode
  */
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { C } from './config/colors';
+import { C, lightTheme, darkTheme, type ThemeMode, getThemeMode, setThemeMode, setCurrentMode } from './config/colors';
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
 import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary } from './components';
@@ -25,6 +25,28 @@ import './index.css';
 const STORAGE_KEY = 'forgecomply360-ssp-data';
 
 function App() {
+  // Theme state
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(() => getThemeMode());
+
+  // Initialize theme on mount
+  useEffect(() => {
+    const mode = getThemeMode();
+    setThemeModeState(mode);
+    setCurrentMode(mode);
+    document.documentElement.setAttribute('data-theme', mode);
+  }, []);
+
+  // Toggle theme handler
+  const handleToggleTheme = useCallback(() => {
+    const newMode = themeMode === 'light' ? 'dark' : 'light';
+    setThemeModeState(newMode);
+    setThemeMode(newMode);
+    setCurrentMode(newMode);
+  }, [themeMode]);
+
+  // Get current theme colors
+  const colors = themeMode === 'dark' ? darkTheme : lightTheme;
+
   // Auth and Sync hooks
   const [authState, authActions] = useAuth();
   const [syncState, syncActions] = useSync(authState.isOnlineMode);
@@ -371,10 +393,11 @@ function App() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: C.bg,
-      color: C.text,
-      fontFamily: "'DM Sans', -apple-system, sans-serif",
+      background: colors.bg,
+      color: colors.text,
+      fontFamily: "'Inter', 'DM Sans', -apple-system, sans-serif",
       display: 'flex',
+      transition: 'background-color 0.3s ease, color 0.3s ease',
     }}>
       {/* Sidebar */}
       <Sidebar
@@ -384,7 +407,6 @@ function App() {
         overall={overall}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed(!collapsed)}
-        validationErrors={validation.sectionErrors}
       />
 
       {/* Main Content */}
@@ -407,6 +429,8 @@ function App() {
           sspTitle={syncState.sspTitle}
           onSync={handleSync}
           onDisconnect={handleDisconnect}
+          themeMode={themeMode}
+          onToggleTheme={handleToggleTheme}
         />
 
         {/* Export Modal */}

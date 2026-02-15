@@ -1,15 +1,26 @@
 /**
- * ForgeComply 360 Reporter - Added Banner Component
+ * Forge Cyber Defense - Added Banner Component
  * Shows contextual information for FedRAMP/FISMA sections
  */
 import React from 'react';
-import { C, TAG_COLORS, TAG_BG } from '../config/colors';
+import { C } from '../config/colors';
 
 interface AddedBannerProps {
   tag: 'fedramp' | 'fisma';
   ref: string;
   text: string;
 }
+
+// Tag colors inline to match new design
+const TAG_COLORS = {
+  fedramp: '#3b82f6', // Blue
+  fisma: '#f97316',   // Orange
+};
+
+const TAG_BG = {
+  fedramp: '#eff6ff', // Blue-50
+  fisma: '#fff7ed',   // Orange-50
+};
 
 export const AddedBanner: React.FC<AddedBannerProps> = ({ tag, ref: nistRef, text }) => (
   <div style={{
@@ -20,19 +31,19 @@ export const AddedBanner: React.FC<AddedBannerProps> = ({ tag, ref: nistRef, tex
     border: `1px solid ${TAG_COLORS[tag]}30`,
   }}>
     <div style={{
-      fontSize: 11,
+      fontSize: 12,
       color: TAG_COLORS[tag],
       fontWeight: 600,
-      marginBottom: 4,
+      marginBottom: 6,
       textTransform: 'uppercase',
-      letterSpacing: '.05em',
+      letterSpacing: '.04em',
     }}>
-      {tag === 'fisma' ? '🔴' : '✦'} {tag === 'fisma' ? 'NEW — FISMA/RMF Requirement' : 'FEDRAMP ADDITION'} — {nistRef}
+      {tag === 'fisma' ? '🔴' : '✦'} {tag === 'fisma' ? 'FISMA/RMF Requirement' : 'FedRAMP Addition'} — {nistRef}
     </div>
     <div style={{
-      fontSize: 12,
+      fontSize: 13,
       color: C.textSecondary,
-      lineHeight: 1.5,
+      lineHeight: 1.6,
     }}>
       {text}
     </div>

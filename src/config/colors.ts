@@ -1,67 +1,177 @@
 /**
- * ForgeComply 360 Reporter - Color System (Light Theme)
+ * Forge Cyber Defense - ForgeReporter Color System
+ * Clean, professional design with dark mode support
  */
-export const C = {
-  // Backgrounds (Light)
-  bg: '#ffffff',           // Main background - white
-  surface: '#f8fafc',      // Card/section background - slate-50
-  surfaceAlt: '#f1f5f9',   // Alternate surface - slate-100
-  surfaceHover: '#e2e8f0', // Hover state - slate-200
 
-  // Brand Colors (ForgeComply)
-  primary: '#0ea5e9',      // Sky-500 - primary actions
-  primaryDark: '#0284c7',  // Sky-600 - hover states
-  primaryLight: '#e0f2fe', // Sky-100 - light background
-  accent: '#14b8a6',       // Teal-500 - accents
-  accentDark: '#0d9488',   // Teal-600 - hover
-  accentLight: '#ccfbf1',  // Teal-100 - light background
+// Theme type
+export type ThemeMode = 'light' | 'dark';
+
+// Light theme colors
+const lightColors = {
+  // Forge Cyber Defense Brand Colors
+  navy: '#1e3a5f',
+  navyLight: '#2d4a6f',
+  navyDark: '#152a4a',
+  teal: '#14b8a6',
+  tealLight: '#2dd4bf',
+  tealDark: '#0d9488',
+
+  // Backgrounds
+  bg: '#f8fafc',
+  surface: '#ffffff',
+  surfaceAlt: '#f1f5f9',
+  surfaceHover: '#e2e8f0',
+
+  // Primary Actions
+  primary: '#1e3a5f',
+  primaryDark: '#152a4a',
+  primaryLight: '#e0f2fe',
+
+  // Accent
+  accent: '#14b8a6',
+  accentDark: '#0d9488',
+  accentLight: '#ccfbf1',
 
   // Status Colors
-  success: '#22c55e',      // Green-500
-  successLight: '#dcfce7', // Green-100
-  warning: '#f59e0b',      // Amber-500
-  warningLight: '#fef3c7', // Amber-100
-  error: '#ef4444',        // Red-500
-  errorLight: '#fee2e2',   // Red-100
-  info: '#3b82f6',         // Blue-500
-  infoLight: '#dbeafe',    // Blue-100
+  success: '#22c55e',
+  successLight: '#dcfce7',
+  warning: '#f59e0b',
+  warningLight: '#fef3c7',
+  error: '#ef4444',
+  errorLight: '#fee2e2',
+  info: '#3b82f6',
+  infoLight: '#dbeafe',
 
   // Text Colors
-  text: '#0f172a',         // Slate-900 - primary text
-  textSecondary: '#475569', // Slate-600 - secondary text
-  textMuted: '#94a3b8',    // Slate-400 - muted text
-  textLight: '#cbd5e1',    // Slate-300 - disabled text
+  text: '#1e293b',
+  textSecondary: '#64748b',
+  textMuted: '#94a3b8',
+  textLight: '#cbd5e1',
+
+  // Sidebar Text
+  sidebarText: '#ffffff',
+  sidebarTextMuted: '#94a3b8',
+  sidebarTextSecondary: '#cbd5e1',
 
   // Borders
-  border: '#e2e8f0',       // Slate-200
-  borderDark: '#cbd5e1',   // Slate-300
-  borderLight: '#f1f5f9',  // Slate-100
+  border: '#e2e8f0',
+  borderDark: '#cbd5e1',
+  borderLight: '#f1f5f9',
 
-  // Tag Colors
-  tagOriginal: '#64748b',  // Slate-500 (gray)
-  tagFedramp: '#3b82f6',   // Blue-500
-  tagFisma: '#f97316',     // Orange-500
-
-  // Tag Backgrounds
-  tagOriginalBg: '#f1f5f9', // Slate-100
-  tagFedrampBg: '#eff6ff',  // Blue-50
-  tagFismaBg: '#fff7ed',    // Orange-50
+  // Card accent line
+  cardAccent: '#14b8a6',
 };
 
-export const TAG_COLORS = {
-  original: C.tagOriginal,
-  fedramp: C.tagFedramp,
-  fisma: C.tagFisma,
+// Dark theme colors
+const darkColors = {
+  // Forge Cyber Defense Brand Colors
+  navy: '#0f172a',
+  navyLight: '#1e293b',
+  navyDark: '#020617',
+  teal: '#14b8a6',
+  tealLight: '#2dd4bf',
+  tealDark: '#0d9488',
+
+  // Backgrounds
+  bg: '#0f172a',
+  surface: '#1e293b',
+  surfaceAlt: '#334155',
+  surfaceHover: '#475569',
+
+  // Primary Actions
+  primary: '#14b8a6',
+  primaryDark: '#0d9488',
+  primaryLight: '#134e4a',
+
+  // Accent
+  accent: '#14b8a6',
+  accentDark: '#0d9488',
+  accentLight: '#134e4a',
+
+  // Status Colors
+  success: '#22c55e',
+  successLight: '#166534',
+  warning: '#f59e0b',
+  warningLight: '#92400e',
+  error: '#ef4444',
+  errorLight: '#991b1b',
+  info: '#3b82f6',
+  infoLight: '#1e40af',
+
+  // Text Colors
+  text: '#f1f5f9',
+  textSecondary: '#cbd5e1',
+  textMuted: '#94a3b8',
+  textLight: '#64748b',
+
+  // Sidebar Text
+  sidebarText: '#ffffff',
+  sidebarTextMuted: '#94a3b8',
+  sidebarTextSecondary: '#cbd5e1',
+
+  // Borders
+  border: '#334155',
+  borderDark: '#475569',
+  borderLight: '#1e293b',
+
+  // Card accent line
+  cardAccent: '#14b8a6',
 };
 
-export const TAG_LABELS = {
-  original: 'ORIGINAL',
-  fedramp: 'FEDRAMP',
-  fisma: 'FISMA/RMF',
+// Get current theme from localStorage or system preference
+export const getThemeMode = (): ThemeMode => {
+  if (typeof window === 'undefined') return 'light';
+  const stored = localStorage.getItem('forge-theme');
+  if (stored === 'dark' || stored === 'light') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
-export const TAG_BG = {
-  original: C.tagOriginalBg,
-  fedramp: C.tagFedrampBg,
-  fisma: C.tagFismaBg,
+// Set theme mode
+export const setThemeMode = (mode: ThemeMode) => {
+  localStorage.setItem('forge-theme', mode);
+  document.documentElement.setAttribute('data-theme', mode);
+};
+
+// Toggle theme
+export const toggleTheme = () => {
+  const current = getThemeMode();
+  setThemeMode(current === 'light' ? 'dark' : 'light');
+};
+
+// Current colors (default to light, will be updated by theme context)
+let currentMode: ThemeMode = 'light';
+
+export const setCurrentMode = (mode: ThemeMode) => {
+  currentMode = mode;
+};
+
+// Export colors based on current mode
+export const C = new Proxy(lightColors, {
+  get(target, prop: keyof typeof lightColors) {
+    return currentMode === 'dark' ? darkColors[prop] : target[prop];
+  },
+});
+
+// Also export static versions for cases where proxy doesn't work
+export const lightTheme = lightColors;
+export const darkTheme = darkColors;
+
+// Navigation groups for sidebar
+export const NAV_GROUPS = {
+  gettingStarted: {
+    label: 'Getting Started',
+    sections: ['sysinfo', 'fips199', 'infotypes'],
+  },
+  architecture: {
+    label: 'Architecture',
+    sections: ['baseline', 'rmf', 'boundary', 'dataflow', 'network', 'pps', 'interconnections'],
+  },
+  securityControls: {
+    label: 'Security Controls',
+    sections: ['crypto', 'personnel', 'identity', 'sepduty', 'controls'],
+  },
+  policies: {
+    label: 'Policies & Plans',
+    sections: ['policies', 'scrm', 'privacy', 'contingency', 'ir', 'cm', 'conmon', 'poam'],
+  },
 };

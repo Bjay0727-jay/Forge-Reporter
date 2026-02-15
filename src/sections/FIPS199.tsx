@@ -23,7 +23,7 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
   const lv: Record<string, number> = { high: 3, moderate: 2, low: 1 };
   const vs = [d.conf, d.integ, d.avail].map((v) => lv[v || ''] || 0);
   const mx = Math.max(...vs);
-  const ov = mx === 3 ? 'HIGH' : mx === 2 ? 'MODERATE' : mx === 1 ? 'LOW' : '\u2014';
+  const ov = mx === 3 ? 'HIGH' : mx === 2 ? 'MODERATE' : mx === 1 ? 'LOW' : '—';
   const oc = ov === 'HIGH' ? C.error : ov === 'MODERATE' ? C.warning : ov === 'LOW' ? C.success : C.textMuted;
 
   return (
@@ -68,9 +68,9 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
         </div>
         <div style={G3}>
           {[
-            { k: 'conf', l: 'Confidentiality', i: '\ud83d\udd12' },
-            { k: 'integ', l: 'Integrity', i: '\u2705' },
-            { k: 'avail', l: 'Availability', i: '\u23f1\ufe0f' },
+            { k: 'conf', l: 'Confidentiality', i: '🔒' },
+            { k: 'integ', l: 'Integrity', i: '✅' },
+            { k: 'avail', l: 'Availability', i: '⏱️' },
           ].map((o) => (
             <div key={o.k}>
               <div style={{ fontSize: 12, color: C.textSecondary, marginBottom: 6, fontWeight: 600 }}>
