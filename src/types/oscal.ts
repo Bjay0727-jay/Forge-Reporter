@@ -27,12 +27,33 @@ export interface OscalSystemSecurityPlan {
 
 export interface OscalMetadata {
   title: string;
+  published?: string;
   'last-modified': string;
   version: string;
   'oscal-version': string;
+  revisions?: OscalRevision[];
   roles?: OscalRole[];
+  locations?: OscalLocation[];
   parties?: OscalParty[];
   'responsible-parties'?: OscalResponsibleParty[];
+  remarks?: string;
+}
+
+export interface OscalRevision {
+  title?: string;
+  published?: string;
+  'last-modified'?: string;
+  version: string;
+  'oscal-version'?: string;
+  remarks?: string;
+}
+
+export interface OscalLocation {
+  uuid: string;
+  title?: string;
+  address?: OscalAddress;
+  'email-addresses'?: string[];
+  'telephone-numbers'?: OscalTelephoneNumber[];
   remarks?: string;
 }
 
@@ -215,9 +236,32 @@ export interface OscalAuthorizedPrivilege {
   'functions-performed': string[];
 }
 
+/**
+ * Component type values per OSCAL 1.1.2 §system-component.
+ * The schema allows arbitrary strings via anyOf, but these are the
+ * well-known enumerated values.
+ */
+export type OscalComponentType =
+  | 'this-system'
+  | 'system'
+  | 'interconnection'
+  | 'software'
+  | 'hardware'
+  | 'service'
+  | 'policy'
+  | 'physical'
+  | 'process-procedure'
+  | 'plan'
+  | 'guidance'
+  | 'standard'
+  | 'validation'
+  | 'network'
+  // Schema allows arbitrary strings via anyOf
+  | (string & Record<never, never>);
+
 export interface OscalComponent {
   uuid: string;
-  type: string;
+  type: OscalComponentType;
   title: string;
   description: string;
   purpose?: string;

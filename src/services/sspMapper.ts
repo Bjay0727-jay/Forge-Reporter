@@ -583,6 +583,61 @@ export async function saveSSPToBackend(sspId: string, data: SSPData, previousDat
 // =============================================================================
 
 /**
+ * Returns true if the error is a 409 Conflict (duplicate), which is safe
+ * to ignore during sync. All other errors are re-thrown.
+ */
+function isDuplicateError(error: unknown): boolean {
+  if (error instanceof Error) {
+    // API errors typically include status code in the message
+    return error.message.includes('409') || error.message.toLowerCase().includes('duplicate');
+  }
+  return false;
+}
+
+/**
+ * POST a single item to the backend, ignoring 409 Conflict (duplicate) errors.
+ * All other errors propagate to the caller.
+ */
+async function postIgnoringDuplicates(url: string, body: Record<string, unknown>): Promise<void> {
+  try {
+    await api(url, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  } catch (error) {
+    if (!isDuplicateError(error)) {
+      throw error;
+    }
+  }
+}
+
+/**
+ * Delete all remote items for a resource and re-create from local state.
+ * Falls back to add-only if the DELETE endpoint returns 404 (not implemented).
+ */
+async function replaceRemoteCollection(
+  sspId: string,
+  endpoint: string,
+  items: Array<Record<string, unknown>>,
+): Promise<void> {
+  // Attempt to clear existing remote items first
+  try {
+    await api(`/api/v1/ssp/${sspId}/${endpoint}`, { method: 'DELETE' });
+  } catch (error) {
+    // If DELETE not supported (404/405), fall back to add-only
+    const msg = error instanceof Error ? error.message : '';
+    if (!msg.includes('404') && !msg.includes('405')) {
+      throw error;
+    }
+  }
+
+  // Re-create all local items
+  for (const item of items) {
+    await postIgnoringDuplicates(`/api/v1/ssp/${sspId}/${endpoint}`, item);
+  }
+}
+
+/**
  * Sync info types between Reporter and Backend
  */
 export async function syncInfoTypes(
@@ -590,23 +645,17 @@ export async function syncInfoTypes(
   localItems: InfoType[],
   _remoteItems: BackendInfoType[]
 ): Promise<void> {
-  // For now, just add new items (full sync would need delete/update logic)
-  for (const item of localItems) {
-    if (item.nistId && item.name) {
-      await api(`/api/v1/ssp/${sspId}/info-types`, {
-        method: 'POST',
-        body: JSON.stringify({
-          nist_id: item.nistId,
-          name: item.name,
-          confidentiality: item.c,
-          integrity: item.i,
-          availability: item.a,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.nistId && item.name)
+    .map((item) => ({
+      nist_id: item.nistId,
+      name: item.name,
+      confidentiality: item.c,
+      integrity: item.i,
+      availability: item.a,
+    }));
+
+  await replaceRemoteCollection(sspId, 'info-types', items);
 }
 
 /**
@@ -616,23 +665,18 @@ export async function syncPortsProtocols(
   sspId: string,
   localItems: PPSRow[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.port) {
-      await api(`/api/v1/ssp/${sspId}/ports-protocols`, {
-        method: 'POST',
-        body: JSON.stringify({
-          port: item.port,
-          protocol: item.proto,
-          service: item.svc,
-          purpose: item.purpose,
-          direction: item.dir,
-          dit_ref: item.dit,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.port)
+    .map((item) => ({
+      port: item.port,
+      protocol: item.proto,
+      service: item.svc,
+      purpose: item.purpose,
+      direction: item.dir,
+      dit_ref: item.dit,
+    }));
+
+  await replaceRemoteCollection(sspId, 'ports-protocols', items);
 }
 
 /**
@@ -642,22 +686,17 @@ export async function syncCryptoModules(
   sspId: string,
   localItems: CryptoModule[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.mod) {
-      await api(`/api/v1/ssp/${sspId}/crypto-modules`, {
-        method: 'POST',
-        body: JSON.stringify({
-          module_name: item.mod,
-          certificate_number: item.cert,
-          fips_level: item.level,
-          usage: item.usage,
-          deployment_location: item.where,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.mod)
+    .map((item) => ({
+      module_name: item.mod,
+      certificate_number: item.cert,
+      fips_level: item.level,
+      usage: item.usage,
+      deployment_location: item.where,
+    }));
+
+  await replaceRemoteCollection(sspId, 'crypto-modules', items);
 }
 
 /**
@@ -667,21 +706,16 @@ export async function syncSeparationDuties(
   sspId: string,
   localItems: SepDutyRow[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.role) {
-      await api(`/api/v1/ssp/${sspId}/separation-duties`, {
-        method: 'POST',
-        body: JSON.stringify({
-          role: item.role,
-          access_level: item.access,
-          prohibited_actions: item.prohibited,
-          justification: item.justification,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.role)
+    .map((item) => ({
+      role: item.role,
+      access_level: item.access,
+      prohibited_actions: item.prohibited,
+      justification: item.justification,
+    }));
+
+  await replaceRemoteCollection(sspId, 'separation-duties', items);
 }
 
 /**
@@ -691,23 +725,18 @@ export async function syncPolicyMappings(
   sspId: string,
   localItems: PolicyDoc[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.family) {
-      await api(`/api/v1/ssp/${sspId}/policy-mappings`, {
-        method: 'POST',
-        body: JSON.stringify({
-          control_family: item.family,
-          policy_title: item.title,
-          policy_version: item.version,
-          policy_owner: item.owner,
-          last_review_date: item.lastReview,
-          status: item.status,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.family)
+    .map((item) => ({
+      control_family: item.family,
+      policy_title: item.title,
+      policy_version: item.version,
+      policy_owner: item.owner,
+      last_review_date: item.lastReview,
+      status: item.status,
+    }));
+
+  await replaceRemoteCollection(sspId, 'policy-mappings', items);
 }
 
 /**
@@ -717,22 +746,17 @@ export async function syncSCRMEntries(
   sspId: string,
   localItems: SCRMSupplier[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.supplier) {
-      await api(`/api/v1/ssp/${sspId}/scrm`, {
-        method: 'POST',
-        body: JSON.stringify({
-          supplier_name: item.supplier,
-          supplier_type: item.type,
-          criticality: item.criticality,
-          sbom_available: item.sbom,
-          risk_level: item.riskLevel,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.supplier)
+    .map((item) => ({
+      supplier_name: item.supplier,
+      supplier_type: item.type,
+      criticality: item.criticality,
+      sbom_available: item.sbom,
+      risk_level: item.riskLevel,
+    }));
+
+  await replaceRemoteCollection(sspId, 'scrm', items);
 }
 
 /**
@@ -742,22 +766,17 @@ export async function syncCMBaselines(
   sspId: string,
   localItems: CMBaseline[]
 ): Promise<void> {
-  for (const item of localItems) {
-    if (item.comp) {
-      await api(`/api/v1/ssp/${sspId}/cm-baselines`, {
-        method: 'POST',
-        body: JSON.stringify({
-          component_name: item.comp,
-          benchmark: item.bench,
-          version: item.ver,
-          compliance_pct: item.pct,
-          scan_frequency: item.scan,
-        }),
-      }).catch(() => {
-        // Ignore duplicates
-      });
-    }
-  }
+  const items = localItems
+    .filter((item) => item.comp)
+    .map((item) => ({
+      component_name: item.comp,
+      benchmark: item.bench,
+      version: item.ver,
+      compliance_pct: item.pct,
+      scan_frequency: item.scan,
+    }));
+
+  await replaceRemoteCollection(sspId, 'cm-baselines', items);
 }
 
 // =============================================================================
