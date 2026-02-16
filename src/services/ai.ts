@@ -341,6 +341,26 @@ Write 100-150 words.`,
 // AI Generation Functions
 // =============================================================================
 
+/** Max character length for user-provided content sent to AI */
+const MAX_CONTENT_LENGTH = 10_000;
+const MAX_INSTRUCTIONS_LENGTH = 1_000;
+
+/**
+ * Sanitize user-provided text before including it in AI prompts.
+ * Strips sequences that could be used for prompt injection (e.g. fake
+ * system/assistant role markers) and enforces a length limit.
+ */
+function sanitizePromptInput(input: string, maxLength: number): string {
+  let sanitized = input.slice(0, maxLength);
+  // Strip patterns that mimic chat-role boundaries
+  sanitized = sanitized.replace(/\b(system|assistant|user)\s*:/gi, '$1 -');
+  // Strip markdown-style instruction overrides
+  sanitized = sanitized.replace(/#{1,6}\s*(ignore|override|forget|disregard)\b/gi, '');
+  // Collapse excessive whitespace that could hide injections
+  sanitized = sanitized.replace(/\n{4,}/g, '\n\n\n');
+  return sanitized;
+}
+
 /**
  * Generate or refine content for an SSP section using AI
  */
@@ -353,18 +373,27 @@ export async function generateSectionContent(request: AIGenerateRequest): Promis
     throw new Error(`No AI prompts configured for section: ${sectionKey}`);
   }
 
+  // Sanitize user-provided inputs before prompt assembly
+  const safeContent = currentContent
+    ? sanitizePromptInput(currentContent, MAX_CONTENT_LENGTH)
+    : '';
+  const safeInstructions = customInstructions
+    ? sanitizePromptInput(customInstructions, MAX_INSTRUCTIONS_LENGTH)
+    : '';
+
   // Build the user prompt with variable substitution
   let userPrompt = prompts.user;
   userPrompt = substituteVariables(userPrompt, systemContext);
 
-  // Modify prompt based on mode
+  // Modify prompt based on mode — user content is wrapped in delimiters
+  // to clearly separate it from the instruction template
   let systemPrompt = prompts.system;
-  if (mode === 'refine' && currentContent) {
-    systemPrompt += '\n\nYou are refining existing content. Improve clarity, completeness, and compliance language while maintaining the original intent.';
-    userPrompt = `Current content:\n\n${currentContent}\n\n${customInstructions || 'Improve this content for better clarity and compliance language.'}`;
-  } else if (mode === 'expand' && currentContent) {
-    systemPrompt += '\n\nYou are expanding existing content. Add more detail and specificity while maintaining consistency with what is already written.';
-    userPrompt = `Current content:\n\n${currentContent}\n\n${customInstructions || 'Expand this content with more detail and specificity.'}`;
+  if (mode === 'refine' && safeContent) {
+    systemPrompt += '\n\nYou are refining existing content. Improve clarity, completeness, and compliance language while maintaining the original intent. The content to refine is enclosed in <user-content> tags.';
+    userPrompt = `<user-content>\n${safeContent}\n</user-content>\n\nInstructions: ${safeInstructions || 'Improve this content for better clarity and compliance language.'}`;
+  } else if (mode === 'expand' && safeContent) {
+    systemPrompt += '\n\nYou are expanding existing content. Add more detail and specificity while maintaining consistency with what is already written. The content to expand is enclosed in <user-content> tags.';
+    userPrompt = `<user-content>\n${safeContent}\n</user-content>\n\nInstructions: ${safeInstructions || 'Expand this content with more detail and specificity.'}`;
   }
 
   // Check if online mode - if not, use local generation

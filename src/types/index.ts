@@ -2,6 +2,65 @@
  * ForgeComply 360 Reporter - Type Definitions
  */
 
+// =============================================================================
+// Constrained value types
+// =============================================================================
+
+/** FIPS 199 impact levels — the only valid values for C/I/A categorization */
+export type ImpactLevel = 'Low' | 'Moderate' | 'High';
+
+/** NIST SP 800-53 control baselines */
+export type ControlBaseline = 'Low' | 'Moderate' | 'High';
+
+/**
+ * Core fields that must be populated for a valid SSP export.
+ * Use this at export/validation boundaries to assert completeness.
+ */
+export interface RequiredSSPFields {
+  sysName: string;
+  sysDesc: string;
+  conf: ImpactLevel;
+  integ: ImpactLevel;
+  avail: ImpactLevel;
+  ctrlBaseline: ControlBaseline;
+  authType: string;
+  owningAgency: string;
+}
+
+/**
+ * A fully-validated SSPData suitable for OSCAL export.
+ * Combines the required core fields with the rest of SSPData.
+ */
+export type ValidatedSSPData = RequiredSSPFields & Omit<SSPData, keyof RequiredSSPFields>;
+
+/**
+ * Type guard: checks whether an SSPData has all required fields populated.
+ */
+export function isValidatedSSPData(data: SSPData): data is ValidatedSSPData {
+  return (
+    typeof data.sysName === 'string' && data.sysName.trim().length > 0 &&
+    typeof data.sysDesc === 'string' && data.sysDesc.trim().length > 0 &&
+    isImpactLevel(data.conf) &&
+    isImpactLevel(data.integ) &&
+    isImpactLevel(data.avail) &&
+    isControlBaseline(data.ctrlBaseline) &&
+    typeof data.authType === 'string' && data.authType.trim().length > 0 &&
+    typeof data.owningAgency === 'string' && data.owningAgency.trim().length > 0
+  );
+}
+
+function isImpactLevel(v: unknown): v is ImpactLevel {
+  return v === 'Low' || v === 'Moderate' || v === 'High';
+}
+
+function isControlBaseline(v: unknown): v is ControlBaseline {
+  return v === 'Low' || v === 'Moderate' || v === 'High';
+}
+
+// =============================================================================
+// SSP Data — the runtime form state (all fields optional for progressive entry)
+// =============================================================================
+
 export interface SSPData {
   // System Information
   sysName?: string;
@@ -184,6 +243,15 @@ export interface InfoType {
   a?: string;
 }
 
+/** An InfoType with the minimum fields needed for OSCAL export */
+export interface ValidInfoType {
+  nistId: string;
+  name: string;
+  c: string;
+  i: string;
+  a: string;
+}
+
 export interface TailoringRow {
   ctrl?: string;
   dec?: string;
@@ -231,7 +299,16 @@ export interface CryptoModule {
 }
 
 export interface Contact {
+  /** At least name or email should be populated for a usable contact */
   name?: string;
+  role?: string;
+  email?: string;
+  phone?: string;
+}
+
+/** A contact with at least a name — the minimum for OSCAL party generation */
+export interface ValidContact {
+  name: string;
   role?: string;
   email?: string;
   phone?: string;

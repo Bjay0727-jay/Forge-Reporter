@@ -3,7 +3,7 @@
  * Manages bidirectional synchronization between Reporter and Backend
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { SSPData } from '../types';
 import {
   loadSSPFromBackend,
@@ -89,28 +89,21 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
   // Track previous data for change detection
   const previousDataRef = useRef<SSPData | null>(null);
 
-  // Track previous online mode to detect changes
-  const previousOnlineModeRef = useRef(isOnlineMode);
+  // Mutex: prevent concurrent sync operations from clobbering each other
+  const syncInProgressRef = useRef(false);
 
-  // Derive effective status based on online mode changes
-  // This avoids calling setState in useEffect
-  const effectiveStatus = (() => {
-    if (previousOnlineModeRef.current !== isOnlineMode) {
-      previousOnlineModeRef.current = isOnlineMode;
-      // When mode changes, compute new status
-      if (!isOnlineMode) return 'offline' as const;
-      if (state.status === 'offline') return 'idle' as const;
+  // Respond to online mode changes via useEffect (not during render)
+  useEffect(() => {
+    if (!isOnlineMode) {
+      setState((prev) => (prev.status !== 'offline' ? { ...prev, status: 'offline' } : prev));
+    } else {
+      setState((prev) => (prev.status === 'offline' ? { ...prev, status: 'idle' } : prev));
     }
-    return state.status;
-  })();
-
-  // Computed state with effective status
-  const computedState: SyncState = {
-    ...state,
-    status: effectiveStatus,
-  };
+  }, [isOnlineMode]);
 
   const loadFromServer = useCallback(async (sspId: string): Promise<SSPData | null> => {
+    if (syncInProgressRef.current) return null;
+    syncInProgressRef.current = true;
     setState((prev) => ({ ...prev, status: 'syncing', error: null }));
 
     try {
@@ -139,10 +132,14 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
         error: errorMessage,
       }));
       return null;
+    } finally {
+      syncInProgressRef.current = false;
     }
   }, []);
 
   const saveToServer = useCallback(async (sspId: string, data: SSPData): Promise<boolean> => {
+    if (syncInProgressRef.current) return false;
+    syncInProgressRef.current = true;
     setState((prev) => ({ ...prev, status: 'syncing', error: null }));
 
     try {
@@ -166,43 +163,66 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
         error: errorMessage,
       }));
       return false;
+    } finally {
+      syncInProgressRef.current = false;
     }
   }, []);
 
   const fullSync = useCallback(async (sspId: string, data: SSPData): Promise<boolean> => {
+    if (syncInProgressRef.current) return false;
+    syncInProgressRef.current = true;
     setState((prev) => ({ ...prev, status: 'syncing', error: null }));
 
     try {
       // Save main SSP data
       await saveSSPToBackend(sspId, data, previousDataRef.current || undefined);
 
-      // Sync list items in parallel
-      const syncPromises: Promise<void>[] = [];
+      // Sync list items in parallel — use allSettled so partial failures
+      // don't discard successfully synced items
+      const syncPromises: Array<{ label: string; promise: Promise<void> }> = [];
 
       if (data.infoTypes?.length) {
-        syncPromises.push(syncInfoTypes(sspId, data.infoTypes, []));
+        syncPromises.push({ label: 'infoTypes', promise: syncInfoTypes(sspId, data.infoTypes, []) });
       }
       if (data.ppsRows?.length) {
-        syncPromises.push(syncPortsProtocols(sspId, data.ppsRows));
+        syncPromises.push({ label: 'portsProtocols', promise: syncPortsProtocols(sspId, data.ppsRows) });
       }
       if (data.cryptoMods?.length) {
-        syncPromises.push(syncCryptoModules(sspId, data.cryptoMods));
+        syncPromises.push({ label: 'cryptoModules', promise: syncCryptoModules(sspId, data.cryptoMods) });
       }
       if (data.sepDutyMatrix?.length) {
-        syncPromises.push(syncSeparationDuties(sspId, data.sepDutyMatrix));
+        syncPromises.push({ label: 'separationDuties', promise: syncSeparationDuties(sspId, data.sepDutyMatrix) });
       }
       if (data.policyDocs?.length) {
-        syncPromises.push(syncPolicyMappings(sspId, data.policyDocs));
+        syncPromises.push({ label: 'policyMappings', promise: syncPolicyMappings(sspId, data.policyDocs) });
       }
       if (data.scrmSuppliers?.length) {
-        syncPromises.push(syncSCRMEntries(sspId, data.scrmSuppliers));
+        syncPromises.push({ label: 'scrmEntries', promise: syncSCRMEntries(sspId, data.scrmSuppliers) });
       }
       if (data.cmBaselines?.length) {
-        syncPromises.push(syncCMBaselines(sspId, data.cmBaselines));
+        syncPromises.push({ label: 'cmBaselines', promise: syncCMBaselines(sspId, data.cmBaselines) });
       }
 
-      await Promise.all(syncPromises);
+      const results = await Promise.allSettled(syncPromises.map((s) => s.promise));
+
+      // Collect partial failures
+      const failures = results
+        .map((r, i) => (r.status === 'rejected' ? syncPromises[i].label : null))
+        .filter(Boolean);
+
       previousDataRef.current = data;
+
+      if (failures.length > 0) {
+        console.error('Partial sync failures:', failures);
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          lastSyncedAt: new Date(),
+          pendingChanges: true,
+          error: `Sync partially failed for: ${failures.join(', ')}`,
+        }));
+        return false;
+      }
 
       setState((prev) => ({
         ...prev,
@@ -221,6 +241,8 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
         error: errorMessage,
       }));
       return false;
+    } finally {
+      syncInProgressRef.current = false;
     }
   }, []);
 
@@ -281,7 +303,7 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
     clearError,
   };
 
-  return [computedState, actions];
+  return [state, actions];
 }
 
 /**
