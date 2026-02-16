@@ -1,7 +1,11 @@
 /**
  * Forge Cyber Defense - Theme Hook
  * Provides dark mode support across the app
+ *
+ * Note: This file exports both a Provider component and a hook, which is a common pattern
+ * for React context. The eslint-disable is intentional for this pattern.
  */
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ThemeMode } from '../config/colors';
 import { getThemeMode, setThemeMode, setCurrentMode, lightTheme, darkTheme } from '../config/colors';
