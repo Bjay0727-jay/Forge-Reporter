@@ -248,6 +248,28 @@ export const SECTIONS: Section[] = [
   },
   // POST-AUTH (RMF Steps 5-7)
   {
+    id: 'assess',
+    label: 'Security Assessment',
+    icon: '🔍',
+    ref: 'SP 800-53A / RMF Step 5',
+    grp: 'Post-Auth',
+    tag: 'fisma',
+    rmf: 'Assess',
+    description: 'Security control assessment plan and results',
+    bannerText: 'RMF Step 5: Assessors (3PAO or internal) evaluate each control. Document the Security Assessment Plan (SAP) and Security Assessment Report (SAR).'
+  },
+  {
+    id: 'authorize',
+    label: 'Authorization Decision',
+    icon: '✅',
+    ref: 'SP 800-37 Rev2 / RMF Step 6',
+    grp: 'Post-Auth',
+    tag: 'fisma',
+    rmf: 'Authorize',
+    description: 'AO authorization decision and risk acceptance',
+    bannerText: 'RMF Step 6: The Authorizing Official reviews the authorization package (SSP, SAR, POA&M) and renders an authorization decision. Document the ATO letter, conditions, and risk acceptance.'
+  },
+  {
     id: 'conmon',
     label: 'Continuous Monitoring & ISCM',
     icon: '📡',

@@ -35,10 +35,24 @@ export interface ImportError {
 // Main Import Function
 // =============================================================================
 
+/** Maximum file size for OSCAL import: 50 MB */
+const MAX_IMPORT_FILE_SIZE = 50 * 1024 * 1024;
+
 /**
  * Import an OSCAL SSP document (JSON or XML) and convert to SSPData
  */
 export async function importOscalSSP(file: File): Promise<OscalImportResult> {
+  // Validate file size before reading to prevent DoS from oversized files
+  if (file.size > MAX_IMPORT_FILE_SIZE) {
+    throw new Error(
+      `File too large (${formatFileSize(file.size)}). Maximum allowed size is ${formatFileSize(MAX_IMPORT_FILE_SIZE)}.`
+    );
+  }
+
+  if (file.size === 0) {
+    throw new Error('File is empty.');
+  }
+
   const warnings: string[] = [];
 
   // Determine format from file extension or content

@@ -175,9 +175,26 @@ export function useAuth(): [AuthState, AuthActions] {
           throw new Error('Token is expired');
         }
 
-        // Store credentials
+        // Store credentials temporarily so the api() helper can use them
         setApiUrl(apiUrlParam);
         setToken(tokenParam);
+
+        // Verify the token server-side before trusting it.
+        // This ensures the signature is valid and the token hasn't been revoked.
+        try {
+          await import('../services/api').then(({ api: apiCall }) =>
+            apiCall<{ ok: boolean }>('/api/v1/auth/verify', { method: 'GET' })
+          );
+        } catch (verifyError) {
+          // If the server rejects the token, clear stored credentials
+          clearToken();
+          const status = (verifyError as { status?: number })?.status;
+          if (status === 401 || status === 403) {
+            throw new Error('Token rejected by server — it may be revoked or invalid');
+          }
+          // For network errors, allow offline-capable login but warn
+          console.warn('Could not verify token with server (network error), proceeding with local validation');
+        }
 
         setState({
           isAuthenticated: true,

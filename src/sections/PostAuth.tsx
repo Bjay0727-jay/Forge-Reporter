@@ -24,7 +24,129 @@ const useSystemContext = (d: SSPData): SystemContext => {
   }), [d.sysName, d.sysAcronym, d.conf, d.integ, d.avail, d.owningAgency]);
 };
 
-// Section 22: Continuous Monitoring & ISCM
+// Section 22: Security Assessment (RMF Step 5 — Assess)
+export const AssessSec: React.FC<Props> = ({ d, sf }) => {
+  const systemContext = useSystemContext(d);
+
+  return (
+    <div>
+      <SH title="Security Assessment" sub="RMF Step 5: Assess — NIST SP 800-53A. Evaluate the security controls to determine implementation effectiveness." />
+      <AddedBanner tag="fisma" ref="SP 800-53A / RMF Step 5" text="Assessors (3PAO or internal) evaluate each control. Document the Security Assessment Plan (SAP) and Security Assessment Report (SAR)." />
+      <div style={G2}>
+        <FF label="Assessment Type" req>
+          <Sel value={d.assessType} onChange={(v) => sf('assessType', v)} ph="Select" options={[
+            { v: '3pao', l: '3PAO Independent Assessment' },
+            { v: 'internal', l: 'Internal Assessment (Agency)' },
+            { v: 'hybrid', l: 'Hybrid (3PAO + Internal)' },
+          ]} />
+        </FF>
+        <FF label="Assessor Organization">
+          <TI value={d.assessOrg} onChange={(v) => sf('assessOrg', v)} placeholder="e.g., Coalfire, Schellman, KPMG" />
+        </FF>
+      </div>
+      <div style={G2}>
+        <FF label="Assessment Start Date">
+          <TI value={d.assessStart} onChange={(v) => sf('assessStart', v)} placeholder="YYYY-MM-DD" mono />
+        </FF>
+        <FF label="Assessment Completion Date">
+          <TI value={d.assessEnd} onChange={(v) => sf('assessEnd', v)} placeholder="YYYY-MM-DD" mono />
+        </FF>
+      </div>
+      <FF label="SAP Summary" span={2} hint="Summarize the Security Assessment Plan scope and methodology">
+        <TAAI
+          value={d.sapSummary}
+          onChange={(v) => sf('sapSummary', v)}
+          rows={4}
+          placeholder="The SAP defines assessment scope, methodology, and schedule. Controls assessed per SP 800-53A procedures..."
+          sectionKey="assess"
+          sectionLabel="SAP Summary"
+          systemContext={systemContext}
+        />
+      </FF>
+      <Div />
+      <FF label="SAR Summary" span={2} hint="Summarize Security Assessment Report findings">
+        <TAAI
+          value={d.sarSummary}
+          onChange={(v) => sf('sarSummary', v)}
+          rows={4}
+          placeholder="Assessment identified X findings across Y controls. Critical: 0, High: 2, Moderate: 5, Low: 8..."
+          sectionKey="assess"
+          sectionLabel="SAR Summary"
+          systemContext={systemContext}
+        />
+      </FF>
+      <div style={G2}>
+        <FF label="Controls Assessed">
+          <TI value={d.assessCtrlCount} onChange={(v) => sf('assessCtrlCount', v)} placeholder="e.g., 325" />
+        </FF>
+        <FF label="Findings Count">
+          <TI value={d.assessFindingsCount} onChange={(v) => sf('assessFindingsCount', v)} placeholder="e.g., 15" />
+        </FF>
+      </div>
+    </div>
+  );
+};
+
+// Section 23: Authorization Decision (RMF Step 6 — Authorize)
+export const AuthorizeSec: React.FC<Props> = ({ d, sf }) => {
+  const systemContext = useSystemContext(d);
+
+  return (
+    <div>
+      <SH title="Authorization Decision" sub="RMF Step 6: Authorize — NIST SP 800-37 Rev 2. The AO reviews the authorization package and renders a decision." />
+      <AddedBanner tag="fisma" ref="SP 800-37 Rev2 / RMF Step 6" text="The Authorizing Official reviews the SSP, SAR, and POA&M to determine if residual risk is acceptable. Document the ATO letter and any conditions." />
+      <div style={G2}>
+        <FF label="Authorization Decision" req>
+          <Sel value={d.authDecision} onChange={(v) => sf('authDecision', v)} ph="Select" options={[
+            { v: 'ato', l: 'Authorization to Operate (ATO)' },
+            { v: 'iatt', l: 'Interim ATO (IATT)' },
+            { v: 'dato', l: 'Denial of Authorization (DATO)' },
+            { v: 'pending', l: 'Pending Decision' },
+          ]} />
+        </FF>
+        <FF label="Authorization Date">
+          <TI value={d.authDate} onChange={(v) => sf('authDate', v)} placeholder="YYYY-MM-DD" mono />
+        </FF>
+      </div>
+      <div style={G2}>
+        <FF label="AO Name" req>
+          <TI value={d.authAoName} onChange={(v) => sf('authAoName', v)} placeholder="Authorizing Official name" />
+        </FF>
+        <FF label="Authorization Expiration">
+          <TI value={d.authExpiry} onChange={(v) => sf('authExpiry', v)} placeholder="YYYY-MM-DD or 'Ongoing'" mono />
+        </FF>
+      </div>
+      <FF label="Authorization Conditions" span={2} hint="Document any conditions or limitations on the authorization">
+        <TAAI
+          value={d.authConditions}
+          onChange={(v) => sf('authConditions', v)}
+          rows={4}
+          placeholder="ATO granted with the following conditions:
+1. All critical POA&M items remediated within 30 days
+2. Monthly vulnerability scanning required
+3. Annual 3PAO re-assessment..."
+          sectionKey="authorize"
+          sectionLabel="Authorization Conditions"
+          systemContext={systemContext}
+        />
+      </FF>
+      <Div />
+      <FF label="Risk Acceptance Statement" span={2} hint="AO's formal risk acceptance rationale">
+        <TAAI
+          value={d.riskAcceptance}
+          onChange={(v) => sf('riskAcceptance', v)}
+          rows={4}
+          placeholder="The AO has determined that residual risk is acceptable based on review of the SSP, SAR, and POA&M..."
+          sectionKey="authorize"
+          sectionLabel="Risk Acceptance Statement"
+          systemContext={systemContext}
+        />
+      </FF>
+    </div>
+  );
+};
+
+// Section 24: Continuous Monitoring & ISCM
 export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
   const cmTools = useDT(d, 'cmTools', sf);
   const systemContext = useSystemContext(d);

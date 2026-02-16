@@ -14,7 +14,7 @@ import { BoundarySec, DataFlowSec, NetworkSec, PPSSec, InterconSec, CryptoSec } 
 import { PersonnelSec, IdentitySec, SepDutySec } from './Personnel';
 import { ControlsSec, PoliciesSec, SCRMSec, PrivacySec } from './Controls';
 import { ConPlanSec, IRPlanSec, CMPlanSec } from './Plans';
-import { ConMonSec, PoamSec } from './PostAuth';
+import { AssessSec, AuthorizeSec, ConMonSec, PoamSec } from './PostAuth';
 
 // Section renderer type
 export type SectionRenderer = React.FC<{ d: SSPData; sf: (key: string, value: unknown) => void }>;
@@ -42,6 +42,8 @@ export const SECTION_RENDERERS: Record<string, SectionRenderer> = {
   conplan: ConPlanSec,
   irplan: IRPlanSec,
   cmplan: CMPlanSec,
+  assess: AssessSec,
+  authorize: AuthorizeSec,
   conmon: ConMonSec,
   poam: PoamSec,
 };
