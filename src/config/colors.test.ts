@@ -152,8 +152,20 @@ describe('Color System', () => {
   });
 
   describe('Theme Mode Functions', () => {
+    // Helper to create a complete matchMedia mock result
+    const createMatchMediaResult = (matches: boolean) => ({
+      matches,
+      media: '(prefers-color-scheme: dark)',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    });
+
     it('should return light theme by default when no preference stored', () => {
-      matchMediaMock.mockReturnValue({ matches: false });
+      matchMediaMock.mockReturnValue(createMatchMediaResult(false));
       const mode = getThemeMode();
       expect(mode).toBe('light');
     });
@@ -165,7 +177,7 @@ describe('Color System', () => {
     });
 
     it('should respect system dark mode preference', () => {
-      matchMediaMock.mockReturnValue({ matches: true });
+      matchMediaMock.mockReturnValue(createMatchMediaResult(true));
       const mode = getThemeMode();
       expect(mode).toBe('dark');
     });
