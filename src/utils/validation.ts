@@ -94,14 +94,41 @@ export interface ValidationResult {
   sectionErrors: Record<string, number>;
 }
 
+// =============================================================================
+// Field-level validation rules
+// =============================================================================
+
+const VALID_IMPACT_LEVELS = ['Low', 'Moderate', 'High'];
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Fields that must contain a valid email address */
+const EMAIL_FIELDS: ReadonlySet<keyof SSPData> = new Set([
+  'soEmail', 'aoEmail', 'issoEmail', 'issmEmail', 'scaEmail', 'poEmail',
+]);
+
+/** Fields constrained to FIPS 199 impact levels */
+const IMPACT_LEVEL_FIELDS: ReadonlySet<keyof SSPData> = new Set([
+  'conf', 'integ', 'avail',
+]);
+
+/** Maximum character length for narrative fields */
+const MAX_NARRATIVE_LENGTH = 50_000;
+
+const NARRATIVE_FIELDS: ReadonlySet<keyof SSPData> = new Set([
+  'sysDesc', 'catJust', 'baseJust', 'bndNarr', 'dfNarr', 'netNarr',
+  'cryptoNarr', 'idNarr', 'scrmPlan', 'cpPurpose', 'cpScope',
+  'irPurpose', 'irScope', 'cmPurpose', 'cmChangeNarr', 'iscmNarrative',
+]);
+
 /**
- * Validates SSP data against required fields
+ * Validates SSP data against required fields, format rules, and cross-field constraints
  */
 export function validateSSP(data: SSPData): ValidationResult {
   const errors: ValidationError[] = [];
   const sectionErrors: Record<string, number> = {};
 
-  // Check each section's required fields
+  // --- Pass 1: Required field checks ---
   for (const [section, fields] of Object.entries(REQUIRED_FIELDS)) {
     let sectionErrorCount = 0;
 
@@ -124,12 +151,96 @@ export function validateSSP(data: SSPData): ValidationResult {
     }
   }
 
+  // --- Pass 2: Format validation (only on populated fields) ---
+
+  // Email format
+  for (const field of EMAIL_FIELDS) {
+    const value = data[field];
+    if (typeof value === 'string' && value.trim().length > 0 && !EMAIL_REGEX.test(value)) {
+      const label = FIELD_LABELS[field] || field;
+      const section = sectionForField(field);
+      errors.push({ field: field as string, message: `${label} must be a valid email address`, section });
+      sectionErrors[section] = (sectionErrors[section] || 0) + 1;
+    }
+  }
+
+  // Impact level enum (case-insensitive — user input may vary)
+  const validImpactLower = VALID_IMPACT_LEVELS.map((l) => l.toLowerCase());
+  for (const field of IMPACT_LEVEL_FIELDS) {
+    const value = data[field];
+    if (typeof value === 'string' && value.trim().length > 0 && !validImpactLower.includes(value.toLowerCase())) {
+      const label = FIELD_LABELS[field] || field;
+      errors.push({
+        field: field as string,
+        message: `${label} must be one of: ${VALID_IMPACT_LEVELS.join(', ')}`,
+        section: 'fips_199',
+      });
+      sectionErrors['fips_199'] = (sectionErrors['fips_199'] || 0) + 1;
+    }
+  }
+
+  // Narrative length limits
+  for (const field of NARRATIVE_FIELDS) {
+    const value = data[field];
+    if (typeof value === 'string' && value.length > MAX_NARRATIVE_LENGTH) {
+      const label = FIELD_LABELS[field] || field;
+      const section = sectionForField(field);
+      errors.push({
+        field: field as string,
+        message: `${label} exceeds maximum length of ${MAX_NARRATIVE_LENGTH.toLocaleString()} characters`,
+        section,
+      });
+      sectionErrors[section] = (sectionErrors[section] || 0) + 1;
+    }
+  }
+
+  // --- Pass 3: Cross-field rules ---
+
+  // If PII is collected, PIA required status must be specified
+  if (data.ptaCollectsPii === 'Yes' && !data.ptaPiaRequired) {
+    errors.push({
+      field: 'ptaPiaRequired',
+      message: 'PIA Required status must be specified when system collects PII',
+      section: 'privacy',
+    });
+    sectionErrors['privacy'] = (sectionErrors['privacy'] || 0) + 1;
+  }
+
+  // RTO and RPO should be numeric-like if provided
+  for (const field of ['rto', 'rpo'] as const) {
+    const value = data[field];
+    if (typeof value === 'string' && value.trim().length > 0 && !/\d/.test(value)) {
+      const label = FIELD_LABELS[field] || field;
+      errors.push({
+        field,
+        message: `${label} should include a numeric value (e.g., "4 hours")`,
+        section: 'contingency_plan',
+      });
+      sectionErrors['contingency_plan'] = (sectionErrors['contingency_plan'] || 0) + 1;
+    }
+  }
+
   return {
     isValid: errors.length === 0,
     errors,
     errorCount: errors.length,
     sectionErrors,
   };
+}
+
+/** Map a field name to its containing validation section */
+function sectionForField(field: keyof SSPData): string {
+  for (const [section, fields] of Object.entries(REQUIRED_FIELDS)) {
+    if (fields.some((f) => f.field === field)) return section;
+  }
+  // Infer from field prefix for non-required fields
+  if (field.startsWith('so') || field.startsWith('ao') || field.startsWith('isso') || field.startsWith('issm') || field.startsWith('sca') || field.startsWith('po')) return 'personnel';
+  if (field.startsWith('pta') || field.startsWith('pia') || field.startsWith('sorn')) return 'privacy';
+  if (field.startsWith('cp') || field === 'rto' || field === 'rpo') return 'contingency_plan';
+  if (field.startsWith('ir')) return 'incident_response';
+  if (field.startsWith('cm')) return 'configuration_management';
+  if (field.startsWith('iscm')) return 'continuous_monitoring';
+  return 'system_info';
 }
 
 /**

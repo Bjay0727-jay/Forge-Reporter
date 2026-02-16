@@ -74,14 +74,36 @@ export function isOnlineMode(): boolean {
 }
 
 /**
- * Decode JWT payload without verification
+ * Decode a JWT payload for client-side display and expiry checks.
+ *
+ * SECURITY NOTE: This intentionally does NOT verify the signature because the
+ * signing secret lives on the server. All trust decisions (authorization,
+ * data access) are made server-side where the token IS verified. Client-side
+ * decoding is only used for UI hints (user name, expiry countdown) and for
+ * deciding when to prompt re-authentication.
  */
 export function decodeToken(token: string): { exp?: number; sspId?: string; userId?: string; orgId?: string } | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
+
+    // Validate base64 / base64url encoding before decoding
+    if (!/^[A-Za-z0-9_+/=-]+$/.test(parts[1])) return null;
+
     const payload = JSON.parse(atob(parts[1]));
-    return payload;
+
+    // Validate payload is a plain object with expected shape
+    if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+      return null;
+    }
+
+    // Only extract known fields — ignore anything unexpected
+    return {
+      exp: typeof payload.exp === 'number' ? payload.exp : undefined,
+      sspId: typeof payload.sspId === 'string' ? payload.sspId : undefined,
+      userId: typeof payload.userId === 'string' ? payload.userId : undefined,
+      orgId: typeof payload.orgId === 'string' ? payload.orgId : undefined,
+    };
   } catch {
     return null;
   }

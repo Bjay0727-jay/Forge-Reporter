@@ -211,6 +211,24 @@ export interface SSPData {
   cmBaselines?: CMBaseline[];
   cmChangeNarr?: string;
 
+  // Security Assessment (RMF Step 5)
+  assessType?: string;
+  assessOrg?: string;
+  assessStart?: string;
+  assessEnd?: string;
+  sapSummary?: string;
+  sarSummary?: string;
+  assessCtrlCount?: string;
+  assessFindingsCount?: string;
+
+  // Authorization Decision (RMF Step 6)
+  authDecision?: string;
+  authDate?: string;
+  authAoName?: string;
+  authExpiry?: string;
+  authConditions?: string;
+  riskAcceptance?: string;
+
   // Continuous Monitoring
   iscmType?: string;
   ctrlRotation?: string;

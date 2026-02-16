@@ -55,7 +55,7 @@ function getValidator(): ReturnType<Ajv['compile']> {
 
   const ajv = new Ajv({
     allErrors: true,        // Report all errors, not just the first one
-    strict: false,          // Allow additional properties not in schema
+    strict: 'log',          // Log schema quality warnings (full strict breaks the NIST schema)
     validateFormats: true,  // Validate uri, date-time, uuid formats
     verbose: true,          // Include data in errors for debugging
   });
