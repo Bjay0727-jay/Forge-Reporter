@@ -80,8 +80,8 @@ export const Header: React.FC<HeaderProps> = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '16px 24px',
-        borderBottom: `1px solid ${C.border}`,
-        background: C.surface,
+        borderBottom: `1px solid ${C.navyLight}`,
+        background: C.navy,
         flexShrink: 0,
       }}
     >
@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span
                 style={{
                   fontSize: 13,
-                  color: C.textMuted,
+                  color: C.sidebarTextMuted,
                   maxWidth: 200,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -110,10 +110,10 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 {sspTitle}
               </span>
-              <span style={{ color: C.border, fontSize: 12 }}>/</span>
+              <span style={{ color: C.navyLight, fontSize: 12 }}>/</span>
             </>
           )}
-          <span style={{ fontSize: 13, color: C.textMuted }}>
+          <span style={{ fontSize: 13, color: C.sidebarTextMuted }}>
             {sectionLabel}
           </span>
         </div>
@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             fontSize: 20,
             fontWeight: 600,
-            color: C.text,
+            color: C.sidebarText,
             margin: 0,
             lineHeight: 1.3,
           }}
@@ -188,7 +188,7 @@ export const Header: React.FC<HeaderProps> = ({
                   padding: '2px 6px',
                   background: 'none',
                   border: 'none',
-                  color: C.textMuted,
+                  color: C.sidebarTextMuted,
                   fontSize: 12,
                   cursor: 'pointer',
                 }}
@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
               animation: saving ? 'pulse 1s infinite' : 'none',
             }}
           />
-          <span style={{ color: C.textSecondary }}>
+          <span style={{ color: C.sidebarTextSecondary }}>
             {saving ? 'Saving...' : lastSaved ? 'Auto-saved' : 'Ready'}
           </span>
         </div>
@@ -231,9 +231,9 @@ export const Header: React.FC<HeaderProps> = ({
             style={{
               padding: '8px',
               background: 'none',
-              border: `1px solid ${C.border}`,
+              border: `1px solid ${C.navyLight}`,
               borderRadius: 8,
-              color: C.textSecondary,
+              color: C.sidebarTextSecondary,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -241,12 +241,12 @@ export const Header: React.FC<HeaderProps> = ({
               transition: 'all 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = C.bg;
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
               e.currentTarget.style.borderColor = C.teal;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'none';
-              e.currentTarget.style.borderColor = C.border;
+              e.currentTarget.style.borderColor = C.navyLight;
             }}
             title={themeMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
@@ -277,9 +277,9 @@ export const Header: React.FC<HeaderProps> = ({
             style={{
               padding: '8px 14px',
               background: 'none',
-              border: `1px solid ${C.border}`,
+              border: `1px solid ${C.navyLight}`,
               borderRadius: 8,
-              color: C.textMuted,
+              color: C.sidebarTextMuted,
               fontSize: 13,
               fontWeight: 500,
               cursor: 'pointer',
@@ -293,8 +293,8 @@ export const Header: React.FC<HeaderProps> = ({
               e.currentTarget.style.color = C.error;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = C.border;
-              e.currentTarget.style.color = C.textMuted;
+              e.currentTarget.style.borderColor = C.navyLight;
+              e.currentTarget.style.color = C.sidebarTextMuted;
             }}
             title="Clear all SSP data"
           >
@@ -311,9 +311,9 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             padding: '8px 14px',
             background: 'none',
-            border: `1px solid ${C.border}`,
+            border: `1px solid ${C.navyLight}`,
             borderRadius: 8,
-            color: C.textSecondary,
+            color: C.sidebarTextSecondary,
             fontSize: 13,
             fontWeight: 500,
             cursor: 'pointer',
@@ -323,7 +323,7 @@ export const Header: React.FC<HeaderProps> = ({
             transition: 'all 0.15s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = C.bg;
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'none';
@@ -342,9 +342,9 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             padding: '8px 14px',
             background: 'none',
-            border: `1px solid ${C.border}`,
+            border: `1px solid ${C.navyLight}`,
             borderRadius: 8,
-            color: C.textSecondary,
+            color: C.sidebarTextSecondary,
             fontSize: 13,
             fontWeight: 500,
             cursor: 'pointer',
@@ -354,7 +354,7 @@ export const Header: React.FC<HeaderProps> = ({
             transition: 'all 0.15s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = C.bg;
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'none';
