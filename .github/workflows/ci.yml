@@ -540,7 +540,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=reporter-forgecomply360 --branch=${{ github.head_ref }}
+          command: pages deploy dist --project-name=forge-reporter --branch=${{ github.head_ref }}
 
       # ── PR Deployment URL Comment ─────────────────────────────────────────
       - name: Comment deployment URL on PR
@@ -548,7 +548,7 @@ jobs:
         with:
           script: |
             const url = '${{ steps.deploy.outputs.deployment-url }}' ||
-              `https://${context.payload.pull_request.head.ref}.reporter-forgecomply360.pages.dev`;
+              `https://${context.payload.pull_request.head.ref}.forge-reporter.pages.dev`;
 
             const body = [
               '## Deployment Preview',
@@ -625,7 +625,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=reporter-forgecomply360 --branch=main
+          command: pages deploy dist --project-name=forge-reporter --branch=main
 
       - name: Write job summary
         run: |
@@ -654,7 +654,7 @@ jobs:
         run: |
           URL="${{ needs.deploy-preview.outputs.preview_url }}"
           if [ -z "$URL" ]; then
-            URL="https://${{ github.head_ref }}.reporter-forgecomply360.pages.dev"
+            URL="https://${{ github.head_ref }}.forge-reporter.pages.dev"
           fi
           echo "Testing: $URL"
 
@@ -671,7 +671,7 @@ jobs:
         run: |
           URL="${{ needs.deploy-preview.outputs.preview_url }}"
           if [ -z "$URL" ]; then
-            URL="https://${{ github.head_ref }}.reporter-forgecomply360.pages.dev"
+            URL="https://${{ github.head_ref }}.forge-reporter.pages.dev"
           fi
           BODY=$(curl -s --max-time 30 "$URL" || echo "")
           if echo "$BODY" | grep -q "ForgeComply"; then
@@ -709,7 +709,7 @@ jobs:
         run: |
           URL="${{ needs.deploy-production.outputs.production_url }}"
           if [ -z "$URL" ]; then
-            URL="https://reporter-forgecomply360.pages.dev"
+            URL="https://forge-reporter.pages.dev"
           fi
           echo "Testing: $URL"
 
@@ -727,7 +727,7 @@ jobs:
         run: |
           URL="${{ needs.deploy-production.outputs.production_url }}"
           if [ -z "$URL" ]; then
-            URL="https://reporter-forgecomply360.pages.dev"
+            URL="https://forge-reporter.pages.dev"
           fi
           BODY=$(curl -s --max-time 30 "$URL" || echo "")
           if echo "$BODY" | grep -q "ForgeComply"; then
