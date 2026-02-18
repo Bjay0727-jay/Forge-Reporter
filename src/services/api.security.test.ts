@@ -12,7 +12,7 @@ import {
   clearToken,
   getToken,
   api,
-  ApiError,
+  ApiError as _ApiError,
   isOnlineMode,
 } from './api';
 
