@@ -41,7 +41,15 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'json', 'json-summary', 'html'],
-      exclude: ['node_modules/', 'src/test/'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/types/**',
+        'src/main.tsx',
+      ],
     },
   },
 })
