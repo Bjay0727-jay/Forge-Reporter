@@ -105,8 +105,9 @@ vi.mock('../services/api', () => {
 });
 
 // Access the captured calls array from the mock
+type CapturedCall = { path: string; method: string; body?: unknown };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const { __captured: captured } = vi.mocked(await import('../services/api')) as any;
+const { __captured: captured } = vi.mocked(await import('../services/api')) as any as { __captured: CapturedCall[] };
 
 beforeEach(() => {
   (captured as Array<unknown>).length = 0;
