@@ -3,7 +3,7 @@
 Standalone FISMA/FedRAMP System Security Plan (SSP) authoring engine with OSCAL 1.1.2 validation.
 
 [![CI](https://github.com/Bjay0727-jay/Forge-Reporter/actions/workflows/ci.yml/badge.svg)](https://github.com/Bjay0727-jay/Forge-Reporter/actions/workflows/ci.yml)
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://reporter-forgecomply360.pages.dev)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://forge-reporter.pages.dev)
 
 ## Overview
 
@@ -152,14 +152,14 @@ VITE_APP_NAME=ForgeComply 360 Reporter
 
 The Reporter is deployed to Cloudflare Pages via GitHub Actions:
 
-- **Production**: https://reporter-forgecomply360.pages.dev
+- **Production**: https://forge-reporter.pages.dev
 - **Preview**: Auto-deployed for PRs
 
 ### Manual Deploy
 
 ```bash
 npm run build
-npx wrangler pages deploy dist --project-name=reporter-forgecomply360
+npx wrangler pages deploy dist --project-name=forge-reporter
 ```
 
 ## Contributing
