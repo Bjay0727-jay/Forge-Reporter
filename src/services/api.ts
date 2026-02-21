@@ -2,17 +2,24 @@
  * ForgeComply 360 Reporter - API Client
  * Handles communication with the main ForgeComply 360 backend
  *
- * Security: Auth tokens are stored in sessionStorage (not localStorage) to reduce
- * XSS vulnerability. sessionStorage is cleared when the tab closes and is not
- * accessible from other tabs, limiting the attack surface.
+ * Supports two auth modes:
+ * 1. Email/password login with access + refresh token pair
+ * 2. URL hash token injection from parent ForgeComply 360 app
  */
 
 // Storage keys
 const TOKEN_KEY = 'forgecomply360-reporter-token';
+const REFRESH_TOKEN_KEY = 'forgecomply360-reporter-refresh-token';
 const API_URL_KEY = 'forgecomply360-reporter-api-url';
+
+// Token refresh threshold (refresh if token expires within this many minutes)
+const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 
 // Default API URL from environment
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || '';
+
+// Prevent concurrent refresh calls
+let refreshPromise: Promise<boolean> | null = null;
 
 /**
  * Get the configured API URL (stored in localStorage for persistence)
@@ -29,41 +36,49 @@ export function setApiUrl(url: string): void {
 }
 
 /**
- * Get the stored auth token (from sessionStorage for security)
- * Falls back to localStorage for migration from older versions
+ * Get the stored access token
  */
 export function getToken(): string | null {
-  // Check sessionStorage first (secure)
+  // Check localStorage (used for persistent login with refresh tokens)
+  const localToken = localStorage.getItem(TOKEN_KEY);
+  if (localToken) return localToken;
+
+  // Check sessionStorage (used for URL hash injection)
   const sessionToken = sessionStorage.getItem(TOKEN_KEY);
   if (sessionToken) return sessionToken;
-
-  // Fallback: migrate from localStorage if present (older versions)
-  const localToken = localStorage.getItem(TOKEN_KEY);
-  if (localToken) {
-    // Migrate to sessionStorage and remove from localStorage
-    sessionStorage.setItem(TOKEN_KEY, localToken);
-    localStorage.removeItem(TOKEN_KEY);
-    return localToken;
-  }
 
   return null;
 }
 
 /**
- * Store the auth token (in sessionStorage for XSS protection)
+ * Store both access and refresh tokens (for email/password login)
  */
-export function setToken(token: string): void {
-  sessionStorage.setItem(TOKEN_KEY, token);
-  // Ensure old localStorage token is cleared
-  localStorage.removeItem(TOKEN_KEY);
+export function setTokens(accessToken: string, refreshToken: string): void {
+  localStorage.setItem(TOKEN_KEY, accessToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  // Clear any sessionStorage tokens from URL hash flow
+  sessionStorage.removeItem(TOKEN_KEY);
 }
 
 /**
- * Clear the auth token (from both storage locations)
+ * Store a single token (for URL hash injection — no refresh token)
  */
-export function clearToken(): void {
+export function setToken(token: string): void {
+  sessionStorage.setItem(TOKEN_KEY, token);
+}
+
+/**
+ * Clear all auth tokens
+ */
+export function clearTokens(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_KEY); // Clear any migrated tokens
+}
+
+/** @deprecated Use clearTokens() instead */
+export function clearToken(): void {
+  clearTokens();
 }
 
 /**
@@ -90,7 +105,7 @@ export function decodeToken(token: string): { exp?: number; sspId?: string; user
     // Validate base64 / base64url encoding before decoding
     if (!/^[A-Za-z0-9_+/=-]+$/.test(parts[1])) return null;
 
-    const payload = JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
 
     // Validate payload is a plain object with expected shape
     if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
@@ -159,6 +174,69 @@ function notifyError(error: ApiError): void {
 }
 
 /**
+ * Auth failure listener — fires when token refresh fails (session fully expired)
+ */
+type AuthFailureListener = () => void;
+let authFailureListener: AuthFailureListener | null = null;
+
+export function onAuthFailure(listener: AuthFailureListener): () => void {
+  authFailureListener = listener;
+  return () => { authFailureListener = null; };
+}
+
+/**
+ * Proactively refresh access token if it's expiring soon
+ */
+async function refreshAccessToken(): Promise<boolean> {
+  const rToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!rToken) return false;
+
+  // Prevent concurrent refresh calls
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/api/v1/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: rToken }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      setTokens(data.access_token, data.refresh_token);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+/**
+ * Ensure we have a valid (non-expiring-soon) access token
+ */
+async function ensureValidToken(): Promise<boolean> {
+  const token = getToken();
+  if (!token) return false;
+
+  const payload = decodeToken(token);
+  if (!payload?.exp) return true; // No exp = can't check, assume ok
+
+  const now = Math.floor(Date.now() / 1000);
+  const expiresIn = payload.exp - now;
+  const thresholdSeconds = TOKEN_REFRESH_THRESHOLD_MINUTES * 60;
+
+  if (expiresIn > thresholdSeconds) return true; // Token still fresh
+
+  // Token expiring soon — try refresh
+  return refreshAccessToken();
+}
+
+/**
  * Main API fetch wrapper
  */
 export async function api<T = unknown>(
@@ -170,6 +248,12 @@ export async function api<T = unknown>(
     throw new ApiError('API URL not configured', 0);
   }
 
+  // Proactively refresh token if expiring soon
+  const rToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (getToken() && rToken) {
+    await ensureValidToken();
+  }
+
   const token = getToken();
 
   // Build headers
@@ -179,15 +263,15 @@ export async function api<T = unknown>(
 
   // Add auth header if we have a token
   if (token) {
-    // Check if token is expired
-    if (isTokenExpired(token)) {
-      clearToken();
+    // If no refresh token available, check strict expiry
+    if (!rToken && isTokenExpired(token)) {
+      clearTokens();
       throw new ApiError('Session expired', 401);
     }
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Add content-type for JSON bodies
+  // Add content-type for JSON bodies (skip for FormData)
   if (options.body && typeof options.body === 'string') {
     headers['Content-Type'] = 'application/json';
   }
@@ -205,6 +289,32 @@ export async function api<T = unknown>(
     const error = new ApiError('Network error - unable to reach server', 0);
     notifyError(error);
     throw error;
+  }
+
+  // Try refresh on 401 (fallback if proactive refresh didn't happen)
+  if (response.status === 401 && rToken) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      headers['Authorization'] = `Bearer ${getToken()}`;
+      try {
+        response = await fetch(url, { ...options, headers });
+      } catch {
+        const error = new ApiError('Network error - unable to reach server', 0);
+        notifyError(error);
+        throw error;
+      }
+    } else {
+      clearTokens();
+      if (authFailureListener) authFailureListener();
+      throw new ApiError('Session expired', 401);
+    }
+  }
+
+  // Handle 401 when no refresh token exists
+  if (response.status === 401 && !rToken) {
+    clearTokens();
+    if (authFailureListener) authFailureListener();
+    throw new ApiError('Session expired', 401);
   }
 
   // Parse response
@@ -245,11 +355,11 @@ export function parseUrlHash(): { token?: string; sspId?: string; apiUrl?: strin
   const params = new URLSearchParams(hash.slice(1));
   const token = params.get('token') || undefined;
   const sspId = params.get('ssp') || undefined;
-  const apiUrl = params.get('api') || undefined;
+  const apiUrlParam = params.get('api') || undefined;
 
-  if (!token && !sspId && !apiUrl) return null;
+  if (!token && !sspId && !apiUrlParam) return null;
 
-  return { token, sspId, apiUrl };
+  return { token, sspId, apiUrl: apiUrlParam };
 }
 
 /**
@@ -298,5 +408,5 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
  * Disconnect from API
  */
 export function disconnect(): void {
-  clearToken();
+  clearTokens();
 }
