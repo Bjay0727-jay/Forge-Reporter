@@ -93,6 +93,11 @@ interface BackendCryptoModule {
   fips_level?: string;
   usage?: string;
   deployment_location?: string;
+  cnsa_suite?: string;
+  pqc_algorithm?: string;
+  pqc_parameter_set?: string;
+  fips_standard?: string;
+  hybrid_mode?: string;
 }
 
 interface BackendDigitalIdentity {
@@ -299,7 +304,22 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
       level: cm.fips_level,
       usage: cm.usage,
       where: cm.deployment_location,
+      cnsaSuite: cm.cnsa_suite,
+      pqcAlgorithm: cm.pqc_algorithm,
+      pqcParameterSet: cm.pqc_parameter_set,
+      fipsStandard: cm.fips_standard,
+      hybridMode: cm.hybrid_mode,
     })),
+
+    // CNSA 2.0 Readiness
+    cnsaVersion: sections.cnsa_suite_version?.content,
+    pqcMigrationStatus: sections.pqc_migration_status?.content,
+    pqcTargetDate: sections.pqc_target_date?.content,
+    pqcKeyExchange: sections.pqc_key_exchange?.content,
+    pqcDigitalSig: sections.pqc_digital_signature?.content,
+    pqcHashAlgo: sections.pqc_hash_algorithm?.content,
+    pqcSymmetricAlgo: sections.pqc_symmetric_algorithm?.content,
+    pqcNotes: sections.pqc_migration_notes?.content,
 
     // Personnel (from sections)
     soName: sections.personnel_so_name?.content,
@@ -551,7 +571,17 @@ export async function saveSSPToBackend(sspId: string, data: SSPData, previousDat
   if (changes.boundary) sectionUpdates.push({ key: 'authorization_boundary', content: data.bndNarr || '' });
   if (changes.dataFlow) sectionUpdates.push({ key: 'data_flow', content: data.dfNarr || '' });
   if (changes.network) sectionUpdates.push({ key: 'network_architecture', content: data.netNarr || '' });
-  if (changes.crypto) sectionUpdates.push({ key: 'cryptographic_protection', content: data.cryptoNarr || '' });
+  if (changes.crypto) {
+    sectionUpdates.push({ key: 'cryptographic_protection', content: data.cryptoNarr || '' });
+    sectionUpdates.push({ key: 'cnsa_suite_version', content: data.cnsaVersion || '' });
+    sectionUpdates.push({ key: 'pqc_migration_status', content: data.pqcMigrationStatus || '' });
+    sectionUpdates.push({ key: 'pqc_target_date', content: data.pqcTargetDate || '' });
+    sectionUpdates.push({ key: 'pqc_key_exchange', content: data.pqcKeyExchange || '' });
+    sectionUpdates.push({ key: 'pqc_digital_signature', content: data.pqcDigitalSig || '' });
+    sectionUpdates.push({ key: 'pqc_hash_algorithm', content: data.pqcHashAlgo || '' });
+    sectionUpdates.push({ key: 'pqc_symmetric_algorithm', content: data.pqcSymmetricAlgo || '' });
+    sectionUpdates.push({ key: 'pqc_migration_notes', content: data.pqcNotes || '' });
+  }
   if (changes.contingency) {
     sectionUpdates.push({ key: 'contingency_plan_purpose', content: data.cpPurpose || '' });
     sectionUpdates.push({ key: 'contingency_plan_scope', content: data.cpScope || '' });
@@ -694,6 +724,11 @@ export async function syncCryptoModules(
       fips_level: item.level,
       usage: item.usage,
       deployment_location: item.where,
+      cnsa_suite: item.cnsaSuite,
+      pqc_algorithm: item.pqcAlgorithm,
+      pqc_parameter_set: item.pqcParameterSet,
+      fips_standard: item.fipsStandard,
+      hybrid_mode: item.hybridMode,
     }));
 
   await replaceRemoteCollection(sspId, 'crypto-modules', items);
@@ -858,7 +893,7 @@ function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
     boundary: changed(['bndNarr']),
     dataFlow: changed(['dfNarr', 'encRest', 'encTransit', 'keyMgmt', 'dataDisposal']),
     network: changed(['netNarr', 'primaryDC', 'secondaryDC']),
-    crypto: changed(['cryptoNarr']),
+    crypto: changed(['cryptoNarr', 'cnsaVersion', 'pqcMigrationStatus', 'pqcTargetDate', 'pqcKeyExchange', 'pqcDigitalSig', 'pqcHashAlgo', 'pqcSymmetricAlgo', 'pqcNotes']),
     contingency: changed(['cpPurpose', 'cpScope', 'rto', 'rpo', 'mtd', 'backupFreq', 'cpTestDate', 'cpTestType']),
     incident: changed(['irPurpose', 'irScope', 'certTime', 'irTestDate']),
     conmon: changed(['iscmType', 'ctrlRotation', 'iscmNarrative', 'sigChangeCriteria', 'atoExpiry', 'nextAssessment']),

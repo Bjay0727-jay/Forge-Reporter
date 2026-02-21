@@ -86,13 +86,13 @@ export const DataFlowSec: React.FC<Props> = ({ d, sf }) => {
       <Div />
       <div style={G2}>
         <FF label="Encryption at Rest" req>
-          <TI value={d.encRest} onChange={(v) => sf('encRest', v)} placeholder="e.g., AES-256-GCM (FIPS 140-2)" />
+          <TI value={d.encRest} onChange={(v) => sf('encRest', v)} placeholder="e.g., AES-256-GCM (FIPS 140-2 / CNSA 2.0)" />
         </FF>
         <FF label="Encryption in Transit" req>
-          <TI value={d.encTransit} onChange={(v) => sf('encTransit', v)} placeholder="e.g., TLS 1.3, mTLS" />
+          <TI value={d.encTransit} onChange={(v) => sf('encTransit', v)} placeholder="e.g., TLS 1.3 with ML-KEM hybrid key exchange" />
         </FF>
         <FF label="Key Management">
-          <TI value={d.keyMgmt} onChange={(v) => sf('keyMgmt', v)} placeholder="e.g., BYOK via AWS KMS" />
+          <TI value={d.keyMgmt} onChange={(v) => sf('keyMgmt', v)} placeholder="e.g., BYOK via AWS KMS with PQC-ready key encapsulation" />
         </FF>
         <FF label="Data Disposal">
           <Sel value={d.dataDisposal} onChange={(v) => sf('dataDisposal', v)} ph="Select" options={[
@@ -224,16 +224,66 @@ export const CryptoSec: React.FC<Props> = ({ d, sf }) => {
 
   return (
     <div>
-      <SH title="Cryptographic Modules" sub="Rev5 Appendix Q — All crypto modules for DAR, DIT, DIU with FIPS 140-2/3 validation." />
-      <AddedBanner tag="fedramp" ref="Appendix Q (Rev5)" text="New in Rev5. FIPS 140-2/3 validation verified by assessors for every encryption point." />
+      <SH title="Cryptographic Modules" sub="Rev5 Appendix Q — All crypto modules for DAR, DIT, DIU with FIPS 140-2/3 validation and CNSA 2.0 post-quantum readiness." />
+      <AddedBanner tag="fedramp" ref="Appendix Q (Rev5)" text="FIPS 140-2/3 validation verified by assessors. CNSA 2.0 requires ML-KEM, ML-DSA, and AES-256 for NSS by 2030." />
       <FF label="Cryptographic Narrative" req span={2}>
         <TAAI
           value={d.cryptoNarr}
           onChange={(v) => sf('cryptoNarr', v)}
           rows={4}
-          placeholder="All operations use FIPS 140-2 validated modules…"
+          placeholder="All operations use FIPS 140-2 validated modules. Post-quantum transition per CNSA 2.0 is planned/in progress…"
           sectionKey="crypto"
           sectionLabel="Cryptographic Protection Narrative"
+          systemContext={systemContext}
+        />
+      </FF>
+      <Div />
+      <SubH>CNSA 2.0 Readiness</SubH>
+      <div style={G2}>
+        <FF label="CNSA Suite Version">
+          <Sel value={d.cnsaVersion} onChange={(v) => sf('cnsaVersion', v)} ph="Select" options={[
+            { v: 'CNSA 1.0', l: 'CNSA 1.0 (Classical)' },
+            { v: 'CNSA 2.0', l: 'CNSA 2.0 (Post-Quantum)' },
+            { v: 'Transitioning', l: 'Transitioning (1.0 → 2.0)' },
+          ]} />
+        </FF>
+        <FF label="PQC Migration Status">
+          <Sel value={d.pqcMigrationStatus} onChange={(v) => sf('pqcMigrationStatus', v)} ph="Select" options={[
+            { v: 'Not Started', l: 'Not Started' },
+            { v: 'Planning', l: 'Planning' },
+            { v: 'Hybrid Deployed', l: 'Hybrid Deployed' },
+            { v: 'PQ-Only', l: 'PQ-Only (Complete)' },
+            { v: 'N/A', l: 'N/A' },
+          ]} />
+        </FF>
+        <FF label="PQC Target Completion">
+          <TI value={d.pqcTargetDate} onChange={(v) => sf('pqcTargetDate', v)} placeholder="e.g., 2030-12-31" />
+        </FF>
+      </div>
+      <Div />
+      <SubH>CNSA 2.0 Algorithm Summary</SubH>
+      <div style={G2}>
+        <FF label="Key Exchange / Encapsulation">
+          <TI value={d.pqcKeyExchange} onChange={(v) => sf('pqcKeyExchange', v)} placeholder="e.g., ML-KEM-1024 (FIPS 203)" />
+        </FF>
+        <FF label="Digital Signatures">
+          <TI value={d.pqcDigitalSig} onChange={(v) => sf('pqcDigitalSig', v)} placeholder="e.g., ML-DSA-87 (FIPS 204)" />
+        </FF>
+        <FF label="Hashing">
+          <TI value={d.pqcHashAlgo} onChange={(v) => sf('pqcHashAlgo', v)} placeholder="e.g., SHA-384 / SHA-512 (FIPS 180-4)" />
+        </FF>
+        <FF label="Symmetric Encryption">
+          <TI value={d.pqcSymmetricAlgo} onChange={(v) => sf('pqcSymmetricAlgo', v)} placeholder="e.g., AES-256 (FIPS 197)" />
+        </FF>
+      </div>
+      <FF label="PQC Migration Notes" span={2}>
+        <TAAI
+          value={d.pqcNotes}
+          onChange={(v) => sf('pqcNotes', v)}
+          rows={3}
+          placeholder="Describe post-quantum migration timeline, hybrid key exchange deployment, algorithm selection rationale…"
+          sectionKey="pqc"
+          sectionLabel="Post-Quantum Cryptography Migration Notes"
           systemContext={systemContext}
         />
       </FF>
@@ -246,6 +296,11 @@ export const CryptoSec: React.FC<Props> = ({ d, sf }) => {
           { k: 'level', l: 'Level', type: 'select', opts: ['Level 1', 'Level 2', 'Level 3', 'Pending'], w: '90px' },
           { k: 'usage', l: 'Usage', type: 'select', opts: ['DAR', 'DIT', 'DIU', 'DAR+DIT', 'All'], w: '95px' },
           { k: 'where', l: 'Where Used', ph: 'Database encryption' },
+          { k: 'cnsaSuite', l: 'CNSA Suite', type: 'select', opts: ['CNSA 1.0', 'CNSA 2.0', 'Hybrid', 'N/A'], w: '105px' },
+          { k: 'pqcAlgorithm', l: 'PQC Algorithm', type: 'select', opts: ['ML-KEM', 'ML-DSA', 'SLH-DSA', 'None'], w: '115px' },
+          { k: 'pqcParameterSet', l: 'Parameter Set', ph: 'ML-KEM-768', w: '120px' },
+          { k: 'fipsStandard', l: 'FIPS Std', type: 'select', opts: ['FIPS 197', 'FIPS 203', 'FIPS 204', 'FIPS 205', 'FIPS 180-4'], w: '100px' },
+          { k: 'hybridMode', l: 'Mode', type: 'select', opts: ['PQ-only', 'Hybrid (Classical+PQC)', 'Classical-only'], w: '120px' },
         ]}
         rows={cryptoMods.rows}
         onAdd={cryptoMods.add}

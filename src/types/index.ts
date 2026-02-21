@@ -134,6 +134,16 @@ export interface SSPData {
   cryptoNarr?: string;
   cryptoMods?: CryptoModule[];
 
+  // CNSA 2.0 Readiness
+  cnsaVersion?: string;
+  pqcMigrationStatus?: string;
+  pqcTargetDate?: string;
+  pqcKeyExchange?: string;
+  pqcDigitalSig?: string;
+  pqcHashAlgo?: string;
+  pqcSymmetricAlgo?: string;
+  pqcNotes?: string;
+
   // Personnel
   soName?: string;
   soEmail?: string;
@@ -314,6 +324,12 @@ export interface CryptoModule {
   level?: string;
   usage?: string;
   where?: string;
+  // CNSA 2.0 fields
+  cnsaSuite?: string;
+  pqcAlgorithm?: string;
+  pqcParameterSet?: string;
+  fipsStandard?: string;
+  hybridMode?: string;
 }
 
 export interface Contact {
