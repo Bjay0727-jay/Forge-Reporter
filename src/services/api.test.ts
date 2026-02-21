@@ -80,25 +80,20 @@ describe('API Service', () => {
       expect(getToken()).toBeNull();
     });
 
-    it('should migrate token from localStorage to sessionStorage', () => {
-      // Simulate old token in localStorage (from older version)
-      localStorageMock.data['forgecomply360-reporter-token'] = 'old-token';
+    it('should return token from localStorage (persistent login)', () => {
+      // Persistent login stores tokens in localStorage
+      localStorageMock.data['forgecomply360-reporter-token'] = 'persistent-token';
 
-      // getToken should migrate it
       const token = getToken();
-      expect(token).toBe('old-token');
-
-      // Should now be in sessionStorage
-      expect(sessionStorageMock.data['forgecomply360-reporter-token']).toBe('old-token');
-      // And removed from localStorage
-      expect(localStorageMock.data['forgecomply360-reporter-token']).toBeUndefined();
+      expect(token).toBe('persistent-token');
     });
 
-    it('should prefer sessionStorage over localStorage', () => {
-      sessionStorageMock.data['forgecomply360-reporter-token'] = 'session-token';
+    it('should prefer localStorage over sessionStorage', () => {
+      // localStorage (persistent login) takes precedence over sessionStorage (URL hash)
       localStorageMock.data['forgecomply360-reporter-token'] = 'local-token';
+      sessionStorageMock.data['forgecomply360-reporter-token'] = 'session-token';
 
-      expect(getToken()).toBe('session-token');
+      expect(getToken()).toBe('local-token');
     });
   });
 

@@ -17,14 +17,16 @@ import {
   type ValidatedOscalExportResult
 } from './utils/oscalExport';
 import type { OscalImportResult } from './utils/oscalImport';
-import { useAuth } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useSync } from './hooks/useSync';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import './index.css';
 
 // Local storage key for auto-save
 const STORAGE_KEY = 'forgecomply360-ssp-data';
 
-function App() {
+function AppContent() {
   // Theme state
   const [themeMode, setThemeModeState] = useState<ThemeMode>(() => getThemeMode());
 
@@ -507,6 +509,48 @@ function App() {
         />
       </div>
     </div>
+  );
+}
+
+/**
+ * Auth gate: shows Login/Register when not authenticated, AppContent when authenticated
+ */
+function AuthGate() {
+  const [authState] = useAuth();
+  const [authView, setAuthView] = useState<'login' | 'register'>('login');
+
+  // Loading spinner while checking stored credentials
+  if (authState.isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-blue-200 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not authenticated — show login or register
+  if (!authState.isAuthenticated) {
+    if (authView === 'register') {
+      return <RegisterPage onSwitchToLogin={() => setAuthView('login')} />;
+    }
+    return <LoginPage onSwitchToRegister={() => setAuthView('register')} />;
+  }
+
+  // Authenticated — show the SSP editor
+  return <AppContent />;
+}
+
+/**
+ * Root component: wraps everything in AuthProvider
+ */
+function App() {
+  return (
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
   );
 }
 

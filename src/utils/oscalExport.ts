@@ -296,6 +296,11 @@ function buildSystemProps(data: SSPData): Array<{ name: string; value: string }>
   if (data.opDate) props.push({ name: 'operational-date', value: data.opDate });
   if (data.fedrampId) props.push({ name: 'fedramp-id', value: data.fedrampId });
 
+  // CNSA 2.0 readiness props
+  if (data.cnsaVersion) props.push({ name: 'cnsa-suite-version', value: data.cnsaVersion });
+  if (data.pqcMigrationStatus) props.push({ name: 'pqc-migration-status', value: data.pqcMigrationStatus });
+  if (data.pqcTargetDate) props.push({ name: 'pqc-target-date', value: data.pqcTargetDate });
+
   // OSCAL schema requires props array to have at least 1 item if present
   // Return the array as-is (caller will omit if empty)
   return props;
@@ -368,6 +373,13 @@ function buildSystemImplementation(data: SSPData): OscalSystemImplementation {
   if (data.cryptoMods && data.cryptoMods.length > 0) {
     for (const crypto of data.cryptoMods) {
       if (crypto.mod) {
+        const cryptoProps: Array<{ name: string; value: string }> = [];
+        if (crypto.cnsaSuite) cryptoProps.push({ name: 'cnsa-suite-version', value: crypto.cnsaSuite });
+        if (crypto.pqcAlgorithm) cryptoProps.push({ name: 'pqc-algorithm', value: crypto.pqcAlgorithm });
+        if (crypto.pqcParameterSet) cryptoProps.push({ name: 'pqc-parameter-set', value: crypto.pqcParameterSet });
+        if (crypto.fipsStandard) cryptoProps.push({ name: 'fips-standard', value: crypto.fipsStandard });
+        if (crypto.hybridMode) cryptoProps.push({ name: 'hybrid-mode', value: crypto.hybridMode });
+
         components.push({
           uuid: generateUUID(),
           type: 'validation',
@@ -375,6 +387,7 @@ function buildSystemImplementation(data: SSPData): OscalSystemImplementation {
           description: crypto.usage || 'Cryptographic module',
           purpose: `FIPS 140 Level ${crypto.level || 'N/A'} - Certificate: ${crypto.cert || 'N/A'}`,
           status: { state: 'operational' },
+          props: cryptoProps.length > 0 ? cryptoProps : undefined,
         });
       }
     }
