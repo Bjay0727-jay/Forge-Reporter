@@ -5,7 +5,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   getToken,
   setToken,
+  setTokens,
   clearToken,
+  clearTokens,
   getApiUrl,
   setApiUrl,
   isOnlineMode,
@@ -14,6 +16,9 @@ import {
   parseUrlHash,
   api,
   ApiError,
+  onApiError,
+  onAuthFailure,
+  disconnect,
 } from './api';
 
 // Mock localStorage (for API URL - non-sensitive)
@@ -296,6 +301,158 @@ describe('API Service', () => {
       } as Response);
 
       await expect(api('/test')).rejects.toThrow('Server error');
+    });
+
+    it('should handle network errors', async () => {
+      setApiUrl('https://api.example.com');
+
+      vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network failed'));
+
+      await expect(api('/test')).rejects.toThrow('Network error - unable to reach server');
+    });
+
+    it('should handle 401 without refresh token by clearing tokens', async () => {
+      setApiUrl('https://api.example.com');
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+      setToken(validToken);
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'Unauthorized' }),
+      } as Response);
+
+      await expect(api('/test')).rejects.toThrow('Session expired');
+      expect(getToken()).toBeNull();
+    });
+
+    it('should handle non-JSON response', async () => {
+      setApiUrl('https://api.example.com');
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'text/plain' }),
+        text: async () => 'plain text response',
+      } as Response);
+
+      const result = await api('/test');
+      expect(result).toBe('plain text response');
+    });
+
+    it('should add Content-Type for JSON body', async () => {
+      setApiUrl('https://api.example.com');
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ ok: true }),
+      } as Response);
+
+      await api('/test', { method: 'POST', body: JSON.stringify({ key: 'value' }) });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/test',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
+        })
+      );
+    });
+  });
+
+  describe('Token Pair Management', () => {
+    it('should store and retrieve access + refresh tokens', () => {
+      setTokens('access-token-123', 'refresh-token-456');
+      expect(getToken()).toBe('access-token-123');
+      expect(localStorageMock.data['forgecomply360-reporter-token']).toBe('access-token-123');
+      expect(localStorageMock.data['forgecomply360-reporter-refresh-token']).toBe('refresh-token-456');
+    });
+
+    it('should clear sessionStorage token when setTokens is called', () => {
+      setToken('session-only-token');
+      expect(sessionStorageMock.data['forgecomply360-reporter-token']).toBe('session-only-token');
+
+      setTokens('new-access', 'new-refresh');
+      expect(sessionStorageMock.data['forgecomply360-reporter-token']).toBeUndefined();
+      expect(getToken()).toBe('new-access');
+    });
+
+    it('should clearTokens from all storage', () => {
+      setTokens('access', 'refresh');
+      setToken('session-token');
+      clearTokens();
+      expect(getToken()).toBeNull();
+      expect(localStorageMock.data['forgecomply360-reporter-refresh-token']).toBeUndefined();
+    });
+  });
+
+  describe('Auth Failure Listener', () => {
+    it('should register and fire auth failure listener', () => {
+      const listener = vi.fn();
+      const unsubscribe = onAuthFailure(listener);
+
+      // Trigger a 401 with no refresh token to fire the listener
+      setApiUrl('https://api.example.com');
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+      setToken(validToken);
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'Unauthorized' }),
+      } as Response);
+
+      // The listener should fire when 401 triggers session expired
+      api('/test').catch(() => {});
+
+      // Wait for async
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          expect(listener).toHaveBeenCalled();
+          unsubscribe();
+          resolve();
+        }, 50);
+      });
+    });
+  });
+
+  describe('API Error Listener', () => {
+    it('should register and fire error listeners', async () => {
+      const listener = vi.fn();
+      const unsubscribe = onApiError(listener);
+
+      setApiUrl('https://api.example.com');
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'Internal error' }),
+      } as Response);
+
+      await api('/test').catch(() => {});
+      expect(listener).toHaveBeenCalled();
+      expect(listener.mock.calls[0][0].status).toBe(500);
+
+      unsubscribe();
+    });
+  });
+
+  describe('Disconnect', () => {
+    it('should clear all tokens on disconnect', () => {
+      setTokens('access', 'refresh');
+      disconnect();
+      expect(getToken()).toBeNull();
     });
   });
 });
