@@ -14,6 +14,7 @@ import {
   decodeToken,
   isTokenExpired,
   parseUrlHash,
+  initFromUrlHash,
   api,
   ApiError,
   onApiError,
@@ -466,6 +467,164 @@ describe('API Service', () => {
       setTokens('access', 'refresh');
       disconnect();
       expect(getToken()).toBeNull();
+    });
+  });
+
+  describe('Default API URL', () => {
+    it('should return default ForgeComply 360 URL when no stored URL', () => {
+      localStorageMock.data = {};
+      expect(getApiUrl()).toBe('https://forgecomply360-api.workers.dev');
+    });
+
+    it('should prefer stored URL over default', () => {
+      setApiUrl('https://custom-api.example.com');
+      expect(getApiUrl()).toBe('https://custom-api.example.com');
+    });
+  });
+
+  describe('API Error Handling', () => {
+    beforeEach(() => {
+      vi.mocked(global.fetch).mockReset();
+    });
+
+    it('should handle 403 forbidden response', async () => {
+      setApiUrl('https://api.example.com');
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+      setToken(validToken);
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'Forbidden' }),
+      } as Response);
+
+      await expect(api('/test')).rejects.toThrow();
+    });
+
+    it('should handle 404 not found response', async () => {
+      setApiUrl('https://api.example.com');
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+      setToken(validToken);
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'Not found' }),
+      } as Response);
+
+      await expect(api('/test')).rejects.toThrow();
+    });
+
+    it('should send POST request with body', async () => {
+      setApiUrl('https://api.example.com');
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+      setToken(validToken);
+
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ created: true }),
+      } as Response);
+
+      const result = await api('/test', {
+        method: 'POST',
+        body: JSON.stringify({ name: 'test' }),
+      });
+      expect(result).toEqual({ created: true });
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+  });
+
+  describe('initFromUrlHash', () => {
+    it('should return connected: false when no hash', () => {
+      Object.defineProperty(window, 'location', {
+        value: { hash: '', pathname: '/', search: '' },
+        writable: true,
+      });
+      const result = initFromUrlHash();
+      expect(result.connected).toBe(false);
+    });
+
+    it('should connect with valid token in hash', () => {
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, sspId: 'ssp-123' }));
+        return `${header}.${body}.sig`;
+      })();
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          hash: `#token=${validToken}&api=https://api.example.com&ssp=ssp-123`,
+          pathname: '/',
+          search: '',
+        },
+        writable: true,
+      });
+
+      window.history.replaceState = vi.fn();
+
+      const result = initFromUrlHash();
+      expect(result.connected).toBe(true);
+      expect(result.sspId).toBe('ssp-123');
+    });
+
+    it('should reject expired token in hash', () => {
+      const expiredToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) - 3600 }));
+        return `${header}.${body}.sig`;
+      })();
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          hash: `#token=${expiredToken}&api=https://api.example.com`,
+          pathname: '/',
+          search: '',
+        },
+        writable: true,
+      });
+
+      const result = initFromUrlHash();
+      expect(result.connected).toBe(false);
+    });
+
+    it('should extract sspId from token when not in URL', () => {
+      const validToken = (() => {
+        const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+        const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, sspId: 'from-token' }));
+        return `${header}.${body}.sig`;
+      })();
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          hash: `#token=${validToken}&api=https://api.example.com`,
+          pathname: '/',
+          search: '',
+        },
+        writable: true,
+      });
+
+      window.history.replaceState = vi.fn();
+
+      const result = initFromUrlHash();
+      expect(result.sspId).toBe('from-token');
     });
   });
 });
