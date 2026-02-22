@@ -18,6 +18,7 @@ import {
   initFromUrlHash,
   onApiError,
   onAuthFailure,
+  checkBackendReachable,
 } from '../services/api';
 
 // =============================================================================
@@ -181,13 +182,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // 3. Not authenticated
-      setState((prev) => ({
-        ...prev,
-        isAuthenticated: false,
-        isOnlineMode: false,
-        isLoading: false,
-      }));
+      // 3. No valid token — check if backend is reachable before showing login
+      const reachable = await checkBackendReachable();
+      if (reachable) {
+        // Backend is up — show login page
+        setState((prev) => ({
+          ...prev,
+          isAuthenticated: false,
+          isOnlineMode: false,
+          isLoading: false,
+        }));
+      } else {
+        // Backend unreachable — auto-continue in offline mode
+        setState({
+          user: null,
+          org: null,
+          isAuthenticated: true,
+          isOnlineMode: false,
+          isLoading: false,
+          sspId: null,
+          userId: null,
+          orgId: null,
+          apiUrl: null,
+          error: null,
+          tokenExpiresAt: null,
+        });
+      }
     };
 
     init();

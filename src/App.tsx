@@ -433,6 +433,8 @@ function AppContent() {
           onDisconnect={handleDisconnect}
           themeMode={themeMode}
           onToggleTheme={handleToggleTheme}
+          isOfflineMode={!authState.isOnlineMode}
+          onSignIn={authActions.logout}
         />
 
         {/* Export Modal */}
