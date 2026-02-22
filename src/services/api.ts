@@ -15,8 +15,8 @@ const API_URL_KEY = 'forgecomply360-reporter-api-url';
 // Token refresh threshold (refresh if token expires within this many minutes)
 const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 
-// Default API URL from environment
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL || '';
+// Default API URL from environment, falling back to ForgeComply 360 production API
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forgecomply360-api.workers.dev';
 
 // Prevent concurrent refresh calls
 let refreshPromise: Promise<boolean> | null = null;

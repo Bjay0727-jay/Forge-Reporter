@@ -46,7 +46,12 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
         setMfaSetupMessage(result.message || 'MFA is required for privileged accounts.');
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('ERR_')) {
+        setError('Unable to reach the server. Check your connection or use Continue Offline.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
