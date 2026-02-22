@@ -405,6 +405,28 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
 }
 
 /**
+ * Check if the backend API is reachable (lightweight connectivity test)
+ * Returns true if the server responds (any status), false on network failure.
+ */
+export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> {
+  const apiUrl = getApiUrl();
+  if (!apiUrl) return false;
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    await fetch(`${apiUrl}/api/v1/auth/me`, {
+      method: 'HEAD',
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    return true; // Any HTTP response means the server is reachable
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Disconnect from API
  */
 export function disconnect(): void {

@@ -24,6 +24,9 @@ interface HeaderProps {
   // Theme props
   themeMode?: ThemeMode;
   onToggleTheme?: () => void;
+  // Offline sign-in
+  isOfflineMode?: boolean;
+  onSignIn?: () => void;
 }
 
 // Clean section label mapping
@@ -66,6 +69,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSync,
   onDisconnect,
   themeMode,
+  isOfflineMode,
+  onSignIn,
   onToggleTheme,
 }) => {
   const syncDisplay = syncStatus ? getSyncStatusDisplay(syncStatus) : null;
@@ -223,6 +228,41 @@ export const Header: React.FC<HeaderProps> = ({
             {saving ? 'Saving...' : lastSaved ? 'Auto-saved' : 'Ready'}
           </span>
         </div>
+
+        {/* Sign In button for offline users */}
+        {isOfflineMode && onSignIn && (
+          <button
+            onClick={onSignIn}
+            style={{
+              padding: '8px 14px',
+              background: 'none',
+              border: `1px solid ${C.navyLight}`,
+              borderRadius: 8,
+              color: C.sidebarTextSecondary,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = C.teal;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'none';
+              e.currentTarget.style.borderColor = C.navyLight;
+            }}
+            title="Sign in to sync with ForgeComply 360"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+            </svg>
+            Sign In
+          </button>
+        )}
 
         {/* Theme Toggle Button */}
         {onToggleTheme && (
