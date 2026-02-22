@@ -49,7 +49,12 @@ export function RegisterPage({ onSwitchToLogin }: RegisterPageProps) {
     try {
       await register(form);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      const msg = err instanceof Error ? err.message : 'Registration failed';
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('ERR_')) {
+        setError('Unable to reach the server. Please try again later.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }

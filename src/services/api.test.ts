@@ -122,9 +122,10 @@ describe('API Service', () => {
       expect(isOnlineMode()).toBe(false);
     });
 
-    it('should return false when API URL is missing', () => {
+    it('should return true when API URL falls back to default', () => {
       setToken('test-token');
-      expect(isOnlineMode()).toBe(false);
+      // Default API URL is always present as a hardcoded fallback
+      expect(isOnlineMode()).toBe(true);
     });
   });
 
@@ -243,11 +244,23 @@ describe('API Service', () => {
       vi.mocked(global.fetch).mockReset();
     });
 
-    it('should throw when API URL not configured', async () => {
-      // Clear any stored API URL
+    it('should use default API URL when none stored in localStorage', async () => {
+      // Clear stored API URL — default fallback URL is still present
       localStorageMock.data = {};
 
-      await expect(api('/test')).rejects.toThrow('API URL not configured');
+      vi.mocked(global.fetch).mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ success: true }),
+      } as Response);
+
+      const result = await api('/test');
+      expect(result).toEqual({ success: true });
+      // Should have called fetch with the default API URL
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('forgecomply360-api.workers.dev/test'),
+        expect.any(Object),
+      );
     });
 
     it('should make authenticated request with token', async () => {
