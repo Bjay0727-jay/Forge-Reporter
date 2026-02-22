@@ -81,6 +81,8 @@ export interface AuthActions {
   disconnect: () => void;
   refresh: () => void;
   isValid: () => boolean;
+  /** Continue in offline mode without authentication */
+  continueOffline: () => void;
 }
 
 type AuthContextType = [AuthState, AuthActions];
@@ -471,6 +473,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return token ? !isTokenExpired(token) : false;
   }, []);
 
+  const continueOffline = useCallback(() => {
+    setState({
+      user: null,
+      org: null,
+      isAuthenticated: true,
+      isOnlineMode: false,
+      isLoading: false,
+      sspId: null,
+      userId: null,
+      orgId: null,
+      apiUrl: null,
+      error: null,
+      tokenExpiresAt: null,
+    });
+  }, []);
+
   const actions: AuthActions = {
     login,
     verifyMFA,
@@ -480,6 +498,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     disconnect: disconnectAction,
     refresh,
     isValid,
+    continueOffline,
   };
 
   return React.createElement(AuthContext.Provider, { value: [state, actions] }, children);
