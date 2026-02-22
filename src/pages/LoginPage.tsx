@@ -107,7 +107,7 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">Forge Cyber Defense</h1>
-          <p className="text-blue-200 mt-1">Enterprise GRC Platform</p>
+          <p className="text-blue-200 mt-1">Enterprise GRC Reporting Platform</p>
         </div>
 
         {/* NIST AC-8 System Use Notification */}
