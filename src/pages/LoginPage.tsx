@@ -11,7 +11,7 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
-  const [, { login, verifyMFA }] = useAuth();
+  const [, { login, verifyMFA, continueOffline }] = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -337,7 +337,18 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
           </form>
         )}
 
-        <p className="text-center text-xs text-blue-200/60 mt-6">
+        {/* Continue Offline - for standalone use without backend */}
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={continueOffline}
+            className="text-blue-300/70 hover:text-blue-200 text-sm transition-colors"
+          >
+            Continue Offline
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-blue-200/60 mt-4">
           Forge Cyber Defense - Veteran-Owned Business
         </p>
       </div>
