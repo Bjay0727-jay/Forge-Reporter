@@ -363,7 +363,8 @@ function sanitizePromptInput(input: string, maxLength: number): string {
   // Collapse excessive whitespace that could hide injections
   sanitized = sanitized.replace(/\n{4,}/g, '\n\n\n');
   // Strip null bytes and other control characters (except newline/tab)
-  sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  // eslint-disable-next-line no-control-regex
+  sanitized = sanitized.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
   return sanitized;
 }
 
