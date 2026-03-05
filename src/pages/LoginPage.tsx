@@ -10,6 +10,10 @@ interface LoginPageProps {
   onSwitchToRegister: () => void;
 }
 
+// Client-side login rate limiting
+const MAX_LOGIN_ATTEMPTS = 5;
+const BASE_BACKOFF_MS = 2000;
+
 export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
   const [, { login, verifyMFA, continueOffline }] = useAuth();
   const [email, setEmail] = useState('');
@@ -17,6 +21,10 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const sessionExpired = new URLSearchParams(window.location.search).get('expired') === '1';
+
+  // Rate limiting state
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
 
   // MFA state
   const [mfaRequired, setMfaRequired] = useState(false);
@@ -32,12 +40,25 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
   const [forgotSuccess, setForgotSuccess] = useState(false);
   const [forgotError, setForgotError] = useState('');
 
+  const isLockedOut = lockedUntil !== null && Date.now() < lockedUntil;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check rate limiting lockout
+    if (isLockedOut) {
+      const remainingSec = Math.ceil((lockedUntil! - Date.now()) / 1000);
+      setError(`Too many failed attempts. Please wait ${remainingSec} seconds.`);
+      return;
+    }
+
     setError('');
     setLoading(true);
     try {
       const result = await login(email, password);
+      // Successful login — reset rate limiter
+      setFailedAttempts(0);
+      setLockedUntil(null);
       if (result.mfa_required) {
         setMfaRequired(true);
         setMfaToken(result.mfa_token!);
@@ -46,9 +67,22 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
         setMfaSetupMessage(result.message || 'MFA is required for privileged accounts.');
       }
     } catch (err: unknown) {
+      const newAttempts = failedAttempts + 1;
+      setFailedAttempts(newAttempts);
+
+      // Apply exponential backoff after MAX_LOGIN_ATTEMPTS
+      if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+        const backoffMs = BASE_BACKOFF_MS * Math.pow(2, newAttempts - MAX_LOGIN_ATTEMPTS);
+        const lockExpiry = Date.now() + Math.min(backoffMs, 60000); // cap at 60s
+        setLockedUntil(lockExpiry);
+      }
+
       const msg = err instanceof Error ? err.message : 'Login failed';
       if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('ERR_')) {
         setError('Unable to reach the server. Check your connection or use Continue Offline.');
+      } else if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+        const waitSec = Math.ceil(Math.min(BASE_BACKOFF_MS * Math.pow(2, newAttempts - MAX_LOGIN_ATTEMPTS), 60000) / 1000);
+        setError(`${msg}. Account temporarily locked — try again in ${waitSec}s.`);
       } else {
         setError(msg);
       }

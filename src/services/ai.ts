@@ -356,8 +356,14 @@ function sanitizePromptInput(input: string, maxLength: number): string {
   sanitized = sanitized.replace(/\b(system|assistant|user)\s*:/gi, '$1 -');
   // Strip markdown-style instruction overrides
   sanitized = sanitized.replace(/#{1,6}\s*(ignore|override|forget|disregard)\b/gi, '');
+  // Strip XML/HTML-style tags that could mimic structured prompt boundaries
+  sanitized = sanitized.replace(/<\/?(system|assistant|user|instruction|prompt|tool)[^>]*>/gi, '');
+  // Strip common injection phrases
+  sanitized = sanitized.replace(/\b(ignore previous instructions|forget (all|your) (instructions|rules)|you are now|new instructions|override (system|all))\b/gi, '');
   // Collapse excessive whitespace that could hide injections
   sanitized = sanitized.replace(/\n{4,}/g, '\n\n\n');
+  // Strip null bytes and other control characters (except newline/tab)
+  sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
   return sanitized;
 }
 
