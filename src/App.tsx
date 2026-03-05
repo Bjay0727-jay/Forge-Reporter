@@ -2,11 +2,12 @@
  * Forge Cyber Defense - ForgeReporter Main Application
  * Standalone FISMA SSP Reporting Engine with Dark Mode
  */
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, Suspense } from 'react';
 import { C, lightTheme, darkTheme, type ThemeMode, getThemeMode, setThemeMode, setCurrentMode } from './config/colors';
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
 import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary } from './components';
+import { SectionSkeleton } from './components/SectionSkeleton';
 import { SECTION_RENDERERS } from './sections';
 import { validateSSP, type ValidationResult } from './utils/validation';
 import { generatePDF, downloadPDF } from './utils/pdfExport';
@@ -487,20 +488,22 @@ function AppContent() {
           overflowY: 'auto',
           padding: '26px 34px 80px',
         }}>
-          <div
-            style={{
-              maxWidth: 940,
-              margin: '0 auto',
-            }}
-            className="animate-slideIn"
-            key={currentSection}
-          >
-            {Renderer && (
-              <SectionErrorBoundary sectionName={currentSectionInfo?.label || 'Section'}>
-                <Renderer d={data} sf={setField} />
-              </SectionErrorBoundary>
-            )}
-          </div>
+          <Suspense fallback={<SectionSkeleton />}>
+            <div
+              style={{
+                maxWidth: 940,
+                margin: '0 auto',
+              }}
+              className="animate-slideIn"
+              key={currentSection}
+            >
+              {Renderer && (
+                <SectionErrorBoundary sectionName={currentSectionInfo?.label || 'Section'}>
+                  <Renderer d={data} sf={setField} />
+                </SectionErrorBoundary>
+              )}
+            </div>
+          </Suspense>
         </div>
 
         {/* Footer Navigation */}

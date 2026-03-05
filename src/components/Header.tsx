@@ -1,8 +1,8 @@
 /**
  * Forge Cyber Defense - ForgeReporter Header
- * Clean, professional header with dark mode toggle
+ * Clean, professional header with dark mode toggle.
+ * Migrated from inline styles to Tailwind utility classes.
  */
-import { C } from '../config/colors';
 import type { Section } from '../config/sections';
 import type { SyncStatus } from '../hooks/useSync';
 import { getSyncStatusDisplay } from '../hooks/useSync';
@@ -16,20 +16,16 @@ interface HeaderProps {
   onImport: () => void;
   onValidate: () => void;
   onClearData?: () => void;
-  // Sync props
   syncStatus?: SyncStatus;
   sspTitle?: string | null;
   onSync?: () => void;
   onDisconnect?: () => void;
-  // Theme props
   themeMode?: ThemeMode;
   onToggleTheme?: () => void;
-  // Offline sign-in
   isOfflineMode?: boolean;
   onSignIn?: () => void;
 }
 
-// Clean section label mapping
 const SECTION_LABELS: Record<string, string> = {
   sysinfo: 'System Information',
   fips199: 'Security Categorization',
@@ -56,6 +52,10 @@ const SECTION_LABELS: Record<string, string> = {
   poam: 'POA&M',
 };
 
+const btnBase = 'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-150 ease-in-out';
+const btnOutline = `${btnBase} bg-transparent border border-[var(--navy-light)] text-[var(--sidebar-text-secondary)] hover:bg-white/10`;
+const btnIcon = `${btnBase} bg-transparent border border-[var(--navy-light)] text-[var(--sidebar-text-secondary)] hover:bg-white/10 hover:border-[var(--teal)] p-2`;
+
 export const Header: React.FC<HeaderProps> = ({
   currentSection,
   saving,
@@ -79,109 +79,47 @@ export const Header: React.FC<HeaderProps> = ({
     : currentSection?.label;
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 24px',
-        borderBottom: `1px solid ${C.navyLight}`,
-        background: C.navy,
-        flexShrink: 0,
-      }}
-    >
+    <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--navy-light)] bg-[var(--navy)] shrink-0">
       {/* Left: Title and Breadcrumb */}
       <div>
-        {/* Breadcrumb */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 4,
-          }}
-        >
+        <div className="flex items-center gap-2 mb-1">
           {sspTitle && (
             <>
-              <span
-                style={{
-                  fontSize: 13,
-                  color: C.sidebarTextMuted,
-                  maxWidth: 200,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+              <span className="text-[13px] text-[var(--sidebar-text-muted)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                 {sspTitle}
               </span>
-              <span style={{ color: C.navyLight, fontSize: 12 }}>/</span>
+              <span className="text-[var(--navy-light)] text-xs">/</span>
             </>
           )}
-          <span style={{ fontSize: 13, color: C.sidebarTextMuted }}>
+          <span className="text-[13px] text-[var(--sidebar-text-muted)]">
             {sectionLabel}
           </span>
         </div>
-
-        {/* Page Title */}
-        <h1
-          style={{
-            fontSize: 20,
-            fontWeight: 600,
-            color: C.sidebarText,
-            margin: 0,
-            lineHeight: 1.3,
-          }}
-        >
+        <h1 className="text-xl font-semibold text-white m-0 leading-snug">
           {sectionLabel}
         </h1>
       </div>
 
       {/* Right: Status and Actions */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        {/* Sync Status Indicator */}
+      <div className="flex items-center gap-3">
+        {/* Sync Status Indicator — uses dynamic colors from syncDisplay */}
         {syncDisplay && (
           <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 12px',
               background: `${syncDisplay.color}10`,
-              borderRadius: 8,
-              border: `1px solid ${syncDisplay.color}25`,
+              borderColor: `${syncDisplay.color}25`,
             }}
           >
-            <span style={{ fontSize: 14 }}>{syncDisplay.icon}</span>
-            <span
-              style={{
-                fontSize: 12,
-                color: syncDisplay.color,
-                fontWeight: 500,
-              }}
-            >
+            <span className="text-sm">{syncDisplay.icon}</span>
+            <span className="text-xs font-medium" style={{ color: syncDisplay.color }}>
               {syncDisplay.label}
             </span>
             {(syncStatus === 'dirty' || syncStatus === 'error') && onSync && (
               <button
                 onClick={onSync}
-                style={{
-                  padding: '3px 8px',
-                  background: syncDisplay.color,
-                  border: 'none',
-                  borderRadius: 4,
-                  color: '#fff',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  marginLeft: 4,
-                }}
+                className="px-2 py-0.5 border-none rounded text-white text-[11px] font-medium cursor-pointer ml-1"
+                style={{ background: syncDisplay.color }}
               >
                 Sync
               </button>
@@ -189,14 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
             {syncStatus !== 'offline' && onDisconnect && (
               <button
                 onClick={onDisconnect}
-                style={{
-                  padding: '2px 6px',
-                  background: 'none',
-                  border: 'none',
-                  color: C.sidebarTextMuted,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}
+                className="px-1.5 py-0.5 bg-transparent border-none text-[var(--sidebar-text-muted)] text-xs cursor-pointer"
                 title="Disconnect and work offline"
               >
                 ✕
@@ -206,25 +137,12 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Save Status */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 13,
-            color: saving ? C.warning : C.success,
-          }}
-        >
+        <div className="flex items-center gap-1.5 text-[13px]">
           <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: saving ? C.warning : C.success,
-              animation: saving ? 'pulse 1s infinite' : 'none',
-            }}
+            className={`w-2 h-2 rounded-full ${saving ? 'animate-pulse' : ''}`}
+            style={{ background: saving ? 'var(--warning)' : 'var(--success)' }}
           />
-          <span style={{ color: C.sidebarTextSecondary }}>
+          <span className="text-[var(--sidebar-text-secondary)]">
             {saving ? 'Saving...' : lastSaved ? 'Auto-saved' : 'Ready'}
           </span>
         </div>
@@ -233,28 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
         {isOfflineMode && onSignIn && (
           <button
             onClick={onSignIn}
-            style={{
-              padding: '8px 14px',
-              background: 'none',
-              border: `1px solid ${C.navyLight}`,
-              borderRadius: 8,
-              color: C.sidebarTextSecondary,
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.borderColor = C.teal;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'none';
-              e.currentTarget.style.borderColor = C.navyLight;
-            }}
+            className={`${btnOutline} hover:border-[var(--teal)]`}
             title="Sign in to sync with ForgeComply 360"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -268,26 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
         {onToggleTheme && (
           <button
             onClick={onToggleTheme}
-            style={{
-              padding: '8px',
-              background: 'none',
-              border: `1px solid ${C.navyLight}`,
-              borderRadius: 8,
-              color: C.sidebarTextSecondary,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.borderColor = C.teal;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'none';
-              e.currentTarget.style.borderColor = C.navyLight;
-            }}
+            className={btnIcon}
             title={themeMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {themeMode === 'dark' ? (
@@ -314,28 +192,7 @@ export const Header: React.FC<HeaderProps> = ({
         {onClearData && (
           <button
             onClick={onClearData}
-            style={{
-              padding: '8px 14px',
-              background: 'none',
-              border: `1px solid ${C.navyLight}`,
-              borderRadius: 8,
-              color: C.sidebarTextMuted,
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = C.error;
-              e.currentTarget.style.color = C.error;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = C.navyLight;
-              e.currentTarget.style.color = C.sidebarTextMuted;
-            }}
+            className={`${btnOutline} text-[var(--sidebar-text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]`}
             title="Clear all SSP data"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -346,60 +203,15 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Import Button */}
-        <button
-          onClick={onImport}
-          style={{
-            padding: '8px 14px',
-            background: 'none',
-            border: `1px solid ${C.navyLight}`,
-            borderRadius: 8,
-            color: C.sidebarTextSecondary,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'none';
-          }}
-          title="Import OSCAL SSP"
-        >
+        <button onClick={onImport} className={btnOutline} title="Import OSCAL SSP">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
           </svg>
           Import
         </button>
 
-        {/* Preview Button */}
-        <button
-          onClick={onValidate}
-          style={{
-            padding: '8px 14px',
-            background: 'none',
-            border: `1px solid ${C.navyLight}`,
-            borderRadius: 8,
-            color: C.sidebarTextSecondary,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'none';
-          }}
-        >
+        {/* Validate Button */}
+        <button onClick={onValidate} className={btnOutline}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 12l2 2 4-4"/>
             <circle cx="12" cy="12" r="10"/>
@@ -410,26 +222,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Export Button - Primary Action */}
         <button
           onClick={onExport}
-          style={{
-            padding: '8px 16px',
-            background: C.navy,
-            border: 'none',
-            borderRadius: 8,
-            color: '#fff',
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = C.navyDark;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = C.navy;
-          }}
+          className={`${btnBase} bg-[var(--navy)] border-none text-white px-4 hover:bg-[var(--navy-dark)]`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
