@@ -795,7 +795,52 @@ export function downloadOscalXml(doc: OscalSSPDocument, filename?: string): void
 }
 
 /**
+ * Validate generated OSCAL XML for well-formedness and structural correctness.
+ * Uses the browser's DOMParser to check for parse errors, then verifies
+ * key OSCAL structural elements are present in the output.
+ */
+export function validateOscalXml(xml: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  // Check well-formedness via DOMParser
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'application/xml');
+  const parseError = doc.querySelector('parsererror');
+  if (parseError) {
+    errors.push(`XML parse error: ${parseError.textContent?.slice(0, 200) || 'malformed XML'}`);
+    return { valid: false, errors };
+  }
+
+  // Verify root element is system-security-plan with OSCAL namespace
+  const root = doc.documentElement;
+  if (root.tagName !== 'system-security-plan') {
+    errors.push(`Expected root element 'system-security-plan', got '${root.tagName}'`);
+  }
+
+  const ns = root.getAttribute('xmlns');
+  if (ns !== OSCAL_XML_NAMESPACE) {
+    errors.push(`Expected OSCAL namespace '${OSCAL_XML_NAMESPACE}', got '${ns || 'none'}'`);
+  }
+
+  // Verify required OSCAL SSP child elements exist
+  const requiredElements = ['metadata', 'import-profile', 'system-characteristics', 'system-implementation', 'control-implementation'];
+  for (const elem of requiredElements) {
+    if (!root.querySelector(elem)) {
+      errors.push(`Missing required element '${elem}' in XML output`);
+    }
+  }
+
+  // Verify uuid attribute on root
+  if (!root.getAttribute('uuid')) {
+    errors.push('Missing required uuid attribute on root system-security-plan element');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
  * Export OSCAL with validation in XML format
+ * Validates both the JSON schema and the generated XML structure.
  *
  * @param options - Export options
  * @param filename - Optional filename override
@@ -808,6 +853,41 @@ export function exportValidatedOscalXml(
   skipValidation = false
 ): ValidatedOscalExportResult {
   const result = generateValidatedOscalSSP(options);
+
+  // Additionally validate the XML output itself
+  if (result.success) {
+    try {
+      const xml = oscalToXml(result.document);
+      const xmlValidation = validateOscalXml(xml);
+      if (!xmlValidation.valid) {
+        // Add XML-specific errors to the result
+        for (const xmlErr of xmlValidation.errors) {
+          result.validation.errors.push({
+            path: '/xml-output',
+            message: xmlErr,
+            keyword: 'xml-validation',
+            schemaPath: '#/xml',
+          });
+        }
+        result.validation.valid = false;
+        result.validation.stats.errorCount += xmlValidation.errors.length;
+        result.success = false;
+        result.formattedErrors.push(...xmlValidation.errors.map(e => `XML: ${e}`));
+        result.summary = `XML validation failed with ${xmlValidation.errors.length} error(s)`;
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'XML generation failed';
+      result.validation.errors.push({
+        path: '/xml-output',
+        message: msg,
+        keyword: 'xml-generation',
+        schemaPath: '#/xml',
+      });
+      result.validation.valid = false;
+      result.success = false;
+      result.formattedErrors.push(`XML generation: ${msg}`);
+    }
+  }
 
   // Only auto-download if valid or user wants to skip validation
   if (result.success || skipValidation) {

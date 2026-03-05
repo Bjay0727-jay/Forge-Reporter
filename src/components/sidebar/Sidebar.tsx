@@ -48,6 +48,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
+      role="complementary"
+      aria-label="SSP Navigation Sidebar"
       style={{
         width: collapsed ? 72 : 280,
         flexShrink: 0,
@@ -62,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {!collapsed && <DocumentCard documentName={documentName} lastSaved={lastSaved} />}
 
-      <nav style={{ flex: 1, overflowY: 'auto', padding: collapsed ? '16px 8px' : '16px 12px' }}>
+      <nav aria-label="SSP Sections" style={{ flex: 1, overflowY: 'auto', padding: collapsed ? '16px 8px' : '16px 12px' }}>
         {NAV_GROUPS.map((group) => (
           <NavGroup
             key={group.id}
@@ -81,6 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div style={{ borderTop: `1px solid ${C.navyLight}`, padding: '12px', display: 'flex', justifyContent: 'center' }}>
         <button
           onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
             border: 'none',

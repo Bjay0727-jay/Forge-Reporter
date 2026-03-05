@@ -190,6 +190,67 @@ function AppContent() {
     };
   }, [data]);
 
+  // Auto-sync to server with 5s debounce (only in online mode after initial load)
+  const serverSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [conflictData, setConflictData] = useState<{ server: SSPData; local: SSPData } | null>(null);
+
+  useEffect(() => {
+    if (!authState.isOnlineMode || !syncState.sspId || !initialLoadDone) return;
+    if (Object.keys(data).length === 0 || !syncState.pendingChanges) return;
+
+    // Clear any pending server sync
+    if (serverSyncTimerRef.current) {
+      clearTimeout(serverSyncTimerRef.current);
+    }
+
+    // Schedule server sync after 5s debounce
+    serverSyncTimerRef.current = setTimeout(async () => {
+      const sspId = syncState.sspId;
+      if (!sspId) return;
+
+      try {
+        // Conflict detection: fetch server version and compare timestamps
+        const serverRes = await syncActions.loadFromServer(sspId);
+        if (serverRes && syncState.lastSyncedAt) {
+          // Compare key identity fields to detect external changes
+          const serverFingerprint = [serverRes.sysName, serverRes.sysDesc, serverRes.conf, serverRes.integ, serverRes.avail].join('|');
+          const localSnapshot = [data.sysName, data.sysDesc, data.conf, data.integ, data.avail].join('|');
+
+          // Simple conflict: server data differs from both local edits AND what we expect
+          if (serverFingerprint !== localSnapshot && serverRes.sysName && data.sysName && serverRes.sysName !== data.sysName) {
+            console.warn('[Reporter] Conflict detected — server has different data');
+            setConflictData({ server: serverRes, local: data });
+            return;
+          }
+        }
+
+        // No conflict — save to server
+        await syncActions.saveToServer(sspId, data);
+        console.log('[Reporter] Auto-synced to server');
+      } catch (e) {
+        console.error('[Reporter] Auto-sync failed:', e);
+      }
+    }, 5000);
+
+    return () => {
+      if (serverSyncTimerRef.current) {
+        clearTimeout(serverSyncTimerRef.current);
+      }
+    };
+  }, [data, authState.isOnlineMode, syncState.sspId, syncState.pendingChanges, initialLoadDone, syncActions]);
+
+  // Conflict resolution handlers
+  const handleResolveConflict = (choice: 'local' | 'server') => {
+    if (!conflictData) return;
+    if (choice === 'server') {
+      setData(conflictData.server);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conflictData.server));
+    } else if (choice === 'local' && syncState.sspId) {
+      syncActions.saveToServer(syncState.sspId, conflictData.local);
+    }
+    setConflictData(null);
+  };
+
   // Derive saving boolean from status for Header component
   const saving = saveStatus === 'pending';
 
@@ -432,6 +493,55 @@ function AppContent() {
       display: 'flex',
       transition: 'background-color 0.3s ease, color 0.3s ease',
     }}>
+      {/* Skip to main content link for keyboard users */}
+      <a
+        href="#ssp-editor-content"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: 'auto',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.position = 'fixed';
+          e.currentTarget.style.left = '16px';
+          e.currentTarget.style.top = '16px';
+          e.currentTarget.style.width = 'auto';
+          e.currentTarget.style.height = 'auto';
+          e.currentTarget.style.overflow = 'visible';
+          e.currentTarget.style.zIndex = '10000';
+          e.currentTarget.style.background = colors.bg;
+          e.currentTarget.style.padding = '12px 24px';
+          e.currentTarget.style.borderRadius = '8px';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+          e.currentTarget.style.fontWeight = '600';
+          e.currentTarget.style.color = colors.text;
+          e.currentTarget.style.textDecoration = 'none';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.position = 'absolute';
+          e.currentTarget.style.left = '-9999px';
+          e.currentTarget.style.width = '1px';
+          e.currentTarget.style.height = '1px';
+          e.currentTarget.style.overflow = 'hidden';
+        }}
+      >
+        Skip to main content
+      </a>
+
+      {/* Live region for save status announcements */}
+      <div aria-live="polite" aria-atomic="true" style={{
+        position: 'absolute',
+        left: '-9999px',
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+      }}>
+        {saveStatus === 'saved' && lastSaved ? `Document saved at ${lastSaved.toLocaleTimeString()}` : ''}
+      </div>
+
       {/* Sidebar */}
       <Sidebar
         currentSection={currentSection}
@@ -443,7 +553,7 @@ function AppContent() {
       />
 
       {/* Main Content */}
-      <div style={{
+      <main role="main" aria-label="SSP Editor" style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -483,6 +593,76 @@ function AppContent() {
           onImport={handleImport}
         />
 
+        {/* Conflict Resolution Banner */}
+        {conflictData && (
+          <div
+            role="alertdialog"
+            aria-label="Data conflict detected"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 1001,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{
+              background: colors.bg,
+              borderRadius: 14,
+              padding: 28,
+              width: 480,
+              border: `1px solid ${colors.text}20`,
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.2)',
+            }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: 17, fontWeight: 700, color: colors.text }}>
+                Sync Conflict Detected
+              </h3>
+              <p style={{ margin: '0 0 16px', fontSize: 13, color: `${colors.text}90`, lineHeight: 1.6 }}>
+                The SSP has been modified on the server since your last sync. Choose which version to keep:
+              </p>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  onClick={() => handleResolveConflict('server')}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: `1px solid ${colors.text}30`,
+                    background: 'transparent',
+                    color: colors.text,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Use Server Version
+                </button>
+                <button
+                  onClick={() => handleResolveConflict('local')}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: '#0ea5e9',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Keep My Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Loading indicator when fetching from server */}
         {syncState.status === 'syncing' && !initialLoadDone && (
           <div style={{
@@ -513,7 +693,7 @@ function AppContent() {
         )}
 
         {/* Section Content */}
-        <div style={{
+        <div id="ssp-editor-content" tabIndex={-1} style={{
           flex: 1,
           overflowY: 'auto',
           padding: '26px 34px 80px',
@@ -542,7 +722,7 @@ function AppContent() {
           onPrevious={handlePrevious}
           onNext={handleNext}
         />
-      </div>
+      </main>
     </div>
   );
 }

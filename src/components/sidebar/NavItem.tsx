@@ -23,6 +23,8 @@ export const NavItem: React.FC<NavItemProps> = ({
 }) => (
   <button
     onClick={onClick}
+    aria-current={isActive ? 'page' : undefined}
+    aria-label={collapsed ? label : undefined}
     style={{
       display: 'flex',
       alignItems: 'center',
