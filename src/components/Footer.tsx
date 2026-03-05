@@ -50,6 +50,8 @@ export const Footer: React.FC<FooterProps> = ({
 
   return (
     <footer
+      role="navigation"
+      aria-label="Section navigation"
       style={{
         display: 'flex',
         justifyContent: 'space-between',

@@ -2,7 +2,7 @@
  * ForgeComply 360 Reporter - Import Modal Component
  * Supports drag & drop import of OSCAL SSP files (JSON/XML)
  */
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { C } from '../config/colors';
 import {
   importOscalSSP,
@@ -26,6 +26,47 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OscalImportResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Focus trap and keyboard handling
+  useEffect(() => {
+    if (!isOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+        return;
+      }
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    requestAnimationFrame(() => {
+      const first = dialogRef.current?.querySelector<HTMLElement>('button:not([disabled])');
+      first?.focus();
+    });
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [isOpen]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -121,6 +162,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       onClick={handleClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-modal-title"
         onClick={(e) => e.stopPropagation()}
         style={{
           background: C.bg,
@@ -133,7 +178,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           boxShadow: '0 24px 64px rgba(0, 0, 0, 0.15)',
         }}
       >
-        <h3 style={{
+        <h3 id="import-modal-title" style={{
           margin: '0 0 8px',
           fontSize: 17,
           fontWeight: 700,
@@ -329,6 +374,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               type="file"
               accept=".json,.xml,.oscal,application/json,application/xml"
               onChange={handleFileSelect}
+              aria-label="Upload OSCAL SSP file"
               style={{ display: 'none' }}
             />
 
