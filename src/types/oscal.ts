@@ -107,15 +107,17 @@ export interface OscalImportProfile {
 // =============================================================================
 
 export interface OscalSystemCharacteristics {
-  'system-ids'?: OscalSystemId[];
+  'system-ids': OscalSystemId[];
   'system-name': string;
   'system-name-short'?: string;
   description: string;
   props?: OscalProperty[];
+  links?: OscalLink[];
   'security-sensitivity-level'?: string;
   'system-information': OscalSystemInformation;
   'security-impact-level': OscalSecurityImpactLevel;
   status: OscalSystemStatus;
+  'date-authorized'?: string;
   'authorization-boundary': OscalAuthorizationBoundary;
   'network-architecture'?: OscalNetworkArchitecture;
   'data-flow'?: OscalDataFlow;
@@ -136,13 +138,15 @@ export interface OscalProperty {
 }
 
 export interface OscalSystemInformation {
+  props?: OscalProperty[];
+  links?: OscalLink[];
   'information-types': OscalInformationType[];
 }
 
 export interface OscalInformationType {
   uuid?: string;
   title: string;
-  description?: string;
+  description: string;
   categorizations?: OscalCategorization[];
   props?: OscalProperty[];
   'confidentiality-impact': OscalImpact;
@@ -159,6 +163,8 @@ export interface OscalImpact {
   base: string;
   selected?: string;
   'adjustment-justification'?: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
 }
 
 export interface OscalSecurityImpactLevel {
@@ -175,6 +181,7 @@ export interface OscalSystemStatus {
 export interface OscalAuthorizationBoundary {
   description: string;
   props?: OscalProperty[];
+  links?: OscalLink[];
   diagrams?: OscalDiagram[];
   remarks?: string;
 }
@@ -183,6 +190,7 @@ export interface OscalDiagram {
   uuid: string;
   description?: string;
   caption?: string;
+  props?: OscalProperty[];
   links?: OscalLink[];
 }
 
@@ -196,6 +204,7 @@ export interface OscalLink {
 export interface OscalNetworkArchitecture {
   description: string;
   props?: OscalProperty[];
+  links?: OscalLink[];
   diagrams?: OscalDiagram[];
   remarks?: string;
 }
@@ -203,6 +212,7 @@ export interface OscalNetworkArchitecture {
 export interface OscalDataFlow {
   description: string;
   props?: OscalProperty[];
+  links?: OscalLink[];
   diagrams?: OscalDiagram[];
   remarks?: string;
 }
@@ -213,9 +223,21 @@ export interface OscalDataFlow {
 
 export interface OscalSystemImplementation {
   props?: OscalProperty[];
+  links?: OscalLink[];
+  'leveraged-authorizations'?: OscalLeveragedAuthorization[];
   users: OscalUser[];
   components: OscalComponent[];
   'inventory-items'?: OscalInventoryItem[];
+  remarks?: string;
+}
+
+export interface OscalLeveragedAuthorization {
+  uuid: string;
+  title: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
+  'party-uuid': string;
+  'date-authorized': string;
   remarks?: string;
 }
 
@@ -362,6 +384,57 @@ export interface OscalByComponent {
   links?: OscalLink[];
   'set-parameters'?: OscalSetParameter[];
   'implementation-status'?: OscalImplementationStatus;
+  export?: OscalExport;
+  inherited?: OscalInherited[];
+  satisfied?: OscalSatisfied[];
+  'responsible-roles'?: OscalResponsibleRole[];
+  remarks?: string;
+}
+
+export interface OscalExport {
+  description?: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
+  provided?: OscalProvided[];
+  responsibilities?: OscalResponsibility[];
+  remarks?: string;
+}
+
+export interface OscalProvided {
+  uuid: string;
+  description: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
+  'responsible-roles'?: OscalResponsibleRole[];
+  remarks?: string;
+}
+
+export interface OscalResponsibility {
+  uuid: string;
+  'provided-uuid'?: string;
+  description: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
+  'responsible-roles'?: OscalResponsibleRole[];
+  remarks?: string;
+}
+
+export interface OscalInherited {
+  uuid: string;
+  'provided-uuid'?: string;
+  description: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
+  'responsible-roles'?: OscalResponsibleRole[];
+  remarks?: string;
+}
+
+export interface OscalSatisfied {
+  uuid: string;
+  'responsibility-uuid'?: string;
+  description: string;
+  props?: OscalProperty[];
+  links?: OscalLink[];
   'responsible-roles'?: OscalResponsibleRole[];
   remarks?: string;
 }
