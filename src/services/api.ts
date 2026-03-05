@@ -7,10 +7,15 @@
  * 2. URL hash token injection from parent ForgeComply 360 app
  */
 
-// Storage keys
-const TOKEN_KEY = 'forgecomply360-reporter-token';
+// Storage keys — refresh token persists in localStorage for session recovery;
+// access tokens are held in memory only (mitigates XSS token exfiltration).
 const REFRESH_TOKEN_KEY = 'forgecomply360-reporter-refresh-token';
 const API_URL_KEY = 'forgecomply360-reporter-api-url';
+
+// In-memory access token — not accessible from localStorage/sessionStorage.
+// If the page reloads the token is lost, but a refresh token (if present) will
+// transparently obtain a new access token.
+let inMemoryAccessToken: string | null = null;
 
 // Token refresh threshold (refresh if token expires within this many minutes)
 const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
@@ -18,62 +23,78 @@ const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 // Default API URL from environment, falling back to ForgeComply 360 production API
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forgecomply360-api.workers.dev';
 
+// Allowed API URL patterns — restrict to known trusted domains
+const ALLOWED_API_DOMAINS = [
+  'forgecomply360-api.workers.dev',
+  'localhost',
+  '127.0.0.1',
+];
+
 // Prevent concurrent refresh calls
 let refreshPromise: Promise<boolean> | null = null;
+
+/**
+ * Check if a URL is in the allowed API domain list
+ */
+function isAllowedApiUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ALLOWED_API_DOMAINS.some(
+      (domain) => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+    );
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Get the configured API URL (stored in localStorage for persistence)
  */
 export function getApiUrl(): string {
-  return localStorage.getItem(API_URL_KEY) || DEFAULT_API_URL;
+  const stored = localStorage.getItem(API_URL_KEY);
+  if (stored && isAllowedApiUrl(stored)) return stored;
+  return DEFAULT_API_URL;
 }
 
 /**
- * Set the API URL (non-sensitive, can persist in localStorage)
+ * Set the API URL — only accepts URLs matching the trusted domain allowlist.
  */
 export function setApiUrl(url: string): void {
+  if (!isAllowedApiUrl(url)) {
+    throw new Error('API URL is not in the trusted domain allowlist');
+  }
   localStorage.setItem(API_URL_KEY, url);
 }
 
 /**
- * Get the stored access token
+ * Get the stored access token (from in-memory storage)
  */
 export function getToken(): string | null {
-  // Check localStorage (used for persistent login with refresh tokens)
-  const localToken = localStorage.getItem(TOKEN_KEY);
-  if (localToken) return localToken;
-
-  // Check sessionStorage (used for URL hash injection)
-  const sessionToken = sessionStorage.getItem(TOKEN_KEY);
-  if (sessionToken) return sessionToken;
-
-  return null;
+  return inMemoryAccessToken;
 }
 
 /**
- * Store both access and refresh tokens (for email/password login)
+ * Store both access and refresh tokens (for email/password login).
+ * Access token is kept in memory; refresh token persists in localStorage.
  */
 export function setTokens(accessToken: string, refreshToken: string): void {
-  localStorage.setItem(TOKEN_KEY, accessToken);
+  inMemoryAccessToken = accessToken;
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  // Clear any sessionStorage tokens from URL hash flow
-  sessionStorage.removeItem(TOKEN_KEY);
 }
 
 /**
- * Store a single token (for URL hash injection — no refresh token)
+ * Store a single access token in memory (for URL hash injection — no refresh token)
  */
 export function setToken(token: string): void {
-  sessionStorage.setItem(TOKEN_KEY, token);
+  inMemoryAccessToken = token;
 }
 
 /**
  * Clear all auth tokens
  */
 export function clearTokens(): void {
-  localStorage.removeItem(TOKEN_KEY);
+  inMemoryAccessToken = null;
   localStorage.removeItem(REFRESH_TOKEN_KEY);
-  sessionStorage.removeItem(TOKEN_KEY);
 }
 
 /** @deprecated Use clearTokens() instead */
@@ -372,9 +393,13 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
     return { connected: false };
   }
 
-  // Store API URL if provided
+  // Store API URL if provided (silently ignore untrusted domains)
   if (hashParams.apiUrl) {
-    setApiUrl(hashParams.apiUrl);
+    try {
+      setApiUrl(hashParams.apiUrl);
+    } catch {
+      // URL not in allowlist — use default instead
+    }
   }
 
   // Store and validate token

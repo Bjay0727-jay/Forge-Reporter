@@ -10,6 +10,7 @@ import {
   setToken,
   setApiUrl,
   clearToken,
+  clearTokens,
   getToken,
   api,
   ApiError as _ApiError,
@@ -59,6 +60,7 @@ describe('API Service — Security Hardening', () => {
     vi.clearAllMocks();
     localStorageMock.data = {};
     sessionStorageMock.data = {};
+    clearTokens();
   });
 
   // =========================================================================
@@ -169,7 +171,7 @@ describe('API Service — Security Hardening', () => {
   describe('ForgeComply 360 API Integration', () => {
     beforeEach(() => {
       vi.mocked(global.fetch).mockReset();
-      setApiUrl('https://forgecomply.example.com');
+      setApiUrl('https://forgecomply360-api.workers.dev');
     });
 
     it('should send Bearer token in Authorization header', async () => {
@@ -185,7 +187,7 @@ describe('API Service — Security Hardening', () => {
       await api('/api/v1/ssp/ssp-1');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://forgecomply.example.com/api/v1/ssp/ssp-1',
+        'https://forgecomply360-api.workers.dev/api/v1/ssp/ssp-1',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: `Bearer ${token}`,
@@ -283,7 +285,7 @@ describe('API Service — Security Hardening', () => {
   // =========================================================================
   describe('Online Mode Detection', () => {
     it('should return false after clearToken', () => {
-      setApiUrl('https://forgecomply.example.com');
+      setApiUrl('https://forgecomply360-api.workers.dev');
       setToken(validJWT());
       expect(isOnlineMode()).toBe(true);
 

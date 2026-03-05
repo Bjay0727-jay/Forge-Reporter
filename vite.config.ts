@@ -5,7 +5,16 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  esbuild: {
+    // Remove console.log/warn/debug/info in production; keep console.error
+    drop: process.env.NODE_ENV === 'production' ? ['debugger'] : [],
+    pure: process.env.NODE_ENV === 'production'
+      ? ['console.log', 'console.warn', 'console.debug', 'console.info']
+      : [],
+  },
   build: {
+    // Strip console.* and debugger statements in production builds
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         // Manual chunks for code-splitting heavy dependencies
