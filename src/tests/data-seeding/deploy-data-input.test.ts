@@ -7,14 +7,14 @@
  * ForgeComply 360 backend.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline } from '../types';
-import { isValidatedSSPData } from '../types';
-import { validateSSP, getSectionErrors, hasFieldError, getFieldError, formatValidationSummary } from '../utils/validation';
+import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline } from '../../types';
+import { isValidatedSSPData } from '../../types';
+import { validateSSP, getSectionErrors, hasFieldError, getFieldError, formatValidationSummary } from '../../utils/validation';
 import {
   generateOscalSSP,
   generateValidatedOscalSSP,
   oscalToJson,
-} from '../utils/oscalExport';
+} from '../../utils/oscalExport';
 import {
   saveSSPToBackend,
   loadSSPFromBackend,
@@ -25,12 +25,12 @@ import {
   syncPolicyMappings,
   syncSCRMEntries,
   syncCMBaselines,
-} from '../services/sspMapper';
+} from '../../services/sspMapper';
 
 // ---------------------------------------------------------------------------
 // Mock the low-level API client so no real HTTP calls are made
 // ---------------------------------------------------------------------------
-vi.mock('../services/api', () => {
+vi.mock('../../services/api', () => {
   const captured: Array<{ path: string; method: string; body?: unknown }> = [];
   return {
     api: vi.fn(async (path: string, options?: RequestInit) => {
@@ -107,7 +107,7 @@ vi.mock('../services/api', () => {
 // Access the captured calls array from the mock
 type CapturedCall = { path: string; method: string; body?: unknown };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const { __captured: captured } = vi.mocked(await import('../services/api')) as any as { __captured: CapturedCall[] };
+const { __captured: captured } = vi.mocked(await import('../../services/api')) as any as { __captured: CapturedCall[] };
 
 beforeEach(() => {
   (captured as Array<unknown>).length = 0;
