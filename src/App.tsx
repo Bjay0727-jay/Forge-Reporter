@@ -54,8 +54,38 @@ function AppContent() {
   const [authState, authActions] = useAuth();
   const [syncState, syncActions] = useSync(authState.isOnlineMode);
 
-  // Current section state
-  const [currentSection, setCurrentSection] = useState('sysinfo');
+  // Current section state — initialized from URL hash for deep linking
+  const [currentSection, setCurrentSectionRaw] = useState(() => {
+    const hash = window.location.hash;
+    const match = hash.match(/^#section=(.+)$/);
+    if (match) {
+      const sectionId = decodeURIComponent(match[1]);
+      if (SECTIONS.some((s) => s.id === sectionId)) return sectionId;
+    }
+    return 'sysinfo';
+  });
+
+  // Wrap setCurrentSection to also update the URL hash
+  const setCurrentSection = useCallback((sectionId: string) => {
+    setCurrentSectionRaw(sectionId);
+    window.history.pushState(null, '', `#section=${encodeURIComponent(sectionId)}`);
+  }, []);
+
+  // Listen for browser back/forward navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      const match = hash.match(/^#section=(.+)$/);
+      if (match) {
+        const sectionId = decodeURIComponent(match[1]);
+        if (SECTIONS.some((s) => s.id === sectionId)) {
+          setCurrentSectionRaw(sectionId);
+        }
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // SSP data state
   const [data, setData] = useState<SSPData>(() => {

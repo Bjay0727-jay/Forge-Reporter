@@ -145,12 +145,21 @@ export const setCurrentMode = (mode: ThemeMode) => {
   currentMode = mode;
 };
 
-// Export colors based on current mode
-export const C = new Proxy(lightColors, {
-  get(target, prop: keyof typeof lightColors) {
-    return currentMode === 'dark' ? darkColors[prop] : target[prop];
-  },
-});
+// Export colors based on current mode.
+// In SSR or environments without Proxy support, fall back to lightColors directly.
+export const C: typeof lightColors =
+  typeof Proxy !== 'undefined'
+    ? new Proxy(lightColors, {
+        get(target, prop: string | symbol) {
+          if (typeof prop === 'symbol' || !(prop in target)) {
+            return undefined;
+          }
+          return currentMode === 'dark'
+            ? darkColors[prop as keyof typeof darkColors]
+            : target[prop as keyof typeof lightColors];
+        },
+      })
+    : lightColors;
 
 // Also export static versions for cases where proxy doesn't work
 export const lightTheme = lightColors;

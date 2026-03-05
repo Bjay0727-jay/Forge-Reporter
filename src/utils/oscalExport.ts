@@ -7,6 +7,7 @@
  */
 
 import type { SSPData } from '../types';
+import { isValidatedSSPData } from '../types';
 import type {
   OscalSSPDocument,
   OscalSystemSecurityPlan,
@@ -593,6 +594,14 @@ export interface ValidatedOscalExportResult {
  * @returns Export result with document and validation info
  */
 export function generateValidatedOscalSSP(options: OscalExportOptions): ValidatedOscalExportResult {
+  // Runtime check: warn if required SSP fields are missing before generating OSCAL
+  if (!isValidatedSSPData(options.data)) {
+    console.warn(
+      '[OSCAL Export] SSPData is missing required fields (sysName, sysDesc, conf, integ, avail, ctrlBaseline, authType, owningAgency). ' +
+      'The generated document may fail 3PAO validation.'
+    );
+  }
+
   // Generate the OSCAL document
   const document = generateOscalSSP(options);
 

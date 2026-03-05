@@ -5,6 +5,7 @@
 
 import { api } from './api';
 import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline } from '../types';
+import { isValidatedSSPData } from '../types';
 
 // =============================================================================
 // Backend Response Types
@@ -442,6 +443,14 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
  * Only saves fields that have changed (dirty tracking)
  */
 export async function saveSSPToBackend(sspId: string, data: SSPData, previousData?: SSPData): Promise<void> {
+  // Runtime validation: warn (but don't block) if required fields are missing
+  if (!isValidatedSSPData(data)) {
+    console.warn(
+      '[SSP Mapper] Saving SSPData with missing required fields. ' +
+      'Document may be incomplete for OSCAL export.'
+    );
+  }
+
   const changes = detectChanges(data, previousData);
   const promises: Promise<unknown>[] = [];
 
@@ -604,8 +613,21 @@ export async function saveSSPToBackend(sspId: string, data: SSPData, previousDat
     );
   }
 
-  // Execute all updates
-  await Promise.all(promises);
+  // Execute all updates — use allSettled so partial failures don't
+  // discard successfully saved sections (Finding #1 / #4)
+  const results = await Promise.allSettled(promises);
+  const failures = results
+    .map((r, i) => (r.status === 'rejected' ? i : null))
+    .filter((i): i is number => i !== null);
+
+  if (failures.length > 0) {
+    const failedCount = failures.length;
+    const totalCount = results.length;
+    throw new Error(
+      `Save partially failed: ${failedCount}/${totalCount} operations failed. ` +
+      `Successfully saved ${totalCount - failedCount} sections.`
+    );
+  }
 }
 
 // =============================================================================
@@ -643,20 +665,34 @@ async function postIgnoringDuplicates(url: string, body: Record<string, unknown>
 
 /**
  * Delete all remote items for a resource and re-create from local state.
- * Falls back to add-only if the DELETE endpoint returns 404 (not implemented).
+ * Falls back to add-only if the DELETE endpoint returns 404/405 (not implemented).
+ *
+ * LIMITATION: When the backend does not support bulk DELETE (404/405),
+ * items removed locally will NOT be removed from the server. The sync
+ * becomes add/update-only. This is a known limitation documented in
+ * Architecture Finding #4. A future backend version should support
+ * DELETE for full CRUD sync.
  */
 async function replaceRemoteCollection(
   sspId: string,
   endpoint: string,
   items: Array<Record<string, unknown>>,
 ): Promise<void> {
+  let deleteSupported = true;
+
   // Attempt to clear existing remote items first
   try {
     await api(`/api/v1/ssp/${sspId}/${endpoint}`, { method: 'DELETE' });
   } catch (error) {
     // If DELETE not supported (404/405), fall back to add-only
     const msg = error instanceof Error ? error.message : '';
-    if (!msg.includes('404') && !msg.includes('405')) {
+    if (msg.includes('404') || msg.includes('405')) {
+      deleteSupported = false;
+      console.warn(
+        `[SSP Mapper] DELETE not supported for ${endpoint}. ` +
+        `Falling back to add-only sync — remote deletions will not propagate.`
+      );
+    } else {
       throw error;
     }
   }
@@ -664,6 +700,13 @@ async function replaceRemoteCollection(
   // Re-create all local items
   for (const item of items) {
     await postIgnoringDuplicates(`/api/v1/ssp/${sspId}/${endpoint}`, item);
+  }
+
+  if (!deleteSupported && items.length === 0) {
+    console.warn(
+      `[SSP Mapper] Local ${endpoint} is empty but remote items may still exist ` +
+      `(DELETE not supported). Remote cleanup requires manual intervention.`
+    );
   }
 }
 
