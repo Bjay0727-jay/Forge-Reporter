@@ -1,0 +1,6 @@
+# OSCAL source data (large, download via download.sh)
+*.json
+!package.json
+
+# Generated SQL output
+output/
