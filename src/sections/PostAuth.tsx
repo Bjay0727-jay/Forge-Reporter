@@ -283,7 +283,51 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
   );
 };
 
-// Section 23: POA&M
+// Section 24a: Vulnerability Findings
+export const VulnSec: React.FC<Props> = ({ d, sf }) => {
+  const vulnFindings = useDT(d, 'vulnFindings', sf);
+  const findings = d.vulnFindings || [];
+  const bySev: Record<string, number> = {};
+  for (const f of findings) { if (f.sev) bySev[f.sev] = (bySev[f.sev] || 0) + 1; }
+
+  return (
+    <div>
+      <SH title="Vulnerability Findings" sub="Real scan results from Nessus/Qualys/Inspector. Critical+High findings generate POA&M items." />
+      {findings.length > 0 && (
+        <div style={{
+          display: 'flex', gap: 12, marginBottom: 12, padding: '8px 14px',
+          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 11,
+        }}>
+          {['Critical', 'High', 'Medium', 'Low'].map((sev) => (
+            <span key={sev} style={{
+              color: sev === 'Critical' ? '#ef4444' : sev === 'High' ? '#f97316' : sev === 'Medium' ? '#eab308' : '#3b82f6',
+            }}>
+              {sev}: <strong>{bySev[sev] || 0}</strong>
+            </span>
+          ))}
+          <span style={{ color: C.textMuted, marginLeft: 'auto' }}>Total: {findings.length}</span>
+        </div>
+      )}
+      <DT
+        cols={[
+          { k: 'findingId', l: 'ID', ph: 'VF-001', w: '75px', mono: true },
+          { k: 'cve', l: 'CVE', ph: 'CVE-2024-XXXX', w: '130px', mono: true },
+          { k: 'title', l: 'Title', ph: 'Missing MFA enforcement' },
+          { k: 'sev', l: 'Severity', type: 'select', opts: ['Critical', 'High', 'Medium', 'Low'], w: '90px' },
+          { k: 'asset', l: 'Asset', ph: 'web-server-01', w: '110px' },
+          { k: 'status', l: 'Status', type: 'select', opts: ['Open', 'Mitigated', 'Accepted', 'False Positive'], w: '110px' },
+          { k: 'due', l: 'Due', ph: 'YYYY-MM-DD', w: '95px' },
+        ]}
+        rows={vulnFindings.rows}
+        onAdd={vulnFindings.add}
+        onDel={vulnFindings.del}
+        onUpd={vulnFindings.upd}
+      />
+    </div>
+  );
+};
+
+// Section 25: POA&M
 export const PoamSec: React.FC<Props> = ({ d, sf }) => {
   const poamRows = useDT(d, 'poamRows', sf);
   return (

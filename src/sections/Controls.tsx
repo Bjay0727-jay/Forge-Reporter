@@ -41,9 +41,23 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
 
   const cs = d.ctrlData || {};
 
+  // Review progress stats
+  const allKeys = Object.keys(cs);
+  const reviewedCount = allKeys.filter((k) => (cs[k] as ControlEntry)?.reviewStatus === 'approved').length;
+  const totalWithNarrative = allKeys.filter((k) => (cs[k] as ControlEntry)?.implementation).length;
+
   return (
     <div>
       <SH title="Control Implementations" sub="RMF Step 4: Implement. Appendix A — Per NIST 800-53 Rev5 including PT and SR families." />
+      {totalWithNarrative > 0 && (
+        <div style={{
+          display: 'flex', gap: 16, marginBottom: 12, padding: '8px 14px',
+          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`,
+          fontSize: 11.5, color: C.textSecondary,
+        }}>
+          <span>ISSO Review: <strong style={{ color: reviewedCount === totalWithNarrative ? C.success : C.warning }}>{reviewedCount}/{totalWithNarrative}</strong> approved</span>
+        </div>
+      )}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(5, 1fr)',
@@ -193,6 +207,47 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                             boxSizing: 'border-box',
                           }}
                         />
+                        {/* ISSO Review row */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                          <select
+                            value={entry.reviewStatus || ''}
+                            onChange={(e) => {
+                              const n = { ...cs };
+                              n[id] = { ...entry, reviewStatus: e.target.value as ControlEntry['reviewStatus'] || undefined };
+                              sf('ctrlData', n);
+                            }}
+                            style={{
+                              padding: '2px 4px', fontSize: 10, background: C.surface,
+                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
+                              outline: 'none', width: 110,
+                            }}
+                          >
+                            <option value="">Review —</option>
+                            <option value="pending">⏳ Pending</option>
+                            <option value="approved">✅ Approved</option>
+                            <option value="rejected">❌ Rejected</option>
+                            <option value="needs-revision">🔄 Needs Revision</option>
+                          </select>
+                          <input
+                            value={entry.reviewedBy || ''}
+                            onChange={(e) => {
+                              const n = { ...cs };
+                              n[id] = { ...entry, reviewedBy: e.target.value };
+                              sf('ctrlData', n);
+                            }}
+                            placeholder="Reviewer"
+                            style={{
+                              padding: '2px 4px', fontSize: 10, background: C.surface,
+                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
+                              outline: 'none', width: 120,
+                            }}
+                          />
+                          {entry.reviewStatus === 'approved' && (
+                            <span style={{ fontSize: 9, color: C.success }}>
+                              {entry.reviewedAt ? `Approved ${entry.reviewedAt}` : 'Approved'}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     );
                   })}

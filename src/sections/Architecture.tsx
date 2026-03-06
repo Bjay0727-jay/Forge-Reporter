@@ -29,6 +29,7 @@ const useSystemContext = (d: SSPData): SystemContext => {
 // Section 6: Authorization Boundary
 export const BoundarySec: React.FC<Props> = ({ d, sf }) => {
   const bndComps = useDT(d, 'bndComps', sf);
+  const assetRows = useDT(d, 'assetRows', sf);
   const systemContext = useSystemContext(d);
 
   return (
@@ -59,6 +60,25 @@ export const BoundarySec: React.FC<Props> = ({ d, sf }) => {
         onAdd={bndComps.add}
         onDel={bndComps.del}
         onUpd={bndComps.upd}
+      />
+      <Div />
+      <SubH>Asset Inventory</SubH>
+      <DT
+        cols={[
+          { k: 'assetId', l: 'ID', ph: 'HW-001', w: '75px', mono: true },
+          { k: 'name', l: 'Name', ph: 'e.g., web-server-01' },
+          { k: 'type', l: 'Type', type: 'select', opts: ['Hardware', 'Software', 'Cloud', 'Network', 'Container', 'Database', 'Other'], w: '100px' },
+          { k: 'os', l: 'OS', ph: 'RHEL 9.2', w: '100px' },
+          { k: 'ip', l: 'IP', ph: '10.0.1.5', w: '100px', mono: true },
+          { k: 'fqdn', l: 'FQDN', ph: 'web01.internal' },
+          { k: 'owner', l: 'Owner', ph: 'Ops Team', w: '90px' },
+          { k: 'baseline', l: 'Baseline', ph: 'CIS L1', w: '80px' },
+          { k: 'scanDate', l: 'Last Scan', ph: 'YYYY-MM-DD', w: '95px' },
+        ]}
+        rows={assetRows.rows}
+        onAdd={assetRows.add}
+        onDel={assetRows.del}
+        onUpd={assetRows.upd}
       />
     </div>
   );

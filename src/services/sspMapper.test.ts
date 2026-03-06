@@ -338,6 +338,9 @@ describe('SSP Mapper — Sync Logic', () => {
         control_id: 'AC-1',
         status: 'implemented',
         implementation_narrative: 'Access control policy documented.',
+        reviewed_by: '',
+        reviewed_at: '',
+        review_status: '',
       });
     });
 

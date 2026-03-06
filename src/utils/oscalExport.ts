@@ -24,6 +24,7 @@ import type {
   OscalControlImplementation,
   OscalImplementedRequirement,
   OscalByComponent,
+  OscalInventoryItem,
 } from '../types/oscal';
 import {
   validateOscalSSP,
@@ -407,9 +408,32 @@ function buildSystemImplementation(data: SSPData): OscalSystemImplementation {
     components.push(serviceComponent);
   }
 
+  // Build inventory items from asset rows
+  const inventoryItems: OscalInventoryItem[] = [];
+  if (data.assetRows && data.assetRows.length > 0) {
+    for (const asset of data.assetRows) {
+      if (asset.name) {
+        const props: Array<{ name: string; value: string }> = [];
+        if (asset.type) props.push({ name: 'asset-type', value: asset.type });
+        if (asset.os) props.push({ name: 'operating-system', value: asset.os });
+        if (asset.ip) props.push({ name: 'ipv4-address', value: asset.ip });
+        if (asset.fqdn) props.push({ name: 'fqdn', value: asset.fqdn });
+        if (asset.baseline) props.push({ name: 'baseline-configuration-name', value: asset.baseline });
+        if (asset.scanDate) props.push({ name: 'last-scan-date', value: asset.scanDate });
+
+        inventoryItems.push({
+          uuid: generateUUID(),
+          description: `${asset.name}${asset.owner ? ` (${asset.owner})` : ''}${asset.location ? ` — ${asset.location}` : ''}`,
+          props: props.length > 0 ? props : undefined,
+        });
+      }
+    }
+  }
+
   return {
     users,
     components,
+    ...(inventoryItems.length > 0 ? { 'inventory-items': inventoryItems } : {}),
   };
 }
 

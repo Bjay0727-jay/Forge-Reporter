@@ -1,0 +1,64 @@
+{
+  "system_name": "MFEHR",
+  "system_id": "<ssp-uuid-mfehr>",
+  "description": "Military Family Electronic Health Record system",
+  "hosting": "AWS GovCloud (US-West)",
+  "deployment_model": "Government Community Cloud",
+  "cloud_service_model": "IaaS + PaaS",
+  "auth": "Okta SSO + FIDO2 MFA",
+  "key_technologies": [
+    "ECS Fargate",
+    "RDS PostgreSQL (Multi-AZ)",
+    "S3 (FIPS endpoint)",
+    "CloudFront (FedRAMP authorized)",
+    "AWS WAF",
+    "AWS KMS (FIPS 140-2 Level 3)",
+    "Amazon GuardDuty",
+    "AWS CloudTrail"
+  ],
+  "operating_systems": [
+    "Amazon Linux 2023 (STIG hardened)",
+    "Alpine Linux 3.19 (containers)"
+  ],
+  "policy_documents": [
+    { "id": "POL-AC-001", "title": "Access Control Policy", "version": "3.2" },
+    { "id": "POL-AT-001", "title": "Security Awareness & Training Policy", "version": "2.1" },
+    { "id": "POL-AU-001", "title": "Audit & Accountability Policy", "version": "2.4" },
+    { "id": "POL-CA-001", "title": "Assessment & Authorization Policy", "version": "1.8" },
+    { "id": "POL-CM-001", "title": "Configuration Management Policy", "version": "3.0" },
+    { "id": "POL-CP-001", "title": "Contingency Planning Policy", "version": "2.2" },
+    { "id": "POL-IA-001", "title": "Identification & Authentication Policy", "version": "2.7" },
+    { "id": "POL-IR-001", "title": "Incident Response Policy", "version": "3.1" },
+    { "id": "POL-MA-001", "title": "Maintenance Policy", "version": "1.5" },
+    { "id": "POL-MP-001", "title": "Media Protection Policy", "version": "1.3" },
+    { "id": "POL-PE-001", "title": "Physical & Environmental Protection Policy", "version": "2.0" },
+    { "id": "POL-PL-001", "title": "Planning Policy", "version": "1.9" },
+    { "id": "POL-PM-001", "title": "Program Management Policy", "version": "2.0" },
+    { "id": "POL-PS-001", "title": "Personnel Security Policy", "version": "2.3" },
+    { "id": "POL-PT-001", "title": "PII Processing & Transparency Policy", "version": "1.0" },
+    { "id": "POL-RA-001", "title": "Risk Assessment Policy", "version": "2.1" },
+    { "id": "POL-SA-001", "title": "System & Services Acquisition Policy", "version": "1.7" },
+    { "id": "POL-SC-001", "title": "System & Communications Protection Policy", "version": "2.5" },
+    { "id": "POL-SI-001", "title": "System & Information Integrity Policy", "version": "2.8" },
+    { "id": "POL-SR-001", "title": "Supply Chain Risk Management Policy", "version": "1.2" }
+  ],
+  "scan_tools": ["Nessus Professional", "AWS Inspector", "Qualys WAS"],
+  "backup_strategy": "Daily RDS automated snapshots (35-day retention) + S3 cross-region replication + weekly EBS snapshots",
+  "encryption": {
+    "at_rest": "AES-256-GCM via AWS KMS (FIPS 140-2 Level 3 HSM-backed)",
+    "in_transit": "TLS 1.3 with ECDHE key exchange",
+    "key_management": "AWS KMS with annual key rotation"
+  },
+  "network": {
+    "vpc": "Isolated VPC with public, private, and data subnets",
+    "segmentation": "Security groups + NACLs per tier",
+    "waf": "AWS WAF with OWASP Top 10 rule set"
+  },
+  "responsible_parties": {
+    "system_owner": "MFEHR Program Office",
+    "isso": "Designated ISSO",
+    "issm": "Agency ISSM",
+    "ao": "Designated AO"
+  },
+  "_note": "VERIFY: System owner must review and sign off on all values before narrative generation."
+}

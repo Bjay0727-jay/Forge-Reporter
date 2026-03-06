@@ -253,12 +253,50 @@ export interface SSPData {
   poamRows?: POAMRow[];
   poamFreq?: string;
   poamWf?: string;
+
+  // Asset Inventory (Phase 3)
+  assetRows?: AssetRow[];
+
+  // Vulnerability Findings (Phase 3)
+  vulnFindings?: VulnFinding[];
 }
 
 // Control implementation entry (flat: keyed by control ID, e.g. "AC-1")
 export interface ControlEntry {
   status: string;
   implementation?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewStatus?: 'pending' | 'approved' | 'rejected' | 'needs-revision';
+}
+
+// Asset inventory row (Phase 3: real CMDB/cloud data)
+export interface AssetRow {
+  assetId?: string;
+  name?: string;
+  type?: string;
+  owner?: string;
+  location?: string;
+  os?: string;
+  fqdn?: string;
+  ip?: string;
+  ports?: string;
+  baseline?: string;
+  scanDate?: string;
+}
+
+// Vulnerability finding (Phase 3: real scan data)
+export interface VulnFinding {
+  findingId?: string;
+  pluginId?: string;
+  cve?: string;
+  title?: string;
+  sev?: string;
+  asset?: string;
+  status?: string;
+  detected?: string;
+  due?: string;
+  poamId?: string;
 }
 
 // Table row types
