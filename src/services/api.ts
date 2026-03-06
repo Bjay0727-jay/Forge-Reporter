@@ -26,6 +26,7 @@ const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forgecomply360-
 // Allowed API URL patterns — restrict to known trusted domains
 const ALLOWED_API_DOMAINS = [
   'forgecomply360-api.workers.dev',
+  'forgecomply360-api-staging.workers.dev',
   'localhost',
   '127.0.0.1',
 ];
