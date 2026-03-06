@@ -9,8 +9,8 @@
  * Usage:
  *   node scripts/promote/promote-to-production.cjs \
  *     --ssp-id <uuid> \
- *     --api-url https://forgecomply360-api.workers.dev \
- *     --staging-url https://forgecomply360-api-staging.workers.dev \
+ *     --api-url https://forge-comply360-api.stanley-riley.workers.dev \
+ *     --staging-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
  *     --token <jwt> \
  *     --data-dir scripts/seed-data/output \
  *     --narratives-dir scripts/seed-narratives/output \

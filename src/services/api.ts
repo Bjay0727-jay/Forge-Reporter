@@ -21,12 +21,12 @@ let inMemoryAccessToken: string | null = null;
 const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 
 // Default API URL from environment, falling back to ForgeComply 360 production API
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forgecomply360-api.workers.dev';
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forge-comply360-api.stanley-riley.workers.dev';
 
 // Allowed API URL patterns — restrict to known trusted domains
 const ALLOWED_API_DOMAINS = [
-  'forgecomply360-api.workers.dev',
-  'forgecomply360-api-staging.workers.dev',
+  'forge-comply360-api.stanley-riley.workers.dev',
+  'forge-comply360-api-demo.stanley-riley.workers.dev',
   'localhost',
   '127.0.0.1',
 ];

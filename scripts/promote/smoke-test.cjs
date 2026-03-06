@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/promote/smoke-test.cjs \
  *     --ssp-id <uuid> \
- *     --api-url https://forgecomply360-api.workers.dev \
+ *     --api-url https://forge-comply360-api.stanley-riley.workers.dev \
  *     --token <jwt> \
  *     [--staging-report output/staging-validation-*.json]
  */

@@ -171,7 +171,7 @@ describe('API Service — Security Hardening', () => {
   describe('ForgeComply 360 API Integration', () => {
     beforeEach(() => {
       vi.mocked(global.fetch).mockReset();
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
     });
 
     it('should send Bearer token in Authorization header', async () => {
@@ -187,7 +187,7 @@ describe('API Service — Security Hardening', () => {
       await api('/api/v1/ssp/ssp-1');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://forgecomply360-api.workers.dev/api/v1/ssp/ssp-1',
+        'https://forge-comply360-api.stanley-riley.workers.dev/api/v1/ssp/ssp-1',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: `Bearer ${token}`,
@@ -285,7 +285,7 @@ describe('API Service — Security Hardening', () => {
   // =========================================================================
   describe('Online Mode Detection', () => {
     it('should return false after clearToken', () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       setToken(validJWT());
       expect(isOnlineMode()).toBe(true);
 

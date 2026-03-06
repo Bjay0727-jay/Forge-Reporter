@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/promote/backup-production.cjs \
  *     --ssp-id <uuid> \
- *     --api-url https://forgecomply360-api.workers.dev \
+ *     --api-url https://forge-comply360-api.stanley-riley.workers.dev \
  *     --token <jwt> \
  *     --batch-id seed-phase4-2026-03-06
  */
