@@ -788,11 +788,11 @@ describe('Backend Deployment via ForgeComply 360 API', () => {
       expect(data.ctrlBaseline).toBe('Moderate');
     });
 
-    it('should make parallel requests to all 14 backend endpoints', async () => {
+    it('should make parallel requests to all 15 backend endpoints', async () => {
       await loadSSPFromBackend('ssp-001');
 
       const gets = captured.filter(c => c.method === 'GET');
-      expect(gets.length).toBe(14);
+      expect(gets.length).toBe(15);
     });
 
     it('should return empty arrays for missing collection data', async () => {

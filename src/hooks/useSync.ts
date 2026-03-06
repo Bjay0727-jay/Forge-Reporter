@@ -16,6 +16,7 @@ import {
   syncPolicyMappings,
   syncSCRMEntries,
   syncCMBaselines,
+  syncControlImplementations,
   type SSPListItem,
 } from '../services/sspMapper';
 import { api } from '../services/api';
@@ -201,6 +202,9 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
       }
       if (data.cmBaselines?.length) {
         syncPromises.push({ label: 'cmBaselines', promise: syncCMBaselines(sspId, data.cmBaselines) });
+      }
+      if (data.ctrlData && Object.keys(data.ctrlData).length > 0) {
+        syncPromises.push({ label: 'controlImplementations', promise: syncControlImplementations(sspId, data.ctrlData) });
       }
 
       const results = await Promise.allSettled(syncPromises.map((s) => s.promise));
