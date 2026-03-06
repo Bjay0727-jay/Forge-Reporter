@@ -4,7 +4,7 @@
  */
 
 import { api } from './api';
-import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline } from '../types';
+import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline, ControlEntry } from '../types';
 import { isValidatedSSPData } from '../types';
 
 // =============================================================================
@@ -176,6 +176,14 @@ interface BackendPOAMSummary {
   remediation_workflow?: string;
 }
 
+interface BackendControlImplementation {
+  id: string;
+  control_id: string;
+  status: string;
+  implementation_narrative?: string;
+  responsibility?: string;
+}
+
 // =============================================================================
 // Load SSP from Backend
 // =============================================================================
@@ -200,6 +208,7 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     configMgmtRes,
     cmBaselinesRes,
     poamRes,
+    controlImplRes,
   ] = await Promise.all([
     api<{ document: BackendSSPDocument }>(`/api/v1/ssp/${sspId}`),
     api<{ info_types: BackendInfoType[] }>(`/api/v1/ssp/${sspId}/info-types`).catch(() => ({ info_types: [] })),
@@ -215,6 +224,7 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     api<{ config_management: BackendConfigManagement | null }>(`/api/v1/ssp/${sspId}/config-management`).catch(() => ({ config_management: null })),
     api<{ cm_baselines: BackendCMBaseline[] }>(`/api/v1/ssp/${sspId}/cm-baselines`).catch(() => ({ cm_baselines: [] })),
     api<{ poam_summary: BackendPOAMSummary | null }>(`/api/v1/ssp/${sspId}/poam-summary`).catch(() => ({ poam_summary: null })),
+    api<{ control_implementations: BackendControlImplementation[] }>(`/api/v1/ssp/${sspId}/control-implementations`).catch(() => ({ control_implementations: [] })),
   ]);
 
   const doc = docRes.document;
@@ -429,6 +439,16 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     // POA&M
     poamFreq: poamRes.poam_summary?.review_frequency,
     poamWf: poamRes.poam_summary?.remediation_workflow,
+
+    // Control Implementations
+    ctrlData: controlImplRes.control_implementations?.length > 0
+      ? Object.fromEntries(
+          controlImplRes.control_implementations.map((ci) => [
+            ci.control_id,
+            { status: ci.status || 'planned', implementation: ci.implementation_narrative || '' },
+          ])
+        )
+      : undefined,
   };
 
   return data;
@@ -857,6 +877,24 @@ export async function syncCMBaselines(
   await replaceRemoteCollection(sspId, 'cm-baselines', items);
 }
 
+/**
+ * Sync control implementations between Reporter and Backend
+ */
+export async function syncControlImplementations(
+  sspId: string,
+  ctrlData: Record<string, ControlEntry>,
+): Promise<void> {
+  const items = Object.entries(ctrlData)
+    .filter(([, v]) => v.status || v.implementation)
+    .map(([controlId, v]) => ({
+      control_id: controlId,
+      status: v.status || 'planned',
+      implementation_narrative: v.implementation || '',
+    }));
+
+  await replaceRemoteCollection(sspId, 'control-implementations', items);
+}
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -886,6 +924,7 @@ interface ChangeFlags {
   contingency: boolean;
   incident: boolean;
   conmon: boolean;
+  controls: boolean;
 }
 
 function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
@@ -907,6 +946,7 @@ function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
       contingency: true,
       incident: true,
       conmon: true,
+      controls: true,
     };
   }
 
@@ -940,6 +980,7 @@ function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
     contingency: changed(['cpPurpose', 'cpScope', 'rto', 'rpo', 'mtd', 'backupFreq', 'cpTestDate', 'cpTestType']),
     incident: changed(['irPurpose', 'irScope', 'certTime', 'irTestDate']),
     conmon: changed(['iscmType', 'ctrlRotation', 'iscmNarrative', 'sigChangeCriteria', 'atoExpiry', 'nextAssessment']),
+    controls: changed(['ctrlData']),
   };
 }
 

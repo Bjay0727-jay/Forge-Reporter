@@ -172,7 +172,7 @@ export interface SSPData {
   privAccess?: string;
 
   // Controls
-  ctrlData?: Record<string, Record<string, string>>;
+  ctrlData?: Record<string, ControlEntry>;
 
   // Policies
   policyDocs?: PolicyDoc[];
@@ -253,6 +253,12 @@ export interface SSPData {
   poamRows?: POAMRow[];
   poamFreq?: string;
   poamWf?: string;
+}
+
+// Control implementation entry (flat: keyed by control ID, e.g. "AC-1")
+export interface ControlEntry {
+  status: string;
+  implementation?: string;
 }
 
 // Table row types

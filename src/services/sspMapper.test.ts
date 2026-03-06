@@ -12,6 +12,7 @@ import {
   syncPolicyMappings,
   syncSCRMEntries,
   syncCMBaselines,
+  syncControlImplementations,
 } from './sspMapper';
 import { api } from './api';
 
@@ -309,6 +310,47 @@ describe('SSP Mapper — Sync Logic', () => {
         `/api/v1/ssp/${SSP_ID}/info-types`,
         expect.objectContaining({ method: 'DELETE' }),
       );
+    });
+  });
+
+  // =========================================================================
+  // Control Implementations Sync
+  // =========================================================================
+  describe('Control Implementations Sync', () => {
+    it('should sync control implementations with correct payload', async () => {
+      vi.mocked(api).mockResolvedValue(undefined);
+
+      await syncControlImplementations(SSP_ID, {
+        'AC-1': { status: 'implemented', implementation: 'Access control policy documented.' },
+        'CM-1': { status: 'partial', implementation: 'Config management in progress.' },
+      });
+
+      // DELETE + 2 POSTs
+      expect(api).toHaveBeenCalledTimes(3);
+      expect(api).toHaveBeenNthCalledWith(1,
+        `/api/v1/ssp/${SSP_ID}/control-implementations`,
+        expect.objectContaining({ method: 'DELETE' }),
+      );
+
+      const postCall = vi.mocked(api).mock.calls[1];
+      const body = JSON.parse(postCall[1]!.body as string);
+      expect(body).toEqual({
+        control_id: 'AC-1',
+        status: 'implemented',
+        implementation_narrative: 'Access control policy documented.',
+      });
+    });
+
+    it('should skip entries with no status and no implementation', async () => {
+      vi.mocked(api).mockResolvedValue(undefined);
+
+      await syncControlImplementations(SSP_ID, {
+        'AC-1': { status: 'implemented', implementation: 'Test' },
+        'AC-2': { status: '', implementation: '' },  // Should be skipped
+      });
+
+      // DELETE + 1 POST (only AC-1)
+      expect(api).toHaveBeenCalledTimes(2);
     });
   });
 });

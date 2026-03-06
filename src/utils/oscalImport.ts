@@ -408,7 +408,7 @@ function parseControlImplementation(ctrlImpl: Record<string, unknown>, data: SSP
   const implReqs = ctrlImpl['implemented-requirements'] as Array<Record<string, unknown>> | undefined;
 
   if (implReqs && implReqs.length > 0) {
-    const ctrlData: Record<string, Record<string, string>> = {};
+    const ctrlData: Record<string, { status: string; implementation: string }> = {};
 
     for (const req of implReqs) {
       const controlId = (req['control-id'] as string)?.toUpperCase();

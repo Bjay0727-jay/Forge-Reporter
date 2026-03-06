@@ -55,11 +55,24 @@ describe('ControlsSec', () => {
   it('renders with pre-existing control data', () => {
     const data: SSPData = {
       ctrlData: {
-        'AC-1': { status: 'implemented', narrative: 'Access control policy documented.' },
-        'AC-2': { status: 'partial', narrative: 'Account management in progress.' },
+        'AC-1': { status: 'implemented', implementation: 'Access control policy documented.' },
+        'AC-2': { status: 'partial', implementation: 'Account management in progress.' },
       },
     };
     render(<ControlsSec d={data} sf={vi.fn()} />);
     expect(screen.getByText('Control Implementations')).toBeInTheDocument();
+  });
+
+  it('shows dynamic count from ctrlData when available', () => {
+    const data: SSPData = {
+      ctrlData: {
+        'AC-1': { status: 'implemented', implementation: 'Test' },
+        'AC-2': { status: 'partial', implementation: '' },
+        'AC-3': { status: 'planned', implementation: '' },
+      },
+    };
+    render(<ControlsSec d={data} sf={vi.fn()} />);
+    // AC family should show count of 3 (from ctrlData keys) instead of default 25
+    expect(screen.getByText('(3)')).toBeInTheDocument();
   });
 });

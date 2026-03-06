@@ -449,9 +449,8 @@ function buildControlImplementation(data: SSPData, systemUuid: string): OscalCon
   if (data.ctrlData && typeof data.ctrlData === 'object') {
     for (const [controlId, controlInfo] of Object.entries(data.ctrlData)) {
       if (typeof controlInfo === 'object' && controlInfo !== null) {
-        const info = controlInfo as Record<string, string>;
-        const description = info.implementation || info.description || '';
-        const status = mapControlStatus(info.status);
+        const description = controlInfo.implementation || '';
+        const status = mapControlStatus(controlInfo.status);
 
         if (description || status) {
           const byComponents: OscalByComponent[] = [

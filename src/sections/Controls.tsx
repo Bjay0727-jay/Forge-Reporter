@@ -2,7 +2,7 @@
  * Controls & Policies Sections (15-18)
  */
 import React, { useState } from 'react';
-import type { SSPData } from '../types';
+import type { SSPData, ControlEntry } from '../types';
 import { FF, TI, TA, Sel, SH, Div, G2, SubH } from '../components/FormComponents';
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
@@ -67,9 +67,10 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
         ))}
       </div>
       {families.map((f) => {
-        const fd = cs[f.c] || {};
-        const impl = Object.values(fd).filter((v) => v === 'implemented').length;
-        const pct = f.t > 0 ? Math.round((impl / f.t) * 100) : 0;
+        const familyKeys = Object.keys(cs).filter((k) => k.startsWith(f.c + '-'));
+        const count = familyKeys.length > 0 ? familyKeys.length : f.t;
+        const impl = familyKeys.filter((k) => (cs[k] as ControlEntry)?.status === 'implemented').length;
+        const pct = count > 0 ? Math.round((impl / count) * 100) : 0;
         const isNew = f.c === 'PT' || f.c === 'SR';
 
         return (
@@ -103,7 +104,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                   {f.c}
                 </span>
                 <span style={{ fontSize: 12.5, fontWeight: 600, color: C.text }}>{f.n}</span>
-                <span style={{ fontSize: 11, color: C.textMuted }}>({f.t})</span>
+                <span style={{ fontSize: 11, color: C.textMuted }}>({count})</span>
                 {isNew && (
                   <span style={{
                     fontSize: 8,
@@ -131,39 +132,67 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
             </div>
             {exp === f.c && (
               <div style={{ padding: '0 14px 14px', borderTop: `1px solid ${C.borderLight}` }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 5, paddingTop: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8 }}>
                   {Array.from({ length: f.t }, (_, i) => {
                     const id = `${f.c}-${i + 1}`;
+                    const entry = (cs[id] as ControlEntry) || {};
                     return (
-                      <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span style={{ fontSize: 10.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
-                        <select
-                          value={fd[id] || ''}
+                      <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '8px 10px', border: `1px solid ${C.borderLight}` }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+                          <span style={{ fontSize: 10.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
+                          <select
+                            value={entry.status || ''}
+                            onChange={(e) => {
+                              const n = { ...cs };
+                              n[id] = { ...entry, status: e.target.value };
+                              sf('ctrlData', n);
+                            }}
+                            style={{
+                              padding: '3px 5px',
+                              fontSize: 11,
+                              background: C.surface,
+                              border: `1px solid ${C.border}`,
+                              borderRadius: 4,
+                              color: C.textSecondary,
+                              outline: 'none',
+                              boxSizing: 'border-box',
+                              width: 130,
+                            }}
+                          >
+                            <option value="">—</option>
+                            <option value="implemented">✅ Impl</option>
+                            <option value="partial">🔶 Partial</option>
+                            <option value="planned">📋 Planned</option>
+                            <option value="inherited">🔗 Inherited</option>
+                            <option value="na">➖ N/A</option>
+                          </select>
+                          {entry.implementation && (
+                            <span style={{ fontSize: 9, color: C.success, marginLeft: 'auto' }}>narrative</span>
+                          )}
+                        </div>
+                        <textarea
+                          value={entry.implementation || ''}
                           onChange={(e) => {
                             const n = { ...cs };
-                            if (!n[f.c]) n[f.c] = {};
-                            n[f.c][id] = e.target.value;
+                            n[id] = { ...entry, implementation: e.target.value };
                             sf('ctrlData', n);
                           }}
+                          placeholder="Implementation narrative..."
+                          rows={2}
                           style={{
-                            flex: 1,
-                            padding: '3px 5px',
+                            width: '100%',
                             fontSize: 11,
-                            background: C.bg,
-                            border: `1px solid ${C.border}`,
+                            fontFamily: 'inherit',
+                            background: C.surface,
+                            border: `1px solid ${C.borderLight}`,
                             borderRadius: 4,
-                            color: C.textSecondary,
+                            color: C.text,
+                            padding: '4px 6px',
+                            resize: 'vertical',
                             outline: 'none',
                             boxSizing: 'border-box',
                           }}
-                        >
-                          <option value="">—</option>
-                          <option value="implemented">✅ Impl</option>
-                          <option value="partial">🔶 Partial</option>
-                          <option value="planned">📋 Planned</option>
-                          <option value="inherited">🔗 Inherited</option>
-                          <option value="na">➖ N/A</option>
-                        </select>
+                        />
                       </div>
                     );
                   })}
