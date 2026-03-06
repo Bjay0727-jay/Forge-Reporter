@@ -9,7 +9,7 @@
  *   node scripts/seed-narratives/upload-narratives.cjs \
  *     --input output/mfehr_control_implementations.json \
  *     --ssp-id <ssp-uuid> \
- *     --api-url https://forgecomply360-api-staging.workers.dev \
+ *     --api-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
  *     --token <jwt-token>
  */
 

@@ -91,7 +91,7 @@ describe('API Service', () => {
 
   describe('API URL Management', () => {
     it('should store and retrieve API URL from allowed domains', () => {
-      const url = 'https://forgecomply360-api.workers.dev';
+      const url = 'https://forge-comply360-api.stanley-riley.workers.dev';
       setApiUrl(url);
       expect(getApiUrl()).toBe(url);
     });
@@ -254,13 +254,13 @@ describe('API Service', () => {
       expect(result).toEqual({ success: true });
       // Should have called fetch with the default API URL
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('forgecomply360-api.workers.dev/test'),
+        expect.stringContaining('forge-comply360-api.stanley-riley.workers.dev/test'),
         expect.any(Object),
       );
     });
 
     it('should make authenticated request with token', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -277,7 +277,7 @@ describe('API Service', () => {
       await api('/test');
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://forgecomply360-api.workers.dev/test',
+        'https://forge-comply360-api.stanley-riley.workers.dev/test',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: expect.stringMatching(/^Bearer /),
@@ -287,7 +287,7 @@ describe('API Service', () => {
     });
 
     it('should parse JSON response', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
@@ -300,7 +300,7 @@ describe('API Service', () => {
     });
 
     it('should throw ApiError on failed response', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
@@ -313,7 +313,7 @@ describe('API Service', () => {
     });
 
     it('should handle network errors', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
 
       vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network failed'));
 
@@ -321,7 +321,7 @@ describe('API Service', () => {
     });
 
     it('should handle 401 without refresh token by clearing tokens', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -341,7 +341,7 @@ describe('API Service', () => {
     });
 
     it('should handle non-JSON response', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
@@ -354,7 +354,7 @@ describe('API Service', () => {
     });
 
     it('should add Content-Type for JSON body', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
@@ -365,7 +365,7 @@ describe('API Service', () => {
       await api('/test', { method: 'POST', body: JSON.stringify({ key: 'value' }) });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://forgecomply360-api.workers.dev/test',
+        'https://forge-comply360-api.stanley-riley.workers.dev/test',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
@@ -407,7 +407,7 @@ describe('API Service', () => {
       const unsubscribe = onAuthFailure(listener);
 
       // Trigger a 401 with no refresh token to fire the listener
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -441,7 +441,7 @@ describe('API Service', () => {
       const listener = vi.fn();
       const unsubscribe = onApiError(listener);
 
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -468,13 +468,13 @@ describe('API Service', () => {
   describe('Default API URL', () => {
     it('should return default ForgeComply 360 URL when no stored URL', () => {
       localStorageMock.data = {};
-      expect(getApiUrl()).toBe('https://forgecomply360-api.workers.dev');
+      expect(getApiUrl()).toBe('https://forge-comply360-api.stanley-riley.workers.dev');
     });
 
     it('should fall back to default when stored URL is not in allowlist', () => {
       // Manually inject a non-allowed URL into localStorage
       localStorageMock.data['forgecomply360-reporter-api-url'] = 'https://evil.example.com';
-      expect(getApiUrl()).toBe('https://forgecomply360-api.workers.dev');
+      expect(getApiUrl()).toBe('https://forge-comply360-api.stanley-riley.workers.dev');
     });
   });
 
@@ -484,7 +484,7 @@ describe('API Service', () => {
     });
 
     it('should handle 403 forbidden response', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -503,7 +503,7 @@ describe('API Service', () => {
     });
 
     it('should handle 404 not found response', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -522,7 +522,7 @@ describe('API Service', () => {
     });
 
     it('should send POST request with body', async () => {
-      setApiUrl('https://forgecomply360-api.workers.dev');
+      setApiUrl('https://forge-comply360-api.stanley-riley.workers.dev');
       const validToken = (() => {
         const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
         const body = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
@@ -567,7 +567,7 @@ describe('API Service', () => {
 
       Object.defineProperty(window, 'location', {
         value: {
-          hash: `#token=${validToken}&api=https://forgecomply360-api.workers.dev&ssp=ssp-123`,
+          hash: `#token=${validToken}&api=https://forge-comply360-api.stanley-riley.workers.dev&ssp=ssp-123`,
           pathname: '/',
           search: '',
         },
@@ -590,7 +590,7 @@ describe('API Service', () => {
 
       Object.defineProperty(window, 'location', {
         value: {
-          hash: `#token=${expiredToken}&api=https://forgecomply360-api.workers.dev`,
+          hash: `#token=${expiredToken}&api=https://forge-comply360-api.stanley-riley.workers.dev`,
           pathname: '/',
           search: '',
         },
@@ -610,7 +610,7 @@ describe('API Service', () => {
 
       Object.defineProperty(window, 'location', {
         value: {
-          hash: `#token=${validToken}&api=https://forgecomply360-api.workers.dev`,
+          hash: `#token=${validToken}&api=https://forge-comply360-api.stanley-riley.workers.dev`,
           pathname: '/',
           search: '',
         },

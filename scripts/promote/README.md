@@ -20,7 +20,7 @@ Verify all 18 API endpoints return data and ISSO reviews are complete:
 ```bash
 node scripts/promote/validate-staging.cjs \
   --ssp-id <uuid> \
-  --api-url https://forgecomply360-api-staging.workers.dev \
+  --api-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
   --token <jwt>
 ```
 
@@ -45,7 +45,7 @@ Capture current production state before deploying:
 ```bash
 node scripts/promote/backup-production.cjs \
   --ssp-id <uuid> \
-  --api-url https://forgecomply360-api.workers.dev \
+  --api-url https://forge-comply360-api.stanley-riley.workers.dev \
   --token <jwt> \
   --batch-id seed-phase4-2026-03-06
 ```
@@ -62,8 +62,8 @@ Deploy seeded data. Use `--dry-run` first:
 # Preview what would be deployed
 node scripts/promote/promote-to-production.cjs \
   --ssp-id <uuid> \
-  --api-url https://forgecomply360-api.workers.dev \
-  --staging-url https://forgecomply360-api-staging.workers.dev \
+  --api-url https://forge-comply360-api.stanley-riley.workers.dev \
+  --staging-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
   --token <jwt> \
   --data-dir scripts/seed-data/output \
   --narratives-dir scripts/seed-narratives/output \
@@ -72,8 +72,8 @@ node scripts/promote/promote-to-production.cjs \
 # Execute for real
 node scripts/promote/promote-to-production.cjs \
   --ssp-id <uuid> \
-  --api-url https://forgecomply360-api.workers.dev \
-  --staging-url https://forgecomply360-api-staging.workers.dev \
+  --api-url https://forge-comply360-api.stanley-riley.workers.dev \
+  --staging-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
   --token <jwt> \
   --data-dir scripts/seed-data/output \
   --narratives-dir scripts/seed-narratives/output \
@@ -89,7 +89,7 @@ Verify production data is accessible:
 ```bash
 node scripts/promote/smoke-test.cjs \
   --ssp-id <uuid> \
-  --api-url https://forgecomply360-api.workers.dev \
+  --api-url https://forge-comply360-api.stanley-riley.workers.dev \
   --token <jwt> \
   --staging-report output/staging-validation-*.json
 ```

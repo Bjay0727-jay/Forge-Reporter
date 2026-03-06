@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/promote/validate-staging.cjs \
  *     --ssp-id <uuid> \
- *     --api-url https://forgecomply360-api-staging.workers.dev \
+ *     --api-url https://forge-comply360-api-demo.stanley-riley.workers.dev \
  *     --token <jwt>
  *
  * Exit codes:
