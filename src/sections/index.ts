@@ -33,6 +33,7 @@ const CMPlanSec = React.lazy(() => import('./Plans').then(m => ({ default: m.CMP
 const AssessSec = React.lazy(() => import('./PostAuth').then(m => ({ default: m.AssessSec })));
 const AuthorizeSec = React.lazy(() => import('./PostAuth').then(m => ({ default: m.AuthorizeSec })));
 const ConMonSec = React.lazy(() => import('./PostAuth').then(m => ({ default: m.ConMonSec })));
+const VulnSec = React.lazy(() => import('./PostAuth').then(m => ({ default: m.VulnSec })));
 const PoamSec = React.lazy(() => import('./PostAuth').then(m => ({ default: m.PoamSec })));
 
 // Section registry mapping section IDs to their renderer components
@@ -61,5 +62,6 @@ export const SECTION_RENDERERS: Record<string, React.LazyExoticComponent<Section
   assess: AssessSec,
   authorize: AuthorizeSec,
   conmon: ConMonSec,
+  vulns: VulnSec,
   poam: PoamSec,
 };

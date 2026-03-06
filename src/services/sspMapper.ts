@@ -4,7 +4,7 @@
  */
 
 import { api } from './api';
-import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline, ControlEntry } from '../types';
+import type { SSPData, InfoType, PPSRow, CryptoModule, SepDutyRow, PolicyDoc, SCRMSupplier, CMBaseline, ControlEntry, AssetRow, VulnFinding, POAMRow } from '../types';
 import { isValidatedSSPData } from '../types';
 
 // =============================================================================
@@ -182,6 +182,48 @@ interface BackendControlImplementation {
   status: string;
   implementation_narrative?: string;
   responsibility?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  review_status?: string;
+}
+
+interface BackendAsset {
+  id: string;
+  asset_id: string;
+  name: string;
+  asset_type: string;
+  owner?: string;
+  location?: string;
+  operating_system?: string;
+  fqdn?: string;
+  ip_address?: string;
+  open_ports?: string;
+  baseline?: string;
+  last_scan_date?: string;
+}
+
+interface BackendVulnFinding {
+  id: string;
+  finding_id: string;
+  plugin_id?: string;
+  cve?: string;
+  title: string;
+  severity: string;
+  asset_id?: string;
+  status: string;
+  detected_date?: string;
+  due_date?: string;
+  poam_id?: string;
+}
+
+interface BackendPOAMItem {
+  id: string;
+  poam_id: string;
+  weakness: string;
+  severity: string;
+  control: string;
+  status: string;
+  due_date?: string;
 }
 
 // =============================================================================
@@ -209,6 +251,9 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     cmBaselinesRes,
     poamRes,
     controlImplRes,
+    assetsRes,
+    vulnFindingsRes,
+    poamItemsRes,
   ] = await Promise.all([
     api<{ document: BackendSSPDocument }>(`/api/v1/ssp/${sspId}`),
     api<{ info_types: BackendInfoType[] }>(`/api/v1/ssp/${sspId}/info-types`).catch(() => ({ info_types: [] })),
@@ -225,6 +270,9 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     api<{ cm_baselines: BackendCMBaseline[] }>(`/api/v1/ssp/${sspId}/cm-baselines`).catch(() => ({ cm_baselines: [] })),
     api<{ poam_summary: BackendPOAMSummary | null }>(`/api/v1/ssp/${sspId}/poam-summary`).catch(() => ({ poam_summary: null })),
     api<{ control_implementations: BackendControlImplementation[] }>(`/api/v1/ssp/${sspId}/control-implementations`).catch(() => ({ control_implementations: [] })),
+    api<{ assets: BackendAsset[] }>(`/api/v1/ssp/${sspId}/assets`).catch(() => ({ assets: [] })),
+    api<{ vulnerability_findings: BackendVulnFinding[] }>(`/api/v1/ssp/${sspId}/vulnerability-findings`).catch(() => ({ vulnerability_findings: [] })),
+    api<{ poam_items: BackendPOAMItem[] }>(`/api/v1/ssp/${sspId}/poam-items`).catch(() => ({ poam_items: [] })),
   ]);
 
   const doc = docRes.document;
@@ -440,14 +488,65 @@ export async function loadSSPFromBackend(sspId: string): Promise<SSPData> {
     poamFreq: poamRes.poam_summary?.review_frequency,
     poamWf: poamRes.poam_summary?.remediation_workflow,
 
-    // Control Implementations
+    // Control Implementations (with review fields)
     ctrlData: controlImplRes.control_implementations?.length > 0
       ? Object.fromEntries(
           controlImplRes.control_implementations.map((ci) => [
             ci.control_id,
-            { status: ci.status || 'planned', implementation: ci.implementation_narrative || '' },
+            {
+              status: ci.status || 'planned',
+              implementation: ci.implementation_narrative || '',
+              reviewedBy: ci.reviewed_by,
+              reviewedAt: ci.reviewed_at,
+              reviewStatus: ci.review_status as ControlEntry['reviewStatus'],
+            },
           ])
         )
+      : undefined,
+
+    // Asset Inventory
+    assetRows: assetsRes.assets?.length > 0
+      ? assetsRes.assets.map((a) => ({
+          assetId: a.asset_id,
+          name: a.name,
+          type: a.asset_type,
+          owner: a.owner,
+          location: a.location,
+          os: a.operating_system,
+          fqdn: a.fqdn,
+          ip: a.ip_address,
+          ports: a.open_ports,
+          baseline: a.baseline,
+          scanDate: a.last_scan_date,
+        }))
+      : undefined,
+
+    // Vulnerability Findings
+    vulnFindings: vulnFindingsRes.vulnerability_findings?.length > 0
+      ? vulnFindingsRes.vulnerability_findings.map((v) => ({
+          findingId: v.finding_id,
+          pluginId: v.plugin_id,
+          cve: v.cve,
+          title: v.title,
+          sev: v.severity,
+          asset: v.asset_id,
+          status: v.status,
+          detected: v.detected_date,
+          due: v.due_date,
+          poamId: v.poam_id,
+        }))
+      : undefined,
+
+    // POA&M Items
+    poamRows: poamItemsRes.poam_items?.length > 0
+      ? poamItemsRes.poam_items.map((p) => ({
+          id: p.poam_id,
+          weakness: p.weakness,
+          sev: p.severity,
+          ctrl: p.control,
+          status: p.status,
+          due: p.due_date,
+        }))
       : undefined,
   };
 
@@ -890,9 +989,84 @@ export async function syncControlImplementations(
       control_id: controlId,
       status: v.status || 'planned',
       implementation_narrative: v.implementation || '',
+      reviewed_by: v.reviewedBy || '',
+      reviewed_at: v.reviewedAt || '',
+      review_status: v.reviewStatus || '',
     }));
 
   await replaceRemoteCollection(sspId, 'control-implementations', items);
+}
+
+/**
+ * Sync asset inventory between Reporter and Backend
+ */
+export async function syncAssets(
+  sspId: string,
+  localItems: AssetRow[]
+): Promise<void> {
+  const items = localItems
+    .filter((item) => item.name)
+    .map((item) => ({
+      asset_id: item.assetId,
+      name: item.name,
+      asset_type: item.type,
+      owner: item.owner,
+      location: item.location,
+      operating_system: item.os,
+      fqdn: item.fqdn,
+      ip_address: item.ip,
+      open_ports: item.ports,
+      baseline: item.baseline,
+      last_scan_date: item.scanDate,
+    }));
+
+  await replaceRemoteCollection(sspId, 'assets', items);
+}
+
+/**
+ * Sync vulnerability findings between Reporter and Backend
+ */
+export async function syncVulnFindings(
+  sspId: string,
+  localItems: VulnFinding[]
+): Promise<void> {
+  const items = localItems
+    .filter((item) => item.title)
+    .map((item) => ({
+      finding_id: item.findingId,
+      plugin_id: item.pluginId,
+      cve: item.cve,
+      title: item.title,
+      severity: item.sev,
+      asset_id: item.asset,
+      status: item.status,
+      detected_date: item.detected,
+      due_date: item.due,
+      poam_id: item.poamId,
+    }));
+
+  await replaceRemoteCollection(sspId, 'vulnerability-findings', items);
+}
+
+/**
+ * Sync POA&M items between Reporter and Backend
+ */
+export async function syncPOAMItems(
+  sspId: string,
+  localItems: POAMRow[]
+): Promise<void> {
+  const items = localItems
+    .filter((item) => item.weakness)
+    .map((item) => ({
+      poam_id: item.id,
+      weakness: item.weakness,
+      severity: item.sev,
+      control: item.ctrl,
+      status: item.status,
+      due_date: item.due,
+    }));
+
+  await replaceRemoteCollection(sspId, 'poam-items', items);
 }
 
 // =============================================================================
@@ -925,6 +1099,9 @@ interface ChangeFlags {
   incident: boolean;
   conmon: boolean;
   controls: boolean;
+  assets: boolean;
+  vulnFindings: boolean;
+  poamItems: boolean;
 }
 
 function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
@@ -947,6 +1124,9 @@ function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
       incident: true,
       conmon: true,
       controls: true,
+      assets: true,
+      vulnFindings: true,
+      poamItems: true,
     };
   }
 
@@ -981,6 +1161,9 @@ function detectChanges(current: SSPData, previous?: SSPData): ChangeFlags {
     incident: changed(['irPurpose', 'irScope', 'certTime', 'irTestDate']),
     conmon: changed(['iscmType', 'ctrlRotation', 'iscmNarrative', 'sigChangeCriteria', 'atoExpiry', 'nextAssessment']),
     controls: changed(['ctrlData']),
+    assets: changed(['assetRows']),
+    vulnFindings: changed(['vulnFindings']),
+    poamItems: changed(['poamRows']),
   };
 }
 

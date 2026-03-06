@@ -280,6 +280,17 @@ export const SECTIONS: Section[] = [
     description: 'ISCM strategy (SP 800-137)'
   },
   {
+    id: 'vulns',
+    label: 'Vulnerability Findings',
+    icon: '🔓',
+    ref: 'RA-5 / Scan Results',
+    grp: 'Post-Auth',
+    tag: 'fisma',
+    rmf: 'Monitor',
+    description: 'Real vulnerability scan findings',
+    bannerText: 'Import real Nessus/Qualys scan results. Critical and High findings automatically generate POA&M items with FedRAMP remediation timelines.'
+  },
+  {
     id: 'poam',
     label: 'POA&M',
     icon: '📊',

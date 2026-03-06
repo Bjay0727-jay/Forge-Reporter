@@ -65,6 +65,14 @@ vi.mock('../../services/api', () => {
         return { cm_baselines: [] };
       if (method === 'GET' && path.endsWith('/poam-summary'))
         return { poam_summary: null };
+      if (method === 'GET' && path.endsWith('/control-implementations'))
+        return { control_implementations: [] };
+      if (method === 'GET' && path.endsWith('/assets'))
+        return { assets: [] };
+      if (method === 'GET' && path.endsWith('/vulnerability-findings'))
+        return { vulnerability_findings: [] };
+      if (method === 'GET' && path.endsWith('/poam-items'))
+        return { poam_items: [] };
 
       // Main SSP document GET
       if (method === 'GET' && /\/api\/v1\/ssp\/[^/]+$/.test(path))
@@ -792,7 +800,7 @@ describe('Backend Deployment via ForgeComply 360 API', () => {
       await loadSSPFromBackend('ssp-001');
 
       const gets = captured.filter(c => c.method === 'GET');
-      expect(gets.length).toBe(15);
+      expect(gets.length).toBe(18);
     });
 
     it('should return empty arrays for missing collection data', async () => {

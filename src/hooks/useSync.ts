@@ -17,6 +17,9 @@ import {
   syncSCRMEntries,
   syncCMBaselines,
   syncControlImplementations,
+  syncAssets,
+  syncVulnFindings,
+  syncPOAMItems,
   type SSPListItem,
 } from '../services/sspMapper';
 import { api } from '../services/api';
@@ -205,6 +208,15 @@ export function useSync(isOnlineMode: boolean): [SyncState, SyncActions] {
       }
       if (data.ctrlData && Object.keys(data.ctrlData).length > 0) {
         syncPromises.push({ label: 'controlImplementations', promise: syncControlImplementations(sspId, data.ctrlData) });
+      }
+      if (data.assetRows?.length) {
+        syncPromises.push({ label: 'assets', promise: syncAssets(sspId, data.assetRows) });
+      }
+      if (data.vulnFindings?.length) {
+        syncPromises.push({ label: 'vulnFindings', promise: syncVulnFindings(sspId, data.vulnFindings) });
+      }
+      if (data.poamRows?.length) {
+        syncPromises.push({ label: 'poamItems', promise: syncPOAMItems(sspId, data.poamRows) });
       }
 
       const results = await Promise.allSettled(syncPromises.map((s) => s.promise));
