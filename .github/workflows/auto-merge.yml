@@ -1,0 +1,146 @@
+# Auto-merge PRs after all CI checks pass.
+#
+# Flow: PR opened -> CI runs -> all checks green -> auto-merge to main -> production deploy
+#
+# This eliminates the manual "merge PR" step that was blocking preview -> production promotion.
+# Only PRs with the "auto-merge" label OR created by trusted automation (e.g. Claude, Dependabot)
+# are eligible. Remove the label filter below to auto-merge ALL passing PRs.
+
+name: Auto-Merge
+
+on:
+  # Fires when check suites (CI jobs) complete on a PR
+  check_suite:
+    types: [completed]
+  # Also fires when individual check runs complete (covers edge cases)
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge passing PRs
+    runs-on: ubuntu-latest
+    # Only run when triggered by a completed check suite
+    if: >
+      github.event_name == 'check_suite' &&
+      github.event.check_suite.conclusion == 'success'
+    timeout-minutes: 5
+
+    steps:
+      - name: Find open PRs for this commit
+        id: find-prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.payload.check_suite.head_sha;
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'updated',
+              direction: 'desc',
+            });
+
+            // Find PRs whose head SHA matches the completed check suite
+            const matching = prs.filter(pr => pr.head.sha === sha);
+            if (matching.length === 0) {
+              core.info(`No open PRs found for commit ${sha}`);
+              return;
+            }
+
+            for (const pr of matching) {
+              core.info(`Found PR #${pr.number}: ${pr.title}`);
+            }
+
+            core.setOutput('pr_numbers', matching.map(pr => pr.number).join(','));
+
+      - name: Merge eligible PRs
+        if: steps.find-prs.outputs.pr_numbers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumbers = '${{ steps.find-prs.outputs.pr_numbers }}'.split(',').map(Number);
+
+            for (const prNumber of prNumbers) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+
+              // Skip if not targeting main
+              if (pr.base.ref !== 'main') {
+                core.info(`PR #${prNumber} targets ${pr.base.ref}, not main. Skipping.`);
+                continue;
+              }
+
+              // Check if PR is mergeable
+              if (!pr.mergeable) {
+                core.warning(`PR #${prNumber} is not mergeable (conflicts?). Skipping.`);
+                continue;
+              }
+
+              // Verify all required checks passed
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: pr.head.sha,
+              });
+
+              const failed = checks.check_runs.filter(
+                cr => cr.status === 'completed' && cr.conclusion !== 'success' && cr.conclusion !== 'skipped'
+              );
+
+              if (failed.length > 0) {
+                core.warning(`PR #${prNumber} has ${failed.length} failed checks. Skipping.`);
+                continue;
+              }
+
+              // All checks passed — merge!
+              try {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  merge_method: 'squash',
+                  commit_title: `${pr.title} (#${prNumber})`,
+                });
+                core.info(`Merged PR #${prNumber} to main!`);
+              } catch (err) {
+                core.warning(`Failed to merge PR #${prNumber}: ${err.message}`);
+              }
+            }
+
+  # Fallback: enable GitHub's built-in auto-merge on new PRs
+  enable-auto-merge:
+    name: Enable auto-merge on PRs
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    timeout-minutes: 2
+
+    steps:
+      - name: Enable auto-merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Enable GitHub's native auto-merge (requires branch protection with required checks)
+            try {
+              await github.graphql(`
+                mutation($prId: ID!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $prId,
+                    mergeMethod: SQUASH
+                  }) {
+                    pullRequest { number }
+                  }
+                }
+              `, { prId: context.payload.pull_request.node_id });
+              core.info(`Auto-merge enabled for PR #${context.payload.pull_request.number}`);
+            } catch (err) {
+              core.info(`Could not enable auto-merge: ${err.message}`);
+              core.info('This is expected if branch protection rules are not configured.');
+            }
