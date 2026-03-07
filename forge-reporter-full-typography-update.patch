@@ -1,0 +1,1404 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index b58f08b..27b4bc9 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -696,7 +696,7 @@ function AppContent() {
+         <div id="ssp-editor-content" tabIndex={-1} style={{
+           flex: 1,
+           overflowY: 'auto',
+-          padding: '26px 34px 80px',
++          padding: '32px 44px 80px',
+         }}>
+           <Suspense fallback={<SectionSkeleton />}>
+             <div
+diff --git a/src/components/AIAssist.tsx b/src/components/AIAssist.tsx
+index b29f180..9efea4c 100644
+--- a/src/components/AIAssist.tsx
++++ b/src/components/AIAssist.tsx
+@@ -70,7 +70,7 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
+           border: 'none',
+           borderRadius: 6,
+           color: '#fff',
+-          fontSize: 11,
++          fontSize: 14,
+           fontWeight: 600,
+           cursor: isGenerating ? 'wait' : 'pointer',
+           opacity: isGenerating ? 0.7 : 1,
+@@ -136,10 +136,10 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
+             >
+               <span style={{ fontSize: 16 }}>✨</span>
+               <div>
+-                <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>
++                <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
+                   {hasContent ? 'Regenerate' : 'Generate'}
+                 </div>
+-                <div style={{ fontSize: 10, color: C.textMuted }}>
++                <div style={{ fontSize: 14, color: C.textMuted }}>
+                   AI-write this section
+                 </div>
+               </div>
+@@ -164,8 +164,8 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
+                 >
+                   <span style={{ fontSize: 16 }}>🔄</span>
+                   <div>
+-                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Refine</div>
+-                    <div style={{ fontSize: 10, color: C.textMuted }}>Improve clarity & language</div>
++                    <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Refine</div>
++                    <div style={{ fontSize: 14, color: C.textMuted }}>Improve clarity & language</div>
+                   </div>
+                 </button>
+ 
+@@ -185,8 +185,8 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
+                 >
+                   <span style={{ fontSize: 16 }}>📝</span>
+                   <div>
+-                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Expand</div>
+-                    <div style={{ fontSize: 10, color: C.textMuted }}>Add more detail</div>
++                    <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Expand</div>
++                    <div style={{ fontSize: 14, color: C.textMuted }}>Add more detail</div>
+                   </div>
+                 </button>
+               </>
+@@ -236,7 +236,7 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
+               borderRadius: 4,
+               color: '#fff',
+               padding: '4px 8px',
+-              fontSize: 11,
++              fontSize: 14,
+               cursor: 'pointer',
+             }}
+           >
+@@ -309,7 +309,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
+               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>
+                 AI-Generated Content
+               </div>
+-              <div style={{ fontSize: 11, color: C.textMuted }}>
++              <div style={{ fontSize: 14, color: C.textMuted }}>
+                 Review and accept or dismiss
+               </div>
+             </div>
+@@ -344,7 +344,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
+               border: `1px solid ${C.border}`,
+               borderRadius: 8,
+               padding: 20,
+-              fontSize: 13,
++              fontSize: 14,
+               lineHeight: 1.7,
+               color: C.text,
+               whiteSpace: 'pre-wrap',
+@@ -372,7 +372,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
+               border: `1px solid ${C.border}`,
+               borderRadius: 6,
+               color: C.textSecondary,
+-              fontSize: 12,
++              fontSize: 14,
+               fontWeight: 600,
+               cursor: 'pointer',
+             }}
+@@ -387,7 +387,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
+               border: 'none',
+               borderRadius: 6,
+               color: '#fff',
+-              fontSize: 12,
++              fontSize: 14,
+               fontWeight: 600,
+               cursor: 'pointer',
+               display: 'flex',
+@@ -467,7 +467,7 @@ export const InlineAIAssist: React.FC<InlineAIAssistProps> = ({
+           border: 'none',
+           borderRadius: 4,
+           color: '#fff',
+-          fontSize: 10,
++          fontSize: 14,
+           fontWeight: 600,
+           cursor: status === 'generating' ? 'wait' : 'pointer',
+           marginLeft: 8,
+diff --git a/src/components/AddedBanner.tsx b/src/components/AddedBanner.tsx
+index e6edeeb..dd2c9e9 100644
+--- a/src/components/AddedBanner.tsx
++++ b/src/components/AddedBanner.tsx
+@@ -26,22 +26,22 @@ export const AddedBanner: React.FC<AddedBannerProps> = ({ tag, ref: nistRef, tex
+   <div style={{
+     background: TAG_BG[tag],
+     borderRadius: 12,
+-    padding: 20,
+-    marginBottom: 20,
++    padding: '20px 24px',
++    marginBottom: 24,
+     border: `1px solid ${TAG_COLORS[tag]}30`,
+   }}>
+     <div style={{
+-      fontSize: 12,
++      fontSize: 12.5,
+       color: TAG_COLORS[tag],
+       fontWeight: 600,
+-      marginBottom: 6,
++      marginBottom: 8,
+       textTransform: 'uppercase',
+       letterSpacing: '.04em',
+     }}>
+       {tag === 'fisma' ? '🔴' : '✦'} {tag === 'fisma' ? 'FISMA/RMF Requirement' : 'FedRAMP Addition'} — {nistRef}
+     </div>
+     <div style={{
+-      fontSize: 13,
++      fontSize: 14,
+       color: C.textSecondary,
+       lineHeight: 1.6,
+     }}>
+diff --git a/src/components/DynamicTable.tsx b/src/components/DynamicTable.tsx
+index 77a249b..9c320fe 100644
+--- a/src/components/DynamicTable.tsx
++++ b/src/components/DynamicTable.tsx
+@@ -37,11 +37,11 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
+         gridTemplateColumns: gridTemplate,
+         background: C.surface,
+         borderBottom: `1px solid ${C.border}`,
+-        padding: '7px 10px',
++        padding: '10px 12px',
+       }}>
+         {cols.map(c => (
+           <div key={c.k} style={{
+-            fontSize: 10.5,
++            fontSize: 11,
+             fontWeight: 700,
+             color: C.textSecondary,
+             textTransform: 'uppercase',
+@@ -58,24 +58,24 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
+         <div key={i} style={{
+           display: 'grid',
+           gridTemplateColumns: gridTemplate,
+-          padding: '5px 10px',
++          padding: '7px 12px',
+           borderBottom: i < rows.length - 1 ? `1px solid ${C.borderLight}` : 'none',
+           alignItems: 'center',
+           background: i % 2 === 0 ? 'transparent' : C.surface,
+         }}>
+           {cols.map(c => (
+-            <div key={c.k} style={{ paddingRight: 6 }}>
++            <div key={c.k} style={{ paddingRight: 8 }}>
+               {c.type === 'select' ? (
+                 <select
+                   value={(r[c.k] as string) || ''}
+                   onChange={(e) => onUpd(i, c.k, e.target.value)}
+                   style={{
+                     width: '100%',
+-                    padding: '5px 6px',
+-                    fontSize: 11.5,
++                    padding: '7px 8px',
++                    fontSize: 13,
+                     background: C.bg,
+                     border: `1px solid ${C.border}`,
+-                    borderRadius: 5,
++                    borderRadius: 6,
+                     color: C.text,
+                     outline: 'none',
+                     boxSizing: 'border-box',
+@@ -94,11 +94,11 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
+                   placeholder={c.ph || ''}
+                   style={{
+                     width: '100%',
+-                    padding: '5px 6px',
+-                    fontSize: 11.5,
++                    padding: '7px 8px',
++                    fontSize: 13,
+                     background: C.bg,
+                     border: `1px solid ${C.border}`,
+-                    borderRadius: 5,
++                    borderRadius: 6,
+                     color: C.text,
+                     outline: 'none',
+                     boxSizing: 'border-box',
+@@ -133,21 +133,21 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
+         onClick={onAdd}
+         style={{
+           width: '100%',
+-          padding: '9px',
++          padding: '11px',
+           background: 'none',
+           border: 'none',
+           borderTop: `1px solid ${C.border}`,
+           color: C.primary,
+-          fontSize: 12.5,
++          fontSize: 13,
+           fontWeight: 600,
+           cursor: 'pointer',
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+-          gap: 5,
++          gap: 6,
+         }}
+       >
+-        <span style={{ fontSize: 15 }}>+</span> Add Row
++        <span style={{ fontSize: 16 }}>+</span> Add Row
+       </button>
+     </div>
+   );
+diff --git a/src/components/ExportModal.tsx b/src/components/ExportModal.tsx
+index ae49ae8..ab1c629 100644
+--- a/src/components/ExportModal.tsx
++++ b/src/components/ExportModal.tsx
+@@ -204,7 +204,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+                 <div style={{ fontSize: 13, fontWeight: 600, color: C.error }}>
+                   NIST OSCAL 1.1.2 Schema Validation Failed
+                 </div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   {oscalValidation.validation.stats.errorCount} error(s), {oscalValidation.validation.stats.warningCount} warning(s)
+                 </div>
+               </div>
+@@ -217,7 +217,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               padding: 12,
+               maxHeight: 200,
+               overflow: 'auto',
+-              fontSize: 11,
++              fontSize: 13,
+               fontFamily: "'Fira Code', monospace",
+             }}>
+               {oscalValidation.formattedErrors.slice(0, 10).map((err, i) => (
+@@ -239,14 +239,14 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+             {/* Warnings */}
+             {oscalValidation.formattedWarnings.length > 0 && (
+               <div style={{ marginTop: 12 }}>
+-                <div style={{ fontSize: 11, fontWeight: 600, color: C.warning, marginBottom: 6 }}>
++                <div style={{ fontSize: 13, fontWeight: 600, color: C.warning, marginBottom: 6 }}>
+                   Warnings:
+                 </div>
+                 <div style={{
+                   background: C.bg,
+                   borderRadius: 6,
+                   padding: 8,
+-                  fontSize: 10,
++                  fontSize: 13,
+                 }}>
+                   {oscalValidation.formattedWarnings.slice(0, 5).map((warn, i) => (
+                     <div key={i} style={{ padding: '4px 0', color: C.textMuted }}>
+@@ -274,7 +274,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+                   borderRadius: 8,
+                   color: C.warning,
+                   fontWeight: 600,
+-                  fontSize: 12,
++                  fontSize: 13,
+                   cursor: exporting ? 'not-allowed' : 'pointer',
+                 }}
+               >
+@@ -289,7 +289,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+                   borderRadius: 8,
+                   color: '#fff',
+                   fontWeight: 600,
+-                  fontSize: 12,
++                  fontSize: 13,
+                   cursor: 'pointer',
+                 }}
+               >
+@@ -299,7 +299,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+ 
+             <div style={{
+               marginTop: 12,
+-              fontSize: 10,
++              fontSize: 13,
+               color: C.textMuted,
+               textAlign: 'center',
+             }}>
+@@ -324,7 +324,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+               <polyline points="22 4 12 14.01 9 11.01" />
+             </svg>
+-            <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
++            <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
+               ✓ OSCAL document validated against NIST 1.1.2 schema
+             </span>
+           </div>
+@@ -348,10 +348,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               <line x1="12" y1="16" x2="12.01" y2="16" />
+             </svg>
+             <div>
+-              <div style={{ fontSize: 12, fontWeight: 600, color: C.error }}>
++              <div style={{ fontSize: 13, fontWeight: 600, color: C.error }}>
+                 {validation.errorCount} required field{validation.errorCount > 1 ? 's' : ''} missing
+               </div>
+-              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4 }}>
++              <div style={{ fontSize: 13, color: C.textMuted, marginTop: 4 }}>
+                 Export will proceed, but the SSP may be incomplete.
+               </div>
+             </div>
+@@ -373,7 +373,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+               <polyline points="22 4 12 14.01 9 11.01" />
+             </svg>
+-            <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
++            <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
+               All required fields are complete
+             </span>
+           </div>
+@@ -387,7 +387,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+             borderRadius: 8,
+             padding: '10px 14px',
+             marginBottom: 16,
+-            fontSize: 12,
++            fontSize: 13,
+             color: C.error,
+           }}>
+             {error}
+@@ -424,7 +424,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+-              fontSize: 12,
++              fontSize: 13,
+               background: C.surface,
+               color: o.enabled ? C.primary : C.textMuted,
+               fontFamily: "'Fira Code', monospace",
+@@ -439,7 +439,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+             </span>
+             <div style={{ flex: 1 }}>
+               <div style={{
+-                fontSize: 12.5,
++                fontSize: 13.5,
+                 fontWeight: 600,
+                 color: o.enabled ? C.text : C.textMuted,
+               }}>
+@@ -447,7 +447,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+                 {!o.enabled && <span style={{ fontWeight: 400, marginLeft: 6 }}>(Coming Soon)</span>}
+               </div>
+               <div style={{
+-                fontSize: 10.5,
++                fontSize: 13.5,
+                 color: C.textMuted,
+               }}>
+                 {exporting === o.format ? 'Generating...' : o.description}
+@@ -455,7 +455,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+             </div>
+             {o.primary && o.enabled && (
+               <span style={{
+-                fontSize: 8.5,
++                fontSize: 9.5,
+                 color: C.primary,
+                 fontWeight: 700,
+               }}>
+@@ -479,7 +479,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
+               borderRadius: 7,
+               color: C.textSecondary,
+               cursor: exporting ? 'not-allowed' : 'pointer',
+-              fontSize: 11.5,
++              fontSize: 13.5,
+               opacity: exporting ? 0.6 : 1,
+             }}
+           >
+diff --git a/src/components/Footer.tsx b/src/components/Footer.tsx
+index c5f7ff1..d9f6714 100644
+--- a/src/components/Footer.tsx
++++ b/src/components/Footer.tsx
+@@ -72,7 +72,7 @@ export const Footer: React.FC<FooterProps> = ({
+           gap: 8,
+           padding: '10px 16px',
+           borderRadius: 8,
+-          fontSize: 13,
++          fontSize: 14,
+           fontWeight: 500,
+           cursor: isFirst ? 'default' : 'pointer',
+           background: 'none',
+@@ -110,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({
+       {/* Section Counter */}
+       <span
+         style={{
+-          fontSize: 13,
++          fontSize: 14,
+           color: C.textMuted,
+         }}
+       >
+@@ -126,7 +126,7 @@ export const Footer: React.FC<FooterProps> = ({
+           gap: 8,
+           padding: '10px 20px',
+           borderRadius: 8,
+-          fontSize: 13,
++          fontSize: 14,
+           fontWeight: 500,
+           cursor: 'pointer',
+           background: isLast ? C.bg : C.navy,
+diff --git a/src/components/ImportModal.tsx b/src/components/ImportModal.tsx
+index 9c1e1bb..96cc497 100644
+--- a/src/components/ImportModal.tsx
++++ b/src/components/ImportModal.tsx
+@@ -189,7 +189,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+ 
+         <p style={{
+           margin: '0 0 20px',
+-          fontSize: 12,
++          fontSize: 13,
+           color: C.textMuted,
+         }}>
+           {result
+@@ -214,7 +214,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+               <line x1="12" y1="8" x2="12" y2="12" />
+               <line x1="12" y1="16" x2="12.01" y2="16" />
+             </svg>
+-            <div style={{ fontSize: 12, color: C.error }}>
++            <div style={{ fontSize: 13, color: C.error }}>
+               {error}
+             </div>
+           </div>
+@@ -234,13 +234,13 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 {result.documentInfo.title}
+               </div>
+               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   <span style={{ fontWeight: 600 }}>Version:</span> {result.documentInfo.version}
+                 </div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   <span style={{ fontWeight: 600 }}>OSCAL:</span> {result.documentInfo.oscalVersion}
+                 </div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   <span style={{ fontWeight: 600 }}>Format:</span> {result.sourceFormat.toUpperCase()}
+                 </div>
+               </div>
+@@ -262,7 +262,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                   <polyline points="22 4 12 14.01 9 11.01" />
+                 </svg>
+-                <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
++                <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
+                   Valid OSCAL 1.1.2 document
+                 </span>
+               </div>
+@@ -275,11 +275,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 marginBottom: 12,
+               }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+-                  <span style={{ fontSize: 12, fontWeight: 600, color: C.warning }}>
++                  <span style={{ fontSize: 13, fontWeight: 600, color: C.warning }}>
+                     ⚠️ {result.validation.errors.length} validation issue(s)
+                   </span>
+                 </div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   Document can still be imported, but may have missing or invalid data.
+                 </div>
+               </div>
+@@ -293,11 +293,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 padding: 12,
+                 marginBottom: 12,
+               }}>
+-                <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
++                <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+                   Import Notes:
+                 </div>
+                 {result.warnings.map((warn, i) => (
+-                  <div key={i} style={{ fontSize: 11, color: C.textMuted, padding: '3px 0' }}>
++                  <div key={i} style={{ fontSize: 13, color: C.textMuted, padding: '3px 0' }}>
+                     • {warn}
+                   </div>
+                 ))}
+@@ -311,37 +311,37 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 borderRadius: 8,
+                 padding: 12,
+               }}>
+-                <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
++                <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+                   Data to Import:
+                 </div>
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                   {result.data.sysName && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>System:</span> {result.data.sysName}
+                     </div>
+                   )}
+                   {result.data.conf && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>Impact:</span> {result.data.conf}/{result.data.integ}/{result.data.avail}
+                     </div>
+                   )}
+                   {result.data.infoTypes && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>Info Types:</span> {result.data.infoTypes.length}
+                     </div>
+                   )}
+                   {result.data.ctrlData && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>Controls:</span> {Object.keys(result.data.ctrlData).length}
+                     </div>
+                   )}
+                   {result.data.bndComps && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>Components:</span> {result.data.bndComps.length}
+                     </div>
+                   )}
+                   {result.data.sepDutyMatrix && (
+-                    <div style={{ fontSize: 11, color: C.text }}>
++                    <div style={{ fontSize: 13, color: C.text }}>
+                       <span style={{ color: C.textMuted }}>Roles:</span> {result.data.sepDutyMatrix.length}
+                     </div>
+                   )}
+@@ -395,7 +395,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>
+                   Drop OSCAL SSP file here
+                 </div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>
++                <div style={{ fontSize: 13, color: C.textMuted }}>
+                   or click to browse • JSON or XML format
+                 </div>
+               </>
+@@ -411,18 +411,18 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+             padding: 12,
+             marginBottom: 16,
+           }}>
+-            <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
++            <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+               Supported Formats:
+             </div>
+             <div style={{ display: 'flex', gap: 12 }}>
+-              <div style={{ fontSize: 11, color: C.text }}>
++              <div style={{ fontSize: 13, color: C.text }}>
+                 <span style={{ fontFamily: "'Fira Code', monospace" }}>{'{ }'}</span> OSCAL JSON
+               </div>
+-              <div style={{ fontSize: 11, color: C.text }}>
++              <div style={{ fontSize: 13, color: C.text }}>
+                 <span style={{ fontFamily: "'Fira Code', monospace" }}>{'< >'}</span> OSCAL XML
+               </div>
+             </div>
+-            <div style={{ fontSize: 10, color: C.textMuted, marginTop: 8 }}>
++            <div style={{ fontSize: 13, color: C.textMuted, marginTop: 8 }}>
+               Import from eMASS, CSAM, RegScale, Telos Xacta, and other OSCAL-compliant tools
+             </div>
+           </div>
+@@ -442,7 +442,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                   borderRadius: 8,
+                   color: C.textSecondary,
+                   fontWeight: 600,
+-                  fontSize: 12,
++                  fontSize: 13,
+                   cursor: 'pointer',
+                 }}
+               >
+@@ -458,7 +458,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                   borderRadius: 8,
+                   color: '#fff',
+                   fontWeight: 600,
+-                  fontSize: 12,
++                  fontSize: 13,
+                   cursor: 'pointer',
+                 }}
+               >
+@@ -477,7 +477,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
+                 borderRadius: 8,
+                 color: C.textSecondary,
+                 fontWeight: 600,
+-                fontSize: 12,
++                fontSize: 13,
+                 cursor: importing ? 'not-allowed' : 'pointer',
+                 opacity: importing ? 0.6 : 1,
+               }}
+diff --git a/src/components/SectionSkeleton.tsx b/src/components/SectionSkeleton.tsx
+index c0c6507..3710313 100644
+--- a/src/components/SectionSkeleton.tsx
++++ b/src/components/SectionSkeleton.tsx
+@@ -21,7 +21,7 @@ const SkeletonBar: React.FC<{ width?: string; height?: number; className?: strin
+ export const SectionSkeleton: React.FC = () => (
+   <div style={{ maxWidth: 940, margin: '0 auto' }}>
+     {/* Section header skeleton */}
+-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
++    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28, paddingBottom: 20, borderBottom: '1px solid var(--border)' }}>
+       <div
+         className="animate-pulse"
+         style={{ width: 5, height: 28, borderRadius: 2, background: 'var(--border)' }}
+@@ -39,16 +39,16 @@ export const SectionSkeleton: React.FC = () => (
+     }}>
+       {/* Accent bar */}
+       <div className="animate-pulse" style={{ height: 6, background: 'var(--border)' }} />
+-      <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
++      <div style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 20 }}>
+         {/* Title */}
+         <SkeletonBar width="180px" height={18} />
+ 
+         {/* 2-column grid of fields */}
+-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
++        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+           {[1, 2, 3, 4].map((i) => (
+             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+               <SkeletonBar width="100px" height={12} />
+-              <SkeletonBar height={38} />
++              <SkeletonBar height={42} />
+             </div>
+           ))}
+         </div>
+@@ -69,13 +69,13 @@ export const SectionSkeleton: React.FC = () => (
+       boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+     }}>
+       <div className="animate-pulse" style={{ height: 6, background: 'var(--border)' }} />
+-      <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
++      <div style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 20 }}>
+         <SkeletonBar width="200px" height={18} />
+-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
++        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+           {[1, 2].map((i) => (
+             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+               <SkeletonBar width="90px" height={12} />
+-              <SkeletonBar height={38} />
++              <SkeletonBar height={42} />
+             </div>
+           ))}
+         </div>
+diff --git a/src/components/form/Card.tsx b/src/components/form/Card.tsx
+index 2ba904c..47de6e2 100644
+--- a/src/components/form/Card.tsx
++++ b/src/components/form/Card.tsx
+@@ -24,12 +24,12 @@ export const Card: React.FC<CardProps> = ({
+     }}
+   >
+     <div style={{ height: 6, background: `linear-gradient(90deg, ${accentColor}, ${lightTheme.tealLight})` }} />
+-    <div style={{ padding: 24 }}>
++    <div style={{ padding: 28 }}>
+       {title && (
+-        <div style={{ marginBottom: subtitle ? 4 : 20 }}>
+-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: C.text }}>{title}</h3>
++        <div style={{ marginBottom: subtitle ? 6 : 24 }}>
++          <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>{title}</h3>
+           {subtitle && (
+-            <p style={{ margin: '6px 0 0', fontSize: 13, color: C.textMuted, lineHeight: 1.5 }}>{subtitle}</p>
++            <p style={{ margin: '8px 0 0', fontSize: 14, color: C.textMuted, lineHeight: 1.5 }}>{subtitle}</p>
+           )}
+         </div>
+       )}
+diff --git a/src/components/form/Checkbox.tsx b/src/components/form/Checkbox.tsx
+index 6787414..0e1a363 100644
+--- a/src/components/form/Checkbox.tsx
++++ b/src/components/form/Checkbox.tsx
+@@ -7,7 +7,7 @@ interface ChkProps {
+ }
+ 
+ export const Chk: React.FC<ChkProps> = ({ checked, onChange, label }) => (
+-  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: C.text }}>
++  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, color: C.text }}>
+     <div
+       onClick={() => onChange(!checked)}
+       style={{
+diff --git a/src/components/form/Divider.tsx b/src/components/form/Divider.tsx
+index 3ddd8d2..7bf530f 100644
+--- a/src/components/form/Divider.tsx
++++ b/src/components/form/Divider.tsx
+@@ -1,5 +1,5 @@
+ import { C } from '../../config/colors';
+ 
+ export const Div: React.FC = () => (
+-  <div style={{ borderTop: `1px solid ${C.border}`, margin: '22px 0' }} />
++  <div style={{ borderTop: `1px solid ${C.border}`, margin: '28px 0' }} />
+ );
+diff --git a/src/components/form/FormField.tsx b/src/components/form/FormField.tsx
+index 9853d90..14ece74 100644
+--- a/src/components/form/FormField.tsx
++++ b/src/components/form/FormField.tsx
+@@ -21,7 +21,7 @@ export const FF: React.FC<FFProps> = ({ label, fieldId, req, hint, span, error,
+   const id = fieldId || labelToId(label);
+ 
+   return (
+-    <div style={{ gridColumn: span === 2 ? '1/-1' : undefined, marginBottom: 4 }}>
++    <div style={{ gridColumn: span === 2 ? '1/-1' : undefined, marginBottom: 10 }}>
+       <Lbl req={req} htmlFor={id}>{label}</Lbl>
+       {React.Children.map(children, (child, index) => {
+         if (index === 0 && React.isValidElement(child)) {
+@@ -40,7 +40,7 @@ export const FF: React.FC<FFProps> = ({ label, fieldId, req, hint, span, error,
+         </div>
+       )}
+       {hint && !error && (
+-        <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, lineHeight: 1.4 }}>{hint}</div>
++        <div style={{ fontSize: 12, color: C.textMuted, marginTop: 6, lineHeight: 1.5 }}>{hint}</div>
+       )}
+     </div>
+   );
+diff --git a/src/components/form/Label.tsx b/src/components/form/Label.tsx
+index 9ce3f6e..2d80575 100644
+--- a/src/components/form/Label.tsx
++++ b/src/components/form/Label.tsx
+@@ -11,12 +11,13 @@ export const Lbl: React.FC<LblProps> = ({ children, req, htmlFor }) => (
+     htmlFor={htmlFor}
+     style={{
+       display: 'block',
+-      fontSize: 11.5,
++      fontSize: 12,
+       fontWeight: 600,
+       color: C.textSecondary,
+-      marginBottom: 5,
+-      letterSpacing: '.04em',
++      marginBottom: 8,
++      letterSpacing: '.05em',
+       textTransform: 'uppercase',
++      lineHeight: 1.2,
+     }}
+   >
+     {children}
+diff --git a/src/components/form/SectionHeader.tsx b/src/components/form/SectionHeader.tsx
+index 51d6ec7..bce09a8 100644
+--- a/src/components/form/SectionHeader.tsx
++++ b/src/components/form/SectionHeader.tsx
+@@ -6,8 +6,8 @@ interface SHProps {
+ }
+ 
+ export const SH: React.FC<SHProps> = ({ title, sub }) => (
+-  <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
+-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: sub ? 8 : 0 }}>
++  <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: `1px solid ${C.border}` }}>
++    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: sub ? 10 : 0 }}>
+       <div
+         style={{
+           width: 5,
+@@ -16,10 +16,10 @@ export const SH: React.FC<SHProps> = ({ title, sub }) => (
+           background: `linear-gradient(180deg, ${lightTheme.teal}, ${lightTheme.tealDark})`,
+         }}
+       />
+-      <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: C.text }}>{title}</h3>
++      <h3 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>{title}</h3>
+     </div>
+     {sub && (
+-      <p style={{ margin: 0, paddingLeft: 16, fontSize: 13, color: C.textMuted, lineHeight: 1.6 }}>{sub}</p>
++      <p style={{ margin: 0, paddingLeft: 17, fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>{sub}</p>
+     )}
+   </div>
+ );
+diff --git a/src/components/form/SubHeader.tsx b/src/components/form/SubHeader.tsx
+index 66f014a..f79575d 100644
+--- a/src/components/form/SubHeader.tsx
++++ b/src/components/form/SubHeader.tsx
+@@ -5,5 +5,5 @@ interface SubHProps {
+ }
+ 
+ export const SubH: React.FC<SubHProps> = ({ children }) => (
+-  <h4 style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 700, color: C.primary }}>{children}</h4>
++  <h4 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: C.primary, letterSpacing: '-0.01em' }}>{children}</h4>
+ );
+diff --git a/src/components/form/TextAreaAI.tsx b/src/components/form/TextAreaAI.tsx
+index 4938320..1d304a2 100644
+--- a/src/components/form/TextAreaAI.tsx
++++ b/src/components/form/TextAreaAI.tsx
+@@ -87,7 +87,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+             border: 'none',
+             borderRadius: 4,
+             color: '#fff',
+-            fontSize: 10,
++            fontSize: 14,
+             fontWeight: 600,
+             cursor: status === 'generating' ? 'wait' : 'pointer',
+           }}
+@@ -124,7 +124,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+               <button onClick={() => handleGenerate('generate')} style={menuBtnStyle}>
+                 <span style={{ fontSize: 14 }}>✨</span>
+                 <div>
+-                  <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>
++                  <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
+                     {hasContent ? 'Regenerate' : 'Generate'}
+                   </div>
+                   <div style={{ fontSize: 9, color: C.textMuted }}>AI-write this section</div>
+@@ -135,14 +135,14 @@ export const TAAI: React.FC<TAAIProps> = ({
+                   <button onClick={() => handleGenerate('refine')} style={menuBtnStyle}>
+                     <span style={{ fontSize: 14 }}>🔄</span>
+                     <div>
+-                      <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Refine</div>
++                      <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Refine</div>
+                       <div style={{ fontSize: 9, color: C.textMuted }}>Improve clarity</div>
+                     </div>
+                   </button>
+                   <button onClick={() => handleGenerate('expand')} style={{ ...menuBtnStyle, borderBottom: 'none' }}>
+                     <span style={{ fontSize: 14 }}>📝</span>
+                     <div>
+-                      <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Expand</div>
++                      <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Expand</div>
+                       <div style={{ fontSize: 9, color: C.textMuted }}>Add more detail</div>
+                     </div>
+                   </button>
+@@ -196,7 +196,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+               <span style={{ fontSize: 20 }}>✨</span>
+               <div>
+                 <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>AI-Generated Content</div>
+-                <div style={{ fontSize: 11, color: C.textMuted }}>Review and accept or dismiss</div>
++                <div style={{ fontSize: 14, color: C.textMuted }}>Review and accept or dismiss</div>
+               </div>
+             </div>
+             <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+@@ -206,7 +206,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+                   border: `1px solid ${C.border}`,
+                   borderRadius: 8,
+                   padding: 20,
+-                  fontSize: 13,
++                  fontSize: 14,
+                   lineHeight: 1.7,
+                   color: C.text,
+                   whiteSpace: 'pre-wrap',
+@@ -224,7 +224,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+                   border: `1px solid ${C.border}`,
+                   borderRadius: 6,
+                   color: C.textSecondary,
+-                  fontSize: 12,
++                  fontSize: 14,
+                   fontWeight: 600,
+                   cursor: 'pointer',
+                 }}
+@@ -239,7 +239,7 @@ export const TAAI: React.FC<TAAIProps> = ({
+                   border: 'none',
+                   borderRadius: 6,
+                   color: '#fff',
+-                  fontSize: 12,
++                  fontSize: 14,
+                   fontWeight: 600,
+                   cursor: 'pointer',
+                   display: 'flex',
+diff --git a/src/components/form/UploadZone.tsx b/src/components/form/UploadZone.tsx
+index e2404ae..299f173 100644
+--- a/src/components/form/UploadZone.tsx
++++ b/src/components/form/UploadZone.tsx
+@@ -37,22 +37,22 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ icon, title, sub, onUplo
+         <img src={previewUrl} alt="Uploaded preview" style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 6, marginBottom: 10 }} />
+       ) : (
+         <>
+-          <div style={{ fontSize: 28, marginBottom: 6 }}>{icon}</div>
+-          <div style={{ fontSize: 13, fontWeight: 600, color: C.textSecondary }}>{title}</div>
+-          <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, maxWidth: 400 }}>{sub}</div>
++          <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
++          <div style={{ fontSize: 14, fontWeight: 600, color: C.textSecondary }}>{title}</div>
++          <div style={{ fontSize: 12, color: C.textMuted, marginTop: 6, maxWidth: 400 }}>{sub}</div>
+         </>
+       )}
+       <input ref={inputRef} type="file" accept="image/*" onChange={handleChange} style={{ display: 'none' }} />
+       <button
+         onClick={handleClick}
+         style={{
+-          marginTop: 14,
+-          padding: '7px 18px',
++          marginTop: 16,
++          padding: '9px 20px',
+           background: C.primary,
+           color: '#fff',
+           border: 'none',
+-          borderRadius: 7,
+-          fontSize: 12,
++          borderRadius: 8,
++          fontSize: 13,
+           fontWeight: 600,
+           cursor: 'pointer',
+         }}
+diff --git a/src/components/form/ValidationBanner.tsx b/src/components/form/ValidationBanner.tsx
+index f3291b2..51a580b 100644
+--- a/src/components/form/ValidationBanner.tsx
++++ b/src/components/form/ValidationBanner.tsx
+@@ -25,7 +25,7 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ errorCount,
+           <line x1="12" y1="8" x2="12" y2="12" />
+           <line x1="12" y1="16" x2="12.01" y2="16" />
+         </svg>
+-        <span style={{ fontSize: 13, color: C.error, fontWeight: 500 }}>
++        <span style={{ fontSize: 14, color: C.error, fontWeight: 500 }}>
+           {errorCount} required field{errorCount > 1 ? 's' : ''} missing
+         </span>
+       </div>
+@@ -35,8 +35,8 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ errorCount,
+           background: 'none',
+           border: `1px solid ${C.error}40`,
+           borderRadius: 6,
+-          padding: '5px 12px',
+-          fontSize: 11,
++          padding: '6px 14px',
++          fontSize: 12,
+           color: C.error,
+           cursor: 'pointer',
+           fontWeight: 600,
+diff --git a/src/components/form/layouts.ts b/src/components/form/layouts.ts
+index 9d00fc1..2d8e895 100644
+--- a/src/components/form/layouts.ts
++++ b/src/components/form/layouts.ts
+@@ -4,12 +4,14 @@ import React from 'react';
+ export const G2: React.CSSProperties = {
+   display: 'grid',
+   gridTemplateColumns: 'repeat(2, 1fr)',
+-  gap: 16,
++  gap: 24,
++  columnGap: 28,
+ };
+ 
+ 
+ export const G3: React.CSSProperties = {
+   display: 'grid',
+   gridTemplateColumns: 'repeat(3, 1fr)',
+-  gap: 16,
++  gap: 24,
++  columnGap: 28,
+ };
+diff --git a/src/components/form/styles.ts b/src/components/form/styles.ts
+index 6ee7417..61b3c4c 100644
+--- a/src/components/form/styles.ts
++++ b/src/components/form/styles.ts
+@@ -6,16 +6,17 @@ import { C } from '../../config/colors';
+ 
+ export const inputStyle: React.CSSProperties = {
+   width: '100%',
+-  padding: '10px 14px',
+-  fontSize: 13.5,
++  padding: '12px 16px',
++  fontSize: 14,
+   fontFamily: "'DM Sans', sans-serif",
+   background: C.bg,
+   border: `1px solid ${C.border}`,
+-  borderRadius: 8,
++  borderRadius: 10,
+   color: C.text,
+   outline: 'none',
+   transition: 'border-color 0.2s, box-shadow 0.2s',
+   boxSizing: 'border-box',
++  lineHeight: 1.5,
+ };
+ 
+ export const errorBorderStyle: React.CSSProperties = {
+@@ -23,9 +24,9 @@ export const errorBorderStyle: React.CSSProperties = {
+ };
+ 
+ export const errorMessageStyle: React.CSSProperties = {
+-  fontSize: 11,
++  fontSize: 12,
+   color: C.error,
+-  marginTop: 4,
++  marginTop: 6,
+   display: 'flex',
+   alignItems: 'center',
+   gap: 4,
+diff --git a/src/components/sidebar/DocumentCard.tsx b/src/components/sidebar/DocumentCard.tsx
+index a8ac66e..129a4e0 100644
+--- a/src/components/sidebar/DocumentCard.tsx
++++ b/src/components/sidebar/DocumentCard.tsx
+@@ -20,7 +20,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
+   >
+     <div
+       style={{
+-        fontSize: 10,
++        fontSize: 12,
+         color: C.sidebarTextMuted,
+         textTransform: 'uppercase',
+         letterSpacing: '0.05em',
+@@ -32,7 +32,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
+     </div>
+     <div
+       style={{
+-        fontSize: 13,
++        fontSize: 14,
+         fontWeight: 500,
+         color: C.sidebarText,
+         whiteSpace: 'nowrap',
+@@ -44,7 +44,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
+     </div>
+     <div
+       style={{
+-        fontSize: 11,
++        fontSize: 12,
+         color: C.sidebarTextMuted,
+         marginTop: 4,
+         display: 'flex',
+diff --git a/src/components/sidebar/NavGroup.tsx b/src/components/sidebar/NavGroup.tsx
+index 68926bf..76d4a90 100644
+--- a/src/components/sidebar/NavGroup.tsx
++++ b/src/components/sidebar/NavGroup.tsx
+@@ -27,7 +27,7 @@ export const NavGroup: React.FC<NavGroupProps> = ({
+     {!collapsed && (
+       <div
+         style={{
+-          fontSize: 10,
++          fontSize: 11,
+           fontWeight: 600,
+           color: C.sidebarTextMuted,
+           textTransform: 'uppercase',
+diff --git a/src/components/sidebar/NavItem.tsx b/src/components/sidebar/NavItem.tsx
+index 6a39466..fce1707 100644
+--- a/src/components/sidebar/NavItem.tsx
++++ b/src/components/sidebar/NavItem.tsx
+@@ -53,7 +53,7 @@ export const NavItem: React.FC<NavItemProps> = ({
+     {!collapsed && (
+       <span
+         style={{
+-          fontSize: 13,
++          fontSize: 14,
+           fontWeight: isActive ? 500 : 400,
+           color: isActive ? C.sidebarText : C.sidebarTextSecondary,
+           whiteSpace: 'nowrap',
+diff --git a/src/components/sidebar/SidebarLogo.tsx b/src/components/sidebar/SidebarLogo.tsx
+index 95c4797..7625d6f 100644
+--- a/src/components/sidebar/SidebarLogo.tsx
++++ b/src/components/sidebar/SidebarLogo.tsx
+@@ -64,9 +64,9 @@ export const SidebarLogo: React.FC<SidebarLogoProps> = ({ collapsed }) => (
+           <span style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em' }}>
+             ForgeComply
+           </span>
+-          <span style={{ fontSize: 13, fontWeight: 700, color: '#84cc16' }}>360</span>
++          <span style={{ fontSize: 14, fontWeight: 700, color: '#84cc16' }}>360</span>
+         </div>
+-        <div style={{ fontSize: 11, color: C.sidebarTextMuted, marginTop: 2, fontWeight: 500 }}>
++        <div style={{ fontSize: 12, color: C.sidebarTextMuted, marginTop: 2, fontWeight: 500 }}>
+           Reporter &bull; SSP Builder
+         </div>
+       </div>
+diff --git a/src/components/sidebar/SidebarProgress.tsx b/src/components/sidebar/SidebarProgress.tsx
+index 002e702..71266b2 100644
+--- a/src/components/sidebar/SidebarProgress.tsx
++++ b/src/components/sidebar/SidebarProgress.tsx
+@@ -12,7 +12,7 @@ interface SidebarProgressProps {
+ export const SidebarProgress: React.FC<SidebarProgressProps> = ({ overall, sectionsComplete }) => (
+   <div style={{ padding: '16px', borderTop: `1px solid ${C.navyLight}` }}>
+     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+-      <span style={{ fontSize: 11, fontWeight: 500, color: C.sidebarTextMuted }}>
++      <span style={{ fontSize: 12, fontWeight: 500, color: C.sidebarTextMuted }}>
+         Overall Progress
+       </span>
+       <span style={{ fontSize: 14, fontWeight: 600, color: overall === 100 ? C.success : C.teal }}>
+@@ -30,7 +30,7 @@ export const SidebarProgress: React.FC<SidebarProgressProps> = ({ overall, secti
+         }}
+       />
+     </div>
+-    <div style={{ fontSize: 11, color: C.sidebarTextMuted, marginTop: 6 }}>
++    <div style={{ fontSize: 12, color: C.sidebarTextMuted, marginTop: 6 }}>
+       {sectionsComplete} of {SECTIONS.length} sections complete
+     </div>
+   </div>
+diff --git a/src/index.css b/src/index.css
+index 4469b65..7bd7224 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -49,6 +49,8 @@
+ body {
+   margin: 0;
+   font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
++  font-size: 14px;
++  line-height: 1.5;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   background-color: var(--bg);
+@@ -130,7 +132,7 @@ body {
+ input:focus, textarea:focus, select:focus {
+   outline: none;
+   border-color: var(--teal) !important;
+-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
++  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+ }
+ 
+ /* Placeholder styles */
+diff --git a/src/sections/Controls.tsx b/src/sections/Controls.tsx
+index 43b66e8..f39a772 100644
+--- a/src/sections/Controls.tsx
++++ b/src/sections/Controls.tsx
+@@ -51,9 +51,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+       <SH title="Control Implementations" sub="RMF Step 4: Implement. Appendix A — Per NIST 800-53 Rev5 including PT and SR families." />
+       {totalWithNarrative > 0 && (
+         <div style={{
+-          display: 'flex', gap: 16, marginBottom: 12, padding: '8px 14px',
++          display: 'flex', gap: 16, marginBottom: 16, padding: '10px 16px',
+           background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`,
+-          fontSize: 11.5, color: C.textSecondary,
++          fontSize: 13, color: C.textSecondary,
+         }}>
+           <span>ISSO Review: <strong style={{ color: reviewedCount === totalWithNarrative ? C.success : C.warning }}>{reviewedCount}/{totalWithNarrative}</strong> approved</span>
+         </div>
+@@ -75,7 +75,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+           { l: 'Inherited', c: '#8b5cf6', i: '🔗' },
+           { l: 'N/A', c: C.textMuted, i: '➖' },
+         ].map((s) => (
+-          <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11.5, color: s.c }}>
++          <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, color: s.c }}>
+             <span>{s.i}</span>{s.l}
+           </div>
+         ))}
+@@ -108,7 +108,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                 <span style={{
+                   fontFamily: "'Fira Code', monospace",
+-                  fontSize: 11.5,
++                  fontSize: 12.5,
+                   fontWeight: 700,
+                   color: C.primary,
+                   background: `${C.primary}15`,
+@@ -117,8 +117,8 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                 }}>
+                   {f.c}
+                 </span>
+-                <span style={{ fontSize: 12.5, fontWeight: 600, color: C.text }}>{f.n}</span>
+-                <span style={{ fontSize: 11, color: C.textMuted }}>({count})</span>
++                <span style={{ fontSize: 13.5, fontWeight: 600, color: C.text }}>{f.n}</span>
++                <span style={{ fontSize: 12, color: C.textMuted }}>({count})</span>
+                 {isNew && (
+                   <span style={{
+                     fontSize: 8,
+@@ -136,10 +136,10 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                 <div style={{ width: 70, height: 5, background: C.surfaceAlt, borderRadius: 3, overflow: 'hidden' }}>
+                   <div style={{ width: `${pct}%`, height: '100%', background: pct === 100 ? C.success : C.primary, borderRadius: 3 }} />
+                 </div>
+-                <span style={{ fontSize: 10.5, color: C.textSecondary, fontFamily: "'Fira Code', monospace", minWidth: 30, textAlign: 'right' }}>
++                <span style={{ fontSize: 11.5, color: C.textSecondary, fontFamily: "'Fira Code', monospace", minWidth: 30, textAlign: 'right' }}>
+                   {pct}%
+                 </span>
+-                <span style={{ fontSize: 12, color: C.textMuted, transform: exp === f.c ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
++                <span style={{ fontSize: 13, color: C.textMuted, transform: exp === f.c ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                   ▶
+                 </span>
+               </div>
+@@ -151,9 +151,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                     const id = `${f.c}-${i + 1}`;
+                     const entry = (cs[id] as ControlEntry) || {};
+                     return (
+-                      <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '8px 10px', border: `1px solid ${C.borderLight}` }}>
+-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+-                          <span style={{ fontSize: 10.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
++                      <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '10px 12px', border: `1px solid ${C.borderLight}` }}>
++                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
++                          <span style={{ fontSize: 11.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
+                           <select
+                             value={entry.status || ''}
+                             onChange={(e) => {
+@@ -162,11 +162,11 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                               sf('ctrlData', n);
+                             }}
+                             style={{
+-                              padding: '3px 5px',
+-                              fontSize: 11,
++                              padding: '4px 6px',
++                              fontSize: 12,
+                               background: C.surface,
+                               border: `1px solid ${C.border}`,
+-                              borderRadius: 4,
++                              borderRadius: 5,
+                               color: C.textSecondary,
+                               outline: 'none',
+                               boxSizing: 'border-box',
+@@ -181,7 +181,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                             <option value="na">➖ N/A</option>
+                           </select>
+                           {entry.implementation && (
+-                            <span style={{ fontSize: 9, color: C.success, marginLeft: 'auto' }}>narrative</span>
++                            <span style={{ fontSize: 10, color: C.success, marginLeft: 'auto' }}>narrative</span>
+                           )}
+                         </div>
+                         <textarea
+@@ -195,20 +195,20 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                           rows={2}
+                           style={{
+                             width: '100%',
+-                            fontSize: 11,
++                            fontSize: 12,
+                             fontFamily: 'inherit',
+                             background: C.surface,
+                             border: `1px solid ${C.borderLight}`,
+-                            borderRadius: 4,
++                            borderRadius: 5,
+                             color: C.text,
+-                            padding: '4px 6px',
++                            padding: '6px 8px',
+                             resize: 'vertical',
+                             outline: 'none',
+                             boxSizing: 'border-box',
+                           }}
+                         />
+                         {/* ISSO Review row */}
+-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
++                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                           <select
+                             value={entry.reviewStatus || ''}
+                             onChange={(e) => {
+@@ -217,9 +217,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                               sf('ctrlData', n);
+                             }}
+                             style={{
+-                              padding: '2px 4px', fontSize: 10, background: C.surface,
+-                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
+-                              outline: 'none', width: 110,
++                              padding: '3px 5px', fontSize: 11, background: C.surface,
++                              border: `1px solid ${C.borderLight}`, borderRadius: 4, color: C.textSecondary,
++                              outline: 'none', width: 120,
+                             }}
+                           >
+                             <option value="">Review —</option>
+@@ -237,13 +237,13 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
+                             }}
+                             placeholder="Reviewer"
+                             style={{
+-                              padding: '2px 4px', fontSize: 10, background: C.surface,
+-                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
+-                              outline: 'none', width: 120,
++                              padding: '3px 5px', fontSize: 11, background: C.surface,
++                              border: `1px solid ${C.borderLight}`, borderRadius: 4, color: C.textSecondary,
++                              outline: 'none', width: 130,
+                             }}
+                           />
+                           {entry.reviewStatus === 'approved' && (
+-                            <span style={{ fontSize: 9, color: C.success }}>
++                            <span style={{ fontSize: 10, color: C.success }}>
+                               {entry.reviewedAt ? `Approved ${entry.reviewedAt}` : 'Approved'}
+                             </span>
+                           )}
+@@ -353,7 +353,7 @@ export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
+     <SH title="Privacy Analysis (PTA/PIA)" sub="E-Government Act §208, OMB M-03-22, SP 800-122 — Required for any system processing PII." />
+     <AddedBanner tag="fisma" ref="E-Government Act §208 / PT Family" text="FISMA mandates privacy analysis for PII systems. Rev5 added the PT (PII Processing & Transparency) family. A system processing PII without PTA/PIA will NOT receive a FISMA ATO." />
+     <SubH>Privacy Threshold Analysis (PTA)</SubH>
+-    <div style={{ background: C.surface, borderRadius: 10, padding: 16, border: `1px solid ${C.border}`, marginBottom: 16 }}>
++    <div style={{ background: C.surface, borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, marginBottom: 20 }}>
+       <div style={G2}>
+         <FF label="Does the system collect, store, or process PII?" req>
+           <Sel value={d.ptaCollectsPii} onChange={(v) => sf('ptaCollectsPii', v)} ph="Select" options={[
+diff --git a/src/sections/FIPS199.tsx b/src/sections/FIPS199.tsx
+index d07e616..5f890c1 100644
+--- a/src/sections/FIPS199.tsx
++++ b/src/sections/FIPS199.tsx
+@@ -46,7 +46,7 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
+           marginBottom: 20,
+         }}>
+           <span style={{
+-            fontSize: 12,
++            fontSize: 13,
+             fontWeight: 600,
+             color: C.textSecondary,
+             textTransform: 'uppercase',
+@@ -73,7 +73,7 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
+             { k: 'avail', l: 'Availability', i: '⏱️' },
+           ].map((o) => (
+             <div key={o.k}>
+-              <div style={{ fontSize: 12, color: C.textSecondary, marginBottom: 6, fontWeight: 600 }}>
++              <div style={{ fontSize: 13, color: C.textSecondary, marginBottom: 8, fontWeight: 600 }}>
+                 {o.i} {o.l}
+               </div>
+               <Sel
+diff --git a/src/sections/Personnel.tsx b/src/sections/Personnel.tsx
+index 5be26a0..1507ff1 100644
+--- a/src/sections/Personnel.tsx
++++ b/src/sections/Personnel.tsx
+@@ -32,13 +32,13 @@ export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
+         <div key={r.k} style={{
+           background: C.surface,
+           borderRadius: 10,
+-          padding: 16,
+-          marginBottom: 10,
++          padding: 20,
++          marginBottom: 12,
+           border: `1px solid ${C.border}`,
+         }}>
+-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+-            <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: C.primary }}>{r.l}</h4>
+-            <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>{r.ref}</span>
++          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
++            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.primary }}>{r.l}</h4>
++            <span style={{ fontSize: 11, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>{r.ref}</span>
+           </div>
+           <div style={G2}>
+             <FF label="Name" req>
+diff --git a/src/sections/PostAuth.tsx b/src/sections/PostAuth.tsx
+index 5b1f58d..31bc0c7 100644
+--- a/src/sections/PostAuth.tsx
++++ b/src/sections/PostAuth.tsx
+@@ -175,16 +175,16 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
+         border: `1px solid ${C.warning}30`,
+       }}>
+         <div style={{
+-          fontSize: 11,
++          fontSize: 12,
+           color: C.warning,
+           fontWeight: 600,
+-          marginBottom: 4,
++          marginBottom: 6,
+           textTransform: 'uppercase',
+           letterSpacing: '.05em',
+         }}>
+           ⚡ EXPANDED FOR FISMA/RMF — SP 800-137 ISCM + SP 800-37 Step 7
+         </div>
+-        <div style={{ fontSize: 12, color: C.textSecondary, lineHeight: 1.5 }}>
++        <div style={{ fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
+           This section now covers the full RMF Monitor step: 1/3 annual control rotation, Ongoing Authorization triggers, significant change process, FISMA annual reporting, and POA&M monthly cadence.
+         </div>
+       </div>
+@@ -252,11 +252,11 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
+       <div style={{
+         background: C.surface,
+         borderRadius: 10,
+-        padding: 16,
++        padding: 20,
+         border: `1px solid ${C.border}`,
+         display: 'grid',
+         gridTemplateColumns: 'repeat(2, 1fr)',
+-        gap: 8,
++        gap: 10,
+       }}>
+         {cadenceItems.map((item) => (
+           <Chk
+@@ -295,8 +295,8 @@ export const VulnSec: React.FC<Props> = ({ d, sf }) => {
+       <SH title="Vulnerability Findings" sub="Real scan results from Nessus/Qualys/Inspector. Critical+High findings generate POA&M items." />
+       {findings.length > 0 && (
+         <div style={{
+-          display: 'flex', gap: 12, marginBottom: 12, padding: '8px 14px',
+-          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 11,
++          display: 'flex', gap: 12, marginBottom: 16, padding: '10px 16px',
++          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13,
+         }}>
+           {['Critical', 'High', 'Medium', 'Low'].map((sev) => (
+             <span key={sev} style={{
+diff --git a/src/sections/RMFLifecycle.tsx b/src/sections/RMFLifecycle.tsx
+index b01da53..0450929 100644
+--- a/src/sections/RMFLifecycle.tsx
++++ b/src/sections/RMFLifecycle.tsx
+@@ -75,8 +75,8 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+             style={{
+               background: isCurrent ? `${step.color}08` : C.surface,
+               borderRadius: 10,
+-              padding: 16,
+-              marginBottom: 8,
++              padding: 18,
++              marginBottom: 10,
+               border: `1px solid ${isCurrent ? step.color + '50' : C.border}`,
+               transition: 'all 0.2s',
+             }}
+@@ -95,7 +95,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+                   display: 'flex',
+                   alignItems: 'center',
+                   justifyContent: 'center',
+-                  fontSize: 12,
++                  fontSize: 13,
+                   fontWeight: 800,
+                   color: '#fff',
+                   background: step.color,
+@@ -104,16 +104,16 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+                   {step.num}
+                 </div>
+                 <div>
+-                  <div style={{ fontSize: 13, fontWeight: 700, color: isCurrent ? C.text : C.textSecondary }}>
++                  <div style={{ fontSize: 14, fontWeight: 700, color: isCurrent ? C.text : C.textSecondary }}>
+                     {step.name}
+                   </div>
+-                  <div style={{ fontSize: 10, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>
++                  <div style={{ fontSize: 11, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>
+                     {step.ref}
+                   </div>
+                 </div>
+                 {isCurrent && (
+                   <span style={{
+-                    fontSize: 9,
++                    fontSize: 10,
+                     background: step.color,
+                     color: '#fff',
+                     padding: '2px 8px',
+@@ -142,7 +142,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+                   }} />
+                 </div>
+                 <span style={{
+-                  fontSize: 10,
++                  fontSize: 11,
+                   fontFamily: "'Fira Code', monospace",
+                   color: C.textSecondary,
+                 }}>
+@@ -178,11 +178,11 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+       <div style={{
+         background: C.surface,
+         borderRadius: 10,
+-        padding: 16,
++        padding: 20,
+         border: `1px solid ${C.border}`,
+         display: 'grid',
+         gridTemplateColumns: 'repeat(2, 1fr)',
+-        gap: 8,
++        gap: 10,
+       }}>
+         {ARTIFACTS.map((art) => (
+           <Chk
