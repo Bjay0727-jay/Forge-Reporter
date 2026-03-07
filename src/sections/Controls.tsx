@@ -51,9 +51,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
       <SH title="Control Implementations" sub="RMF Step 4: Implement. Appendix A — Per NIST 800-53 Rev5 including PT and SR families." />
       {totalWithNarrative > 0 && (
         <div style={{
-          display: 'flex', gap: 16, marginBottom: 12, padding: '8px 14px',
+          display: 'flex', gap: 16, marginBottom: 16, padding: '10px 16px',
           background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`,
-          fontSize: 11.5, color: C.textSecondary,
+          fontSize: 13, color: C.textSecondary,
         }}>
           <span>ISSO Review: <strong style={{ color: reviewedCount === totalWithNarrative ? C.success : C.warning }}>{reviewedCount}/{totalWithNarrative}</strong> approved</span>
         </div>
@@ -75,7 +75,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
           { l: 'Inherited', c: '#8b5cf6', i: '🔗' },
           { l: 'N/A', c: C.textMuted, i: '➖' },
         ].map((s) => (
-          <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11.5, color: s.c }}>
+          <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12.5, color: s.c }}>
             <span>{s.i}</span>{s.l}
           </div>
         ))}
@@ -108,7 +108,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontFamily: "'Fira Code', monospace",
-                  fontSize: 11.5,
+                  fontSize: 12.5,
                   fontWeight: 700,
                   color: C.primary,
                   background: `${C.primary}15`,
@@ -117,8 +117,8 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                 }}>
                   {f.c}
                 </span>
-                <span style={{ fontSize: 12.5, fontWeight: 600, color: C.text }}>{f.n}</span>
-                <span style={{ fontSize: 11, color: C.textMuted }}>({count})</span>
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: C.text }}>{f.n}</span>
+                <span style={{ fontSize: 12, color: C.textMuted }}>({count})</span>
                 {isNew && (
                   <span style={{
                     fontSize: 8,
@@ -136,10 +136,10 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                 <div style={{ width: 70, height: 5, background: C.surfaceAlt, borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{ width: `${pct}%`, height: '100%', background: pct === 100 ? C.success : C.primary, borderRadius: 3 }} />
                 </div>
-                <span style={{ fontSize: 10.5, color: C.textSecondary, fontFamily: "'Fira Code', monospace", minWidth: 30, textAlign: 'right' }}>
+                <span style={{ fontSize: 11.5, color: C.textSecondary, fontFamily: "'Fira Code', monospace", minWidth: 30, textAlign: 'right' }}>
                   {pct}%
                 </span>
-                <span style={{ fontSize: 12, color: C.textMuted, transform: exp === f.c ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                <span style={{ fontSize: 13, color: C.textMuted, transform: exp === f.c ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
                   ▶
                 </span>
               </div>
@@ -151,9 +151,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                     const id = `${f.c}-${i + 1}`;
                     const entry = (cs[id] as ControlEntry) || {};
                     return (
-                      <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '8px 10px', border: `1px solid ${C.borderLight}` }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-                          <span style={{ fontSize: 10.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
+                      <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '10px 12px', border: `1px solid ${C.borderLight}` }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <span style={{ fontSize: 11.5, fontFamily: "'Fira Code', monospace", color: C.textSecondary, minWidth: 42 }}>{id}</span>
                           <select
                             value={entry.status || ''}
                             onChange={(e) => {
@@ -162,11 +162,11 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                               sf('ctrlData', n);
                             }}
                             style={{
-                              padding: '3px 5px',
-                              fontSize: 11,
+                              padding: '4px 6px',
+                              fontSize: 12,
                               background: C.surface,
                               border: `1px solid ${C.border}`,
-                              borderRadius: 4,
+                              borderRadius: 5,
                               color: C.textSecondary,
                               outline: 'none',
                               boxSizing: 'border-box',
@@ -181,7 +181,7 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                             <option value="na">➖ N/A</option>
                           </select>
                           {entry.implementation && (
-                            <span style={{ fontSize: 9, color: C.success, marginLeft: 'auto' }}>narrative</span>
+                            <span style={{ fontSize: 10, color: C.success, marginLeft: 'auto' }}>narrative</span>
                           )}
                         </div>
                         <textarea
@@ -195,20 +195,20 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                           rows={2}
                           style={{
                             width: '100%',
-                            fontSize: 11,
+                            fontSize: 12,
                             fontFamily: 'inherit',
                             background: C.surface,
                             border: `1px solid ${C.borderLight}`,
-                            borderRadius: 4,
+                            borderRadius: 5,
                             color: C.text,
-                            padding: '4px 6px',
+                            padding: '6px 8px',
                             resize: 'vertical',
                             outline: 'none',
                             boxSizing: 'border-box',
                           }}
                         />
                         {/* ISSO Review row */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
                           <select
                             value={entry.reviewStatus || ''}
                             onChange={(e) => {
@@ -217,9 +217,9 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                               sf('ctrlData', n);
                             }}
                             style={{
-                              padding: '2px 4px', fontSize: 10, background: C.surface,
-                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
-                              outline: 'none', width: 110,
+                              padding: '3px 5px', fontSize: 11, background: C.surface,
+                              border: `1px solid ${C.borderLight}`, borderRadius: 4, color: C.textSecondary,
+                              outline: 'none', width: 120,
                             }}
                           >
                             <option value="">Review —</option>
@@ -237,13 +237,13 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                             }}
                             placeholder="Reviewer"
                             style={{
-                              padding: '2px 4px', fontSize: 10, background: C.surface,
-                              border: `1px solid ${C.borderLight}`, borderRadius: 3, color: C.textSecondary,
-                              outline: 'none', width: 120,
+                              padding: '3px 5px', fontSize: 11, background: C.surface,
+                              border: `1px solid ${C.borderLight}`, borderRadius: 4, color: C.textSecondary,
+                              outline: 'none', width: 130,
                             }}
                           />
                           {entry.reviewStatus === 'approved' && (
-                            <span style={{ fontSize: 9, color: C.success }}>
+                            <span style={{ fontSize: 10, color: C.success }}>
                               {entry.reviewedAt ? `Approved ${entry.reviewedAt}` : 'Approved'}
                             </span>
                           )}
@@ -353,7 +353,7 @@ export const PrivacySec: React.FC<Props> = ({ d, sf }) => (
     <SH title="Privacy Analysis (PTA/PIA)" sub="E-Government Act §208, OMB M-03-22, SP 800-122 — Required for any system processing PII." />
     <AddedBanner tag="fisma" ref="E-Government Act §208 / PT Family" text="FISMA mandates privacy analysis for PII systems. Rev5 added the PT (PII Processing & Transparency) family. A system processing PII without PTA/PIA will NOT receive a FISMA ATO." />
     <SubH>Privacy Threshold Analysis (PTA)</SubH>
-    <div style={{ background: C.surface, borderRadius: 10, padding: 16, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+    <div style={{ background: C.surface, borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, marginBottom: 20 }}>
       <div style={G2}>
         <FF label="Does the system collect, store, or process PII?" req>
           <Sel value={d.ptaCollectsPii} onChange={(v) => sf('ptaCollectsPii', v)} ph="Select" options={[

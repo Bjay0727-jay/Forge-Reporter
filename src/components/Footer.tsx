@@ -72,7 +72,7 @@ export const Footer: React.FC<FooterProps> = ({
           gap: 8,
           padding: '10px 16px',
           borderRadius: 8,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
           cursor: isFirst ? 'default' : 'pointer',
           background: 'none',
@@ -110,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({
       {/* Section Counter */}
       <span
         style={{
-          fontSize: 13,
+          fontSize: 14,
           color: C.textMuted,
         }}
       >
@@ -126,7 +126,7 @@ export const Footer: React.FC<FooterProps> = ({
           gap: 8,
           padding: '10px 20px',
           borderRadius: 8,
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
           cursor: 'pointer',
           background: isLast ? C.bg : C.navy,

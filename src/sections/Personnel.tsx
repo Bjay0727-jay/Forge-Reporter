@@ -32,13 +32,13 @@ export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
         <div key={r.k} style={{
           background: C.surface,
           borderRadius: 10,
-          padding: 16,
-          marginBottom: 10,
+          padding: 20,
+          marginBottom: 12,
           border: `1px solid ${C.border}`,
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-            <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: C.primary }}>{r.l}</h4>
-            <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>{r.ref}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.primary }}>{r.l}</h4>
+            <span style={{ fontSize: 11, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>{r.ref}</span>
           </div>
           <div style={G2}>
             <FF label="Name" req>

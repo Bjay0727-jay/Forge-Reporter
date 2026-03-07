@@ -70,7 +70,7 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
           border: 'none',
           borderRadius: 6,
           color: '#fff',
-          fontSize: 11,
+          fontSize: 14,
           fontWeight: 600,
           cursor: isGenerating ? 'wait' : 'pointer',
           opacity: isGenerating ? 0.7 : 1,
@@ -136,10 +136,10 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
             >
               <span style={{ fontSize: 16 }}>✨</span>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
                   {hasContent ? 'Regenerate' : 'Generate'}
                 </div>
-                <div style={{ fontSize: 10, color: C.textMuted }}>
+                <div style={{ fontSize: 14, color: C.textMuted }}>
                   AI-write this section
                 </div>
               </div>
@@ -164,8 +164,8 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
                 >
                   <span style={{ fontSize: 16 }}>🔄</span>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Refine</div>
-                    <div style={{ fontSize: 10, color: C.textMuted }}>Improve clarity & language</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Refine</div>
+                    <div style={{ fontSize: 14, color: C.textMuted }}>Improve clarity & language</div>
                   </div>
                 </button>
 
@@ -185,8 +185,8 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
                 >
                   <span style={{ fontSize: 16 }}>📝</span>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Expand</div>
-                    <div style={{ fontSize: 10, color: C.textMuted }}>Add more detail</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Expand</div>
+                    <div style={{ fontSize: 14, color: C.textMuted }}>Add more detail</div>
                   </div>
                 </button>
               </>
@@ -236,7 +236,7 @@ export const AIAssistButton: React.FC<AIAssistButtonProps> = ({
               borderRadius: 4,
               color: '#fff',
               padding: '4px 8px',
-              fontSize: 11,
+              fontSize: 14,
               cursor: 'pointer',
             }}
           >
@@ -309,7 +309,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>
                 AI-Generated Content
               </div>
-              <div style={{ fontSize: 11, color: C.textMuted }}>
+              <div style={{ fontSize: 14, color: C.textMuted }}>
                 Review and accept or dismiss
               </div>
             </div>
@@ -344,7 +344,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
               border: `1px solid ${C.border}`,
               borderRadius: 8,
               padding: 20,
-              fontSize: 13,
+              fontSize: 14,
               lineHeight: 1.7,
               color: C.text,
               whiteSpace: 'pre-wrap',
@@ -372,7 +372,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
               border: `1px solid ${C.border}`,
               borderRadius: 6,
               color: C.textSecondary,
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
             }}
@@ -387,7 +387,7 @@ const AIPreviewModal: React.FC<AIPreviewModalProps> = ({
               border: 'none',
               borderRadius: 6,
               color: '#fff',
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
@@ -467,7 +467,7 @@ export const InlineAIAssist: React.FC<InlineAIAssistProps> = ({
           border: 'none',
           borderRadius: 4,
           color: '#fff',
-          fontSize: 10,
+          fontSize: 14,
           fontWeight: 600,
           cursor: status === 'generating' ? 'wait' : 'pointer',
           marginLeft: 8,

@@ -204,7 +204,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.error }}>
                   NIST OSCAL 1.1.2 Schema Validation Failed
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   {oscalValidation.validation.stats.errorCount} error(s), {oscalValidation.validation.stats.warningCount} warning(s)
                 </div>
               </div>
@@ -217,7 +217,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               padding: 12,
               maxHeight: 200,
               overflow: 'auto',
-              fontSize: 11,
+              fontSize: 13,
               fontFamily: "'Fira Code', monospace",
             }}>
               {oscalValidation.formattedErrors.slice(0, 10).map((err, i) => (
@@ -239,14 +239,14 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             {/* Warnings */}
             {oscalValidation.formattedWarnings.length > 0 && (
               <div style={{ marginTop: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.warning, marginBottom: 6 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.warning, marginBottom: 6 }}>
                   Warnings:
                 </div>
                 <div style={{
                   background: C.bg,
                   borderRadius: 6,
                   padding: 8,
-                  fontSize: 10,
+                  fontSize: 13,
                 }}>
                   {oscalValidation.formattedWarnings.slice(0, 5).map((warn, i) => (
                     <div key={i} style={{ padding: '4px 0', color: C.textMuted }}>
@@ -274,7 +274,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   borderRadius: 8,
                   color: C.warning,
                   fontWeight: 600,
-                  fontSize: 12,
+                  fontSize: 13,
                   cursor: exporting ? 'not-allowed' : 'pointer',
                 }}
               >
@@ -289,7 +289,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   borderRadius: 8,
                   color: '#fff',
                   fontWeight: 600,
-                  fontSize: 12,
+                  fontSize: 13,
                   cursor: 'pointer',
                 }}
               >
@@ -299,7 +299,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
             <div style={{
               marginTop: 12,
-              fontSize: 10,
+              fontSize: 13,
               color: C.textMuted,
               textAlign: 'center',
             }}>
@@ -324,7 +324,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-            <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
               ✓ OSCAL document validated against NIST 1.1.2 schema
             </span>
           </div>
@@ -348,10 +348,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.error }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.error }}>
                 {validation.errorCount} required field{validation.errorCount > 1 ? 's' : ''} missing
               </div>
-              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4 }}>
+              <div style={{ fontSize: 13, color: C.textMuted, marginTop: 4 }}>
                 Export will proceed, but the SSP may be incomplete.
               </div>
             </div>
@@ -373,7 +373,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-            <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
               All required fields are complete
             </span>
           </div>
@@ -387,7 +387,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             borderRadius: 8,
             padding: '10px 14px',
             marginBottom: 16,
-            fontSize: 12,
+            fontSize: 13,
             color: C.error,
           }}>
             {error}
@@ -424,7 +424,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 12,
+              fontSize: 13,
               background: C.surface,
               color: o.enabled ? C.primary : C.textMuted,
               fontFamily: "'Fira Code', monospace",
@@ -439,7 +439,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             </span>
             <div style={{ flex: 1 }}>
               <div style={{
-                fontSize: 12.5,
+                fontSize: 13.5,
                 fontWeight: 600,
                 color: o.enabled ? C.text : C.textMuted,
               }}>
@@ -447,7 +447,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 {!o.enabled && <span style={{ fontWeight: 400, marginLeft: 6 }}>(Coming Soon)</span>}
               </div>
               <div style={{
-                fontSize: 10.5,
+                fontSize: 13.5,
                 color: C.textMuted,
               }}>
                 {exporting === o.format ? 'Generating...' : o.description}
@@ -455,7 +455,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             </div>
             {o.primary && o.enabled && (
               <span style={{
-                fontSize: 8.5,
+                fontSize: 9.5,
                 color: C.primary,
                 fontWeight: 700,
               }}>
@@ -479,7 +479,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               borderRadius: 7,
               color: C.textSecondary,
               cursor: exporting ? 'not-allowed' : 'pointer',
-              fontSize: 11.5,
+              fontSize: 13.5,
               opacity: exporting ? 0.6 : 1,
             }}
           >

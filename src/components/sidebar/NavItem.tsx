@@ -53,7 +53,7 @@ export const NavItem: React.FC<NavItemProps> = ({
     {!collapsed && (
       <span
         style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: isActive ? 500 : 400,
           color: isActive ? C.sidebarText : C.sidebarTextSecondary,
           whiteSpace: 'nowrap',

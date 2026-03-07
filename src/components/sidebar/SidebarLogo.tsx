@@ -64,9 +64,9 @@ export const SidebarLogo: React.FC<SidebarLogoProps> = ({ collapsed }) => (
           <span style={{ fontSize: 14, fontWeight: 700, color: '#ffffff', letterSpacing: '0.02em' }}>
             ForgeComply
           </span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#84cc16' }}>360</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#84cc16' }}>360</span>
         </div>
-        <div style={{ fontSize: 11, color: C.sidebarTextMuted, marginTop: 2, fontWeight: 500 }}>
+        <div style={{ fontSize: 12, color: C.sidebarTextMuted, marginTop: 2, fontWeight: 500 }}>
           Reporter &bull; SSP Builder
         </div>
       </div>
