@@ -87,7 +87,7 @@ export const TAAI: React.FC<TAAIProps> = ({
             border: 'none',
             borderRadius: 4,
             color: '#fff',
-            fontSize: 10,
+            fontSize: 14,
             fontWeight: 600,
             cursor: status === 'generating' ? 'wait' : 'pointer',
           }}
@@ -124,7 +124,7 @@ export const TAAI: React.FC<TAAIProps> = ({
               <button onClick={() => handleGenerate('generate')} style={menuBtnStyle}>
                 <span style={{ fontSize: 14 }}>✨</span>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
                     {hasContent ? 'Regenerate' : 'Generate'}
                   </div>
                   <div style={{ fontSize: 9, color: C.textMuted }}>AI-write this section</div>
@@ -135,14 +135,14 @@ export const TAAI: React.FC<TAAIProps> = ({
                   <button onClick={() => handleGenerate('refine')} style={menuBtnStyle}>
                     <span style={{ fontSize: 14 }}>🔄</span>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Refine</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Refine</div>
                       <div style={{ fontSize: 9, color: C.textMuted }}>Improve clarity</div>
                     </div>
                   </button>
                   <button onClick={() => handleGenerate('expand')} style={{ ...menuBtnStyle, borderBottom: 'none' }}>
                     <span style={{ fontSize: 14 }}>📝</span>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Expand</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Expand</div>
                       <div style={{ fontSize: 9, color: C.textMuted }}>Add more detail</div>
                     </div>
                   </button>
@@ -196,7 +196,7 @@ export const TAAI: React.FC<TAAIProps> = ({
               <span style={{ fontSize: 20 }}>✨</span>
               <div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>AI-Generated Content</div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>Review and accept or dismiss</div>
+                <div style={{ fontSize: 14, color: C.textMuted }}>Review and accept or dismiss</div>
               </div>
             </div>
             <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
@@ -206,7 +206,7 @@ export const TAAI: React.FC<TAAIProps> = ({
                   border: `1px solid ${C.border}`,
                   borderRadius: 8,
                   padding: 20,
-                  fontSize: 13,
+                  fontSize: 14,
                   lineHeight: 1.7,
                   color: C.text,
                   whiteSpace: 'pre-wrap',
@@ -224,7 +224,7 @@ export const TAAI: React.FC<TAAIProps> = ({
                   border: `1px solid ${C.border}`,
                   borderRadius: 6,
                   color: C.textSecondary,
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -239,7 +239,7 @@ export const TAAI: React.FC<TAAIProps> = ({
                   border: 'none',
                   borderRadius: 6,
                   color: '#fff',
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',

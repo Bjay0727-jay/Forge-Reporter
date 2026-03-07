@@ -189,7 +189,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
         <p style={{
           margin: '0 0 20px',
-          fontSize: 12,
+          fontSize: 13,
           color: C.textMuted,
         }}>
           {result
@@ -214,7 +214,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <div style={{ fontSize: 12, color: C.error }}>
+            <div style={{ fontSize: 13, color: C.error }}>
               {error}
             </div>
           </div>
@@ -234,13 +234,13 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 {result.documentInfo.title}
               </div>
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   <span style={{ fontWeight: 600 }}>Version:</span> {result.documentInfo.version}
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   <span style={{ fontWeight: 600 }}>OSCAL:</span> {result.documentInfo.oscalVersion}
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   <span style={{ fontWeight: 600 }}>Format:</span> {result.sourceFormat.toUpperCase()}
                 </div>
               </div>
@@ -262,7 +262,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                <span style={{ fontSize: 12, fontWeight: 600, color: C.success }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: C.success }}>
                   Valid OSCAL 1.1.2 document
                 </span>
               </div>
@@ -275,11 +275,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 marginBottom: 12,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: C.warning }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: C.warning }}>
                     ⚠️ {result.validation.errors.length} validation issue(s)
                   </span>
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   Document can still be imported, but may have missing or invalid data.
                 </div>
               </div>
@@ -293,11 +293,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 padding: 12,
                 marginBottom: 12,
               }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
                   Import Notes:
                 </div>
                 {result.warnings.map((warn, i) => (
-                  <div key={i} style={{ fontSize: 11, color: C.textMuted, padding: '3px 0' }}>
+                  <div key={i} style={{ fontSize: 13, color: C.textMuted, padding: '3px 0' }}>
                     • {warn}
                   </div>
                 ))}
@@ -311,37 +311,37 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 borderRadius: 8,
                 padding: 12,
               }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
                   Data to Import:
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   {result.data.sysName && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>System:</span> {result.data.sysName}
                     </div>
                   )}
                   {result.data.conf && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>Impact:</span> {result.data.conf}/{result.data.integ}/{result.data.avail}
                     </div>
                   )}
                   {result.data.infoTypes && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>Info Types:</span> {result.data.infoTypes.length}
                     </div>
                   )}
                   {result.data.ctrlData && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>Controls:</span> {Object.keys(result.data.ctrlData).length}
                     </div>
                   )}
                   {result.data.bndComps && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>Components:</span> {result.data.bndComps.length}
                     </div>
                   )}
                   {result.data.sepDutyMatrix && (
-                    <div style={{ fontSize: 11, color: C.text }}>
+                    <div style={{ fontSize: 13, color: C.text }}>
                       <span style={{ color: C.textMuted }}>Roles:</span> {result.data.sepDutyMatrix.length}
                     </div>
                   )}
@@ -395,7 +395,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>
                   Drop OSCAL SSP file here
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted }}>
+                <div style={{ fontSize: 13, color: C.textMuted }}>
                   or click to browse • JSON or XML format
                 </div>
               </>
@@ -411,18 +411,18 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             padding: 12,
             marginBottom: 16,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 8 }}>
               Supported Formats:
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div style={{ fontSize: 11, color: C.text }}>
+              <div style={{ fontSize: 13, color: C.text }}>
                 <span style={{ fontFamily: "'Fira Code', monospace" }}>{'{ }'}</span> OSCAL JSON
               </div>
-              <div style={{ fontSize: 11, color: C.text }}>
+              <div style={{ fontSize: 13, color: C.text }}>
                 <span style={{ fontFamily: "'Fira Code', monospace" }}>{'< >'}</span> OSCAL XML
               </div>
             </div>
-            <div style={{ fontSize: 10, color: C.textMuted, marginTop: 8 }}>
+            <div style={{ fontSize: 13, color: C.textMuted, marginTop: 8 }}>
               Import from eMASS, CSAM, RegScale, Telos Xacta, and other OSCAL-compliant tools
             </div>
           </div>
@@ -442,7 +442,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   borderRadius: 8,
                   color: C.textSecondary,
                   fontWeight: 600,
-                  fontSize: 12,
+                  fontSize: 13,
                   cursor: 'pointer',
                 }}
               >
@@ -458,7 +458,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                   borderRadius: 8,
                   color: '#fff',
                   fontWeight: 600,
-                  fontSize: 12,
+                  fontSize: 13,
                   cursor: 'pointer',
                 }}
               >
@@ -477,7 +477,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 borderRadius: 8,
                 color: C.textSecondary,
                 fontWeight: 600,
-                fontSize: 12,
+                fontSize: 13,
                 cursor: importing ? 'not-allowed' : 'pointer',
                 opacity: importing ? 0.6 : 1,
               }}

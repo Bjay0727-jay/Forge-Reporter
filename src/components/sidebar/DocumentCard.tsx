@@ -20,7 +20,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
   >
     <div
       style={{
-        fontSize: 10,
+        fontSize: 12,
         color: C.sidebarTextMuted,
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
@@ -32,7 +32,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
     </div>
     <div
       style={{
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 500,
         color: C.sidebarText,
         whiteSpace: 'nowrap',
@@ -44,7 +44,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ documentName, lastSa
     </div>
     <div
       style={{
-        fontSize: 11,
+        fontSize: 12,
         color: C.sidebarTextMuted,
         marginTop: 4,
         display: 'flex',

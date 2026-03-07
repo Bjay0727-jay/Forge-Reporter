@@ -46,7 +46,7 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
           marginBottom: 20,
         }}>
           <span style={{
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 600,
             color: C.textSecondary,
             textTransform: 'uppercase',
@@ -73,7 +73,7 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
             { k: 'avail', l: 'Availability', i: '⏱️' },
           ].map((o) => (
             <div key={o.k}>
-              <div style={{ fontSize: 12, color: C.textSecondary, marginBottom: 6, fontWeight: 600 }}>
+              <div style={{ fontSize: 13, color: C.textSecondary, marginBottom: 8, fontWeight: 600 }}>
                 {o.i} {o.l}
               </div>
               <Sel

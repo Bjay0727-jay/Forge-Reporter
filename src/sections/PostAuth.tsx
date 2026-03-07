@@ -175,16 +175,16 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
         border: `1px solid ${C.warning}30`,
       }}>
         <div style={{
-          fontSize: 11,
+          fontSize: 12,
           color: C.warning,
           fontWeight: 600,
-          marginBottom: 4,
+          marginBottom: 6,
           textTransform: 'uppercase',
           letterSpacing: '.05em',
         }}>
           ⚡ EXPANDED FOR FISMA/RMF — SP 800-137 ISCM + SP 800-37 Step 7
         </div>
-        <div style={{ fontSize: 12, color: C.textSecondary, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: C.textSecondary, lineHeight: 1.5 }}>
           This section now covers the full RMF Monitor step: 1/3 annual control rotation, Ongoing Authorization triggers, significant change process, FISMA annual reporting, and POA&M monthly cadence.
         </div>
       </div>
@@ -252,11 +252,11 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
       <div style={{
         background: C.surface,
         borderRadius: 10,
-        padding: 16,
+        padding: 20,
         border: `1px solid ${C.border}`,
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: 8,
+        gap: 10,
       }}>
         {cadenceItems.map((item) => (
           <Chk
@@ -295,8 +295,8 @@ export const VulnSec: React.FC<Props> = ({ d, sf }) => {
       <SH title="Vulnerability Findings" sub="Real scan results from Nessus/Qualys/Inspector. Critical+High findings generate POA&M items." />
       {findings.length > 0 && (
         <div style={{
-          display: 'flex', gap: 12, marginBottom: 12, padding: '8px 14px',
-          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 11,
+          display: 'flex', gap: 12, marginBottom: 16, padding: '10px 16px',
+          background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13,
         }}>
           {['Critical', 'High', 'Medium', 'Low'].map((sev) => (
             <span key={sev} style={{

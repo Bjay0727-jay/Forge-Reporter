@@ -27,7 +27,7 @@ export const NavGroup: React.FC<NavGroupProps> = ({
     {!collapsed && (
       <div
         style={{
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: 600,
           color: C.sidebarTextMuted,
           textTransform: 'uppercase',

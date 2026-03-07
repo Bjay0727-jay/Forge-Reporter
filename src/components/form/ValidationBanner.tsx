@@ -25,7 +25,7 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ errorCount, 
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
-        <span style={{ fontSize: 13, color: C.error, fontWeight: 500 }}>
+        <span style={{ fontSize: 14, color: C.error, fontWeight: 500 }}>
           {errorCount} required field{errorCount > 1 ? 's' : ''} missing
         </span>
       </div>
@@ -35,8 +35,8 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ errorCount, 
           background: 'none',
           border: `1px solid ${C.error}40`,
           borderRadius: 6,
-          padding: '5px 12px',
-          fontSize: 11,
+          padding: '6px 14px',
+          fontSize: 12,
           color: C.error,
           cursor: 'pointer',
           fontWeight: 600,

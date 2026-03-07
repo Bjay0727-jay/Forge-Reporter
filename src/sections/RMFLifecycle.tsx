@@ -75,8 +75,8 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
             style={{
               background: isCurrent ? `${step.color}08` : C.surface,
               borderRadius: 10,
-              padding: 16,
-              marginBottom: 8,
+              padding: 18,
+              marginBottom: 10,
               border: `1px solid ${isCurrent ? step.color + '50' : C.border}`,
               transition: 'all 0.2s',
             }}
@@ -95,7 +95,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: 800,
                   color: '#fff',
                   background: step.color,
@@ -104,16 +104,16 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
                   {step.num}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: isCurrent ? C.text : C.textSecondary }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: isCurrent ? C.text : C.textSecondary }}>
                     {step.name}
                   </div>
-                  <div style={{ fontSize: 10, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>
+                  <div style={{ fontSize: 11, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>
                     {step.ref}
                   </div>
                 </div>
                 {isCurrent && (
                   <span style={{
-                    fontSize: 9,
+                    fontSize: 10,
                     background: step.color,
                     color: '#fff',
                     padding: '2px 8px',
@@ -142,7 +142,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
                   }} />
                 </div>
                 <span style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   fontFamily: "'Fira Code', monospace",
                   color: C.textSecondary,
                 }}>
@@ -178,11 +178,11 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
       <div style={{
         background: C.surface,
         borderRadius: 10,
-        padding: 16,
+        padding: 20,
         border: `1px solid ${C.border}`,
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: 8,
+        gap: 10,
       }}>
         {ARTIFACTS.map((art) => (
           <Chk
