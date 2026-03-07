@@ -21,7 +21,7 @@ export const FF: React.FC<FFProps> = ({ label, fieldId, req, hint, span, error, 
   const id = fieldId || labelToId(label);
 
   return (
-    <div style={{ gridColumn: span === 2 ? '1/-1' : undefined, marginBottom: 4 }}>
+    <div style={{ gridColumn: span === 2 ? '1/-1' : undefined, marginBottom: 10 }}>
       <Lbl req={req} htmlFor={id}>{label}</Lbl>
       {React.Children.map(children, (child, index) => {
         if (index === 0 && React.isValidElement(child)) {
@@ -40,7 +40,7 @@ export const FF: React.FC<FFProps> = ({ label, fieldId, req, hint, span, error, 
         </div>
       )}
       {hint && !error && (
-        <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, lineHeight: 1.4 }}>{hint}</div>
+        <div style={{ fontSize: 12, color: C.textMuted, marginTop: 6, lineHeight: 1.5 }}>{hint}</div>
       )}
     </div>
   );

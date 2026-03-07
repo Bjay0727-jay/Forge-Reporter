@@ -37,11 +37,11 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
         gridTemplateColumns: gridTemplate,
         background: C.surface,
         borderBottom: `1px solid ${C.border}`,
-        padding: '7px 10px',
+        padding: '10px 12px',
       }}>
         {cols.map(c => (
           <div key={c.k} style={{
-            fontSize: 10.5,
+            fontSize: 11,
             fontWeight: 700,
             color: C.textSecondary,
             textTransform: 'uppercase',
@@ -58,24 +58,24 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
         <div key={i} style={{
           display: 'grid',
           gridTemplateColumns: gridTemplate,
-          padding: '5px 10px',
+          padding: '7px 12px',
           borderBottom: i < rows.length - 1 ? `1px solid ${C.borderLight}` : 'none',
           alignItems: 'center',
           background: i % 2 === 0 ? 'transparent' : C.surface,
         }}>
           {cols.map(c => (
-            <div key={c.k} style={{ paddingRight: 6 }}>
+            <div key={c.k} style={{ paddingRight: 8 }}>
               {c.type === 'select' ? (
                 <select
                   value={(r[c.k] as string) || ''}
                   onChange={(e) => onUpd(i, c.k, e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '5px 6px',
-                    fontSize: 11.5,
+                    padding: '7px 8px',
+                    fontSize: 13,
                     background: C.bg,
                     border: `1px solid ${C.border}`,
-                    borderRadius: 5,
+                    borderRadius: 6,
                     color: C.text,
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -94,11 +94,11 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
                   placeholder={c.ph || ''}
                   style={{
                     width: '100%',
-                    padding: '5px 6px',
-                    fontSize: 11.5,
+                    padding: '7px 8px',
+                    fontSize: 13,
                     background: C.bg,
                     border: `1px solid ${C.border}`,
-                    borderRadius: 5,
+                    borderRadius: 6,
                     color: C.text,
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -133,21 +133,21 @@ export const DT: React.FC<DTProps> = ({ cols, rows, onAdd, onDel, onUpd }) => {
         onClick={onAdd}
         style={{
           width: '100%',
-          padding: '9px',
+          padding: '11px',
           background: 'none',
           border: 'none',
           borderTop: `1px solid ${C.border}`,
           color: C.primary,
-          fontSize: 12.5,
+          fontSize: 13,
           fontWeight: 600,
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 5,
+          gap: 6,
         }}
       >
-        <span style={{ fontSize: 15 }}>+</span> Add Row
+        <span style={{ fontSize: 16 }}>+</span> Add Row
       </button>
     </div>
   );

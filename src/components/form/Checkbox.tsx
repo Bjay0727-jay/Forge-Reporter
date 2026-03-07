@@ -7,7 +7,7 @@ interface ChkProps {
 }
 
 export const Chk: React.FC<ChkProps> = ({ checked, onChange, label }) => (
-  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: C.text }}>
+  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14, color: C.text }}>
     <div
       onClick={() => onChange(!checked)}
       style={{

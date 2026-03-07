@@ -37,22 +37,22 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ icon, title, sub, onUplo
         <img src={previewUrl} alt="Uploaded preview" style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 6, marginBottom: 10 }} />
       ) : (
         <>
-          <div style={{ fontSize: 28, marginBottom: 6 }}>{icon}</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.textSecondary }}>{title}</div>
-          <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, maxWidth: 400 }}>{sub}</div>
+          <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.textSecondary }}>{title}</div>
+          <div style={{ fontSize: 12, color: C.textMuted, marginTop: 6, maxWidth: 400 }}>{sub}</div>
         </>
       )}
       <input ref={inputRef} type="file" accept="image/*" onChange={handleChange} style={{ display: 'none' }} />
       <button
         onClick={handleClick}
         style={{
-          marginTop: 14,
-          padding: '7px 18px',
+          marginTop: 16,
+          padding: '9px 20px',
           background: C.primary,
           color: '#fff',
           border: 'none',
-          borderRadius: 7,
-          fontSize: 12,
+          borderRadius: 8,
+          fontSize: 13,
           fontWeight: 600,
           cursor: 'pointer',
         }}

@@ -26,22 +26,22 @@ export const AddedBanner: React.FC<AddedBannerProps> = ({ tag, ref: nistRef, tex
   <div style={{
     background: TAG_BG[tag],
     borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
+    padding: '20px 24px',
+    marginBottom: 24,
     border: `1px solid ${TAG_COLORS[tag]}30`,
   }}>
     <div style={{
-      fontSize: 12,
+      fontSize: 12.5,
       color: TAG_COLORS[tag],
       fontWeight: 600,
-      marginBottom: 6,
+      marginBottom: 8,
       textTransform: 'uppercase',
       letterSpacing: '.04em',
     }}>
       {tag === 'fisma' ? '🔴' : '✦'} {tag === 'fisma' ? 'FISMA/RMF Requirement' : 'FedRAMP Addition'} — {nistRef}
     </div>
     <div style={{
-      fontSize: 13,
+      fontSize: 14,
       color: C.textSecondary,
       lineHeight: 1.6,
     }}>

@@ -5,5 +5,5 @@ interface SubHProps {
 }
 
 export const SubH: React.FC<SubHProps> = ({ children }) => (
-  <h4 style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 700, color: C.primary }}>{children}</h4>
+  <h4 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: C.primary, letterSpacing: '-0.01em' }}>{children}</h4>
 );

@@ -11,12 +11,13 @@ export const Lbl: React.FC<LblProps> = ({ children, req, htmlFor }) => (
     htmlFor={htmlFor}
     style={{
       display: 'block',
-      fontSize: 11.5,
+      fontSize: 12,
       fontWeight: 600,
       color: C.textSecondary,
-      marginBottom: 5,
-      letterSpacing: '.04em',
+      marginBottom: 8,
+      letterSpacing: '.05em',
       textTransform: 'uppercase',
+      lineHeight: 1.2,
     }}
   >
     {children}

@@ -49,6 +49,8 @@
 body {
   margin: 0;
   font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg);
@@ -130,7 +132,7 @@ body {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--teal) !important;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
 }
 
 /* Placeholder styles */
