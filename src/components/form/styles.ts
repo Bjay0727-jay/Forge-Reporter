@@ -6,16 +6,17 @@ import { C } from '../../config/colors';
 
 export const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '10px 14px',
-  fontSize: 13.5,
+  padding: '12px 16px',
+  fontSize: 14,
   fontFamily: "'DM Sans', sans-serif",
   background: C.bg,
   border: `1px solid ${C.border}`,
-  borderRadius: 8,
+  borderRadius: 10,
   color: C.text,
   outline: 'none',
   transition: 'border-color 0.2s, box-shadow 0.2s',
   boxSizing: 'border-box',
+  lineHeight: 1.5,
 };
 
 export const errorBorderStyle: React.CSSProperties = {
@@ -23,9 +24,9 @@ export const errorBorderStyle: React.CSSProperties = {
 };
 
 export const errorMessageStyle: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 12,
   color: C.error,
-  marginTop: 4,
+  marginTop: 6,
   display: 'flex',
   alignItems: 'center',
   gap: 4,

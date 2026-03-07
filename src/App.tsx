@@ -696,7 +696,7 @@ function AppContent() {
         <div id="ssp-editor-content" tabIndex={-1} style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '26px 34px 80px',
+          padding: '32px 44px 80px',
         }}>
           <Suspense fallback={<SectionSkeleton />}>
             <div

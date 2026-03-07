@@ -24,12 +24,12 @@ export const Card: React.FC<CardProps> = ({
     }}
   >
     <div style={{ height: 6, background: `linear-gradient(90deg, ${accentColor}, ${lightTheme.tealLight})` }} />
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 28 }}>
       {title && (
-        <div style={{ marginBottom: subtitle ? 4 : 20 }}>
-          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: C.text }}>{title}</h3>
+        <div style={{ marginBottom: subtitle ? 6 : 24 }}>
+          <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>{title}</h3>
           {subtitle && (
-            <p style={{ margin: '6px 0 0', fontSize: 13, color: C.textMuted, lineHeight: 1.5 }}>{subtitle}</p>
+            <p style={{ margin: '8px 0 0', fontSize: 14, color: C.textMuted, lineHeight: 1.5 }}>{subtitle}</p>
           )}
         </div>
       )}
