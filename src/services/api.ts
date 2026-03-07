@@ -354,9 +354,14 @@ export async function api<T = unknown>(
 
   // Handle errors
   if (!response.ok) {
-    const message = typeof data === 'object' && data && 'error' in data
-      ? String((data as { error: string }).error)
-      : `Request failed with status ${response.status}`;
+    let message: string;
+    if (typeof data === 'object' && data && 'error' in data) {
+      message = String((data as { error: string }).error);
+    } else if (response.status >= 500) {
+      message = `Server error (${response.status}). The backend may be misconfigured or temporarily unavailable.`;
+    } else {
+      message = `Request failed with status ${response.status}`;
+    }
 
     const error = new ApiError(message, response.status, data);
     notifyError(error);
@@ -433,22 +438,40 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
 /**
  * Check if the backend API is reachable (lightweight connectivity test)
  * Returns true if the server responds (any status), false on network failure.
+ *
+ * Tries /api/v1/health first (no-auth), then falls back to /api/v1/auth/me.
+ * Uses HEAD to minimise bandwidth; any HTTP response = reachable.
  */
 export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> {
   const apiUrl = getApiUrl();
   if (!apiUrl) return false;
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  // Try endpoints in order — first one that gives any HTTP response wins.
+  const endpoints = [
+    `${apiUrl}/api/v1/health`,
+    `${apiUrl}/api/v1/auth/me`,
+  ];
+
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    await fetch(`${apiUrl}/api/v1/auth/me`, {
-      method: 'HEAD',
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    return true; // Any HTTP response means the server is reachable
+    for (const url of endpoints) {
+      try {
+        await fetch(url, { method: 'HEAD', signal: controller.signal });
+        clearTimeout(timer);
+        return true;
+      } catch (e) {
+        // If aborted (timeout), bail immediately
+        if (controller.signal.aborted) throw e;
+        // Otherwise try next endpoint
+      }
+    }
+    return false;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timer);
   }
 }
 

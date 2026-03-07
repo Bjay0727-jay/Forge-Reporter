@@ -78,8 +78,12 @@ export function LoginPage({ onSwitchToRegister }: LoginPageProps) {
       }
 
       const msg = err instanceof Error ? err.message : 'Login failed';
-      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('ERR_')) {
+      const status = (err as { status?: number })?.status;
+
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('ERR_') || msg.includes('Network error')) {
         setError('Unable to reach the server. Check your connection or use Continue Offline.');
+      } else if (status && status >= 500) {
+        setError('The server encountered an error. This may be a temporary issue — please try again in a few moments. If the problem persists, contact your administrator.');
       } else if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
         const waitSec = Math.ceil(Math.min(BASE_BACKOFF_MS * Math.pow(2, newAttempts - MAX_LOGIN_ATTEMPTS), 60000) / 1000);
         setError(`${msg}. Account temporarily locked — try again in ${waitSec}s.`);
