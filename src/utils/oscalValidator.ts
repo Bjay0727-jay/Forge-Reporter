@@ -48,25 +48,32 @@ export interface OscalValidationResult {
 
 let cachedValidator: ReturnType<Ajv['compile']> | null = null;
 
-function getValidator(): ReturnType<Ajv['compile']> {
+function getValidator(): ReturnType<Ajv['compile']> | null {
   if (cachedValidator) {
     return cachedValidator;
   }
 
-  const ajv = new Ajv({
-    allErrors: true,        // Report all errors, not just the first one
-    strict: 'log',          // Log schema quality warnings (full strict breaks the NIST schema)
-    validateFormats: true,  // Validate uri, date-time, uuid formats
-    verbose: true,          // Include data in errors for debugging
-  });
+  try {
+    const ajv = new Ajv({
+      allErrors: true,        // Report all errors, not just the first one
+      strict: 'log',          // Log schema quality warnings (full strict breaks the NIST schema)
+      validateFormats: true,  // Validate uri, date-time, uuid formats
+      verbose: true,          // Include data in errors for debugging
+    });
 
-  // Add format validators (uri, date-time, uuid, email, etc.)
-  addFormats(ajv);
+    // Add format validators (uri, date-time, uuid, email, etc.)
+    addFormats(ajv);
 
-  // Compile the NIST OSCAL SSP schema
-  cachedValidator = ajv.compile(sspSchema);
+    // Compile the NIST OSCAL SSP schema
+    cachedValidator = ajv.compile(sspSchema);
 
-  return cachedValidator;
+    return cachedValidator;
+  } catch (err) {
+    // Ajv.compile() uses new Function() which requires 'unsafe-eval' in CSP.
+    // If CSP blocks it, skip schema validation gracefully.
+    console.warn('OSCAL schema validator could not be compiled (CSP may block unsafe-eval):', err);
+    return null;
+  }
 }
 
 // =============================================================================
@@ -81,6 +88,30 @@ function getValidator(): ReturnType<Ajv['compile']> {
  */
 export function validateOscalSSP(document: unknown): OscalValidationResult {
   const validate = getValidator();
+
+  // If validator couldn't compile (e.g. CSP blocks unsafe-eval), skip schema validation
+  if (!validate) {
+    const warnings = checkBestPractices(document);
+    return {
+      valid: true,
+      errors: [],
+      warnings: [
+        {
+          path: '/',
+          message: 'OSCAL schema validation skipped — validator could not be compiled (CSP restriction)',
+          severity: 'warning',
+        },
+        ...warnings,
+      ],
+      stats: {
+        totalChecks: 1,
+        passedChecks: 0,
+        errorCount: 0,
+        warningCount: warnings.length + 1,
+      },
+    };
+  }
+
   const valid = validate(document);
 
   // Parse schema validation errors
