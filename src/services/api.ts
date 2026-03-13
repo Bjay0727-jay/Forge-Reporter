@@ -23,7 +23,9 @@ const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 // Default API URL from environment, falling back to ForgeComply 360 production API
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forge-comply360-api.stanley-riley.workers.dev';
 
-// Allowed API URL patterns — restrict to known trusted domains
+// Allowed API URL patterns — restrict to known trusted domains.
+// NOTE: The backend Worker CORS_ORIGIN must match this app's deployment origin
+// (https://forge-reporter.pages.dev), NOT https://forgecomply360.pages.dev.
 const ALLOWED_API_DOMAINS = [
   'forge-comply360-api.stanley-riley.workers.dev',
   'forge-comply360-api-demo.stanley-riley.workers.dev',
@@ -440,7 +442,8 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
  * Returns true if the server responds (any status), false on network failure.
  *
  * Tries /api/v1/health first (no-auth), then falls back to /api/v1/auth/me.
- * Uses HEAD to minimise bandwidth; any HTTP response = reachable.
+ * Uses HEAD with no-cors mode to minimise bandwidth and suppress noisy
+ * 401 console errors from unauthenticated endpoints; any response = reachable.
  */
 export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> {
   const apiUrl = getApiUrl();
@@ -458,7 +461,12 @@ export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> 
   try {
     for (const url of endpoints) {
       try {
-        await fetch(url, { method: 'HEAD', signal: controller.signal });
+        await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          credentials: 'omit',
+          signal: controller.signal,
+        });
         clearTimeout(timer);
         return true;
       } catch (e) {
