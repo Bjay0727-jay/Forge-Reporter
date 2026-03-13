@@ -23,7 +23,9 @@ const TOKEN_REFRESH_THRESHOLD_MINUTES = 5;
 // Default API URL from environment, falling back to ForgeComply 360 production API
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://forge-comply360-api.stanley-riley.workers.dev';
 
-// Allowed API URL patterns — restrict to known trusted domains
+// Allowed API URL patterns — restrict to known trusted domains.
+// NOTE: The backend Worker CORS_ORIGIN must match this app's deployment origin
+// (https://forge-reporter.pages.dev), NOT https://forgecomply360.pages.dev.
 const ALLOWED_API_DOMAINS = [
   'forge-comply360-api.stanley-riley.workers.dev',
   'forge-comply360-api-demo.stanley-riley.workers.dev',
