@@ -107,8 +107,8 @@ function AppContent() {
   const [collapsed, setCollapsed] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  // Validation state
-  const [validation, setValidation] = useState<ValidationResult>(() => validateSSP({}));
+  // Validation state — initialize with actual data (not empty object)
+  const [validation, setValidation] = useState<ValidationResult>(() => validateSSP(data));
 
   // Ref to track if we should mark dirty
   const skipDirtyRef = useRef(false);
@@ -132,6 +132,8 @@ function AppContent() {
         console.log('[Reporter] App: Server data received:', serverData);
         if (serverData) {
           setData(serverData);
+          // Update validation immediately so export modal shows correct status
+          setValidation(validateSSP(serverData));
           // Also save to localStorage for offline access
           localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
           console.log('[Reporter] App: Data loaded and saved to localStorage');
@@ -464,13 +466,12 @@ function AppContent() {
   const handleImport = (result: OscalImportResult) => {
     if (result.success && result.data) {
       // Merge imported data with existing data (imported data takes precedence)
-      setData((prev) => ({
-        ...prev,
-        ...result.data,
-      }));
-
-      // Update validation
-      setValidation(validateSSP(result.data));
+      setData((prev) => {
+        const merged = { ...prev, ...result.data };
+        // Update validation with the merged data (not just imported data)
+        setValidation(validateSSP(merged));
+        return merged;
+      });
 
       // Show success message
       const controlCount = result.data.ctrlData ? Object.keys(result.data.ctrlData).length : 0;
