@@ -442,7 +442,8 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
  * Returns true if the server responds (any status), false on network failure.
  *
  * Tries /api/v1/health first (no-auth), then falls back to /api/v1/auth/me.
- * Uses HEAD to minimise bandwidth; any HTTP response = reachable.
+ * Uses HEAD with no-cors mode to minimise bandwidth and suppress noisy
+ * 401 console errors from unauthenticated endpoints; any response = reachable.
  */
 export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> {
   const apiUrl = getApiUrl();
@@ -460,7 +461,12 @@ export async function checkBackendReachable(timeoutMs = 5000): Promise<boolean> 
   try {
     for (const url of endpoints) {
       try {
-        await fetch(url, { method: 'HEAD', signal: controller.signal });
+        await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          credentials: 'omit',
+          signal: controller.signal,
+        });
         clearTimeout(timer);
         return true;
       } catch (e) {
