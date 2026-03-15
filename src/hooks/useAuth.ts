@@ -20,6 +20,7 @@ import {
   onAuthFailure,
   checkBackendReachable,
 } from '../services/api';
+import { showToast } from '../utils/showToast';
 
 // =============================================================================
 // Types
@@ -216,6 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Listen for auth failures (refresh token expired)
   useEffect(() => {
     return onAuthFailure(() => {
+      showToast('Session expired — refresh token is no longer valid. Please sign in again.', 'error');
       setState((prev) => ({
         ...prev,
         user: null,
@@ -241,13 +243,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Token expiry watcher (checks every 60s)
+  // Token expiry watcher with proactive warnings (checks every 30s)
   useEffect(() => {
-    if (!state.tokenExpiresAt) return;
+    if (!state.tokenExpiresAt || !state.isOnlineMode) return;
+
+    let warnedAt5Min = false;
+    let warnedAt1Min = false;
 
     const checkExpiry = () => {
-      if (state.tokenExpiresAt && new Date() >= state.tokenExpiresAt) {
+      if (!state.tokenExpiresAt) return;
+      const now = new Date();
+      const msLeft = state.tokenExpiresAt.getTime() - now.getTime();
+      const minsLeft = msLeft / 60_000;
+
+      if (msLeft <= 0) {
+        // Token expired
         clearTokens();
+        showToast('Session expired. Please sign in again.', 'error');
         setState((prev) => ({
           ...prev,
           user: null,
@@ -256,12 +268,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isOnlineMode: false,
           error: 'Session expired. Please sign in again.',
         }));
+        return;
+      }
+
+      if (minsLeft <= 1 && !warnedAt1Min) {
+        warnedAt1Min = true;
+        showToast('Session expires in less than 1 minute. Save your work or reconnect.', 'error');
+      } else if (minsLeft <= 5 && !warnedAt5Min) {
+        warnedAt5Min = true;
+        showToast('Session expires in ~5 minutes. Your next API call will attempt a refresh.', 'warning');
       }
     };
 
-    const interval = setInterval(checkExpiry, 60000);
+    checkExpiry(); // Run immediately
+    const interval = setInterval(checkExpiry, 30_000);
     return () => clearInterval(interval);
-  }, [state.tokenExpiresAt]);
+  }, [state.tokenExpiresAt, state.isOnlineMode]);
 
   // --- Actions ---
 

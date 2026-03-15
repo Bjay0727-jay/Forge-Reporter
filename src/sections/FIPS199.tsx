@@ -6,13 +6,17 @@ import type { SSPData } from '../types';
 import { FF, Sel, SH, G3, TAAI } from '../components/FormComponents';
 import { C } from '../config/colors';
 import type { SystemContext } from '../services/ai';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
-export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
+export const FIPS199Sec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'fips_199');
   // Build system context for AI
   const systemContext: SystemContext = useMemo(() => ({
     systemName: d.sysName,
@@ -73,8 +77,8 @@ export const FIPS199Sec: React.FC<Props> = ({ d, sf }) => {
             { k: 'avail', l: 'Availability', i: '⏱️' },
           ].map((o) => (
             <div key={o.k}>
-              <div style={{ fontSize: 13, color: C.textSecondary, marginBottom: 8, fontWeight: 600 }}>
-                {o.i} {o.l}
+              <div style={{ fontSize: 13, color: err.has(o.k) ? C.error : C.textSecondary, marginBottom: 8, fontWeight: 600 }}>
+                {o.i} {o.l} {err.has(o.k) && <span style={{ fontSize: 11, fontWeight: 400 }}>— required</span>}
               </div>
               <Sel
                 value={d[o.k as keyof SSPData] as string}

@@ -7,14 +7,18 @@ import { FF, TI, TA, Sel, SH, Div, G2, SubH } from '../components/FormComponents
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import { C } from '../config/colors';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
 // Section 12: Personnel & Roles
-export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
+export const PersonnelSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'personnel');
   const addContacts = useDT(d, 'addContacts', sf);
   const roles = [
     { k: 'so', l: 'System Owner', ref: '§9.1' },
@@ -41,11 +45,11 @@ export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
             <span style={{ fontSize: 11, color: C.textMuted, fontFamily: "'Fira Code', monospace" }}>{r.ref}</span>
           </div>
           <div style={G2}>
-            <FF label="Name" req>
-              <TI value={d[`${r.k}Name` as keyof SSPData] as string} onChange={(v) => sf(`${r.k}Name`, v)} placeholder="First Last" />
+            <FF label="Name" req error={err.get(`${r.k}Name`)}>
+              <TI value={d[`${r.k}Name` as keyof SSPData] as string} onChange={(v) => sf(`${r.k}Name`, v)} placeholder="First Last" error={err.has(`${r.k}Name`)} />
             </FF>
-            <FF label="Email" req>
-              <TI value={d[`${r.k}Email` as keyof SSPData] as string} onChange={(v) => sf(`${r.k}Email`, v)} placeholder="name@agency.gov" />
+            <FF label="Email" req error={err.get(`${r.k}Email`)}>
+              <TI value={d[`${r.k}Email` as keyof SSPData] as string} onChange={(v) => sf(`${r.k}Email`, v)} placeholder="name@agency.gov" error={err.has(`${r.k}Email`)} />
             </FF>
           </div>
         </div>
@@ -69,19 +73,22 @@ export const PersonnelSec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 13: Digital Identity
-export const IdentitySec: React.FC<Props> = ({ d, sf }) => (
+export const IdentitySec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'digital_identity');
+
+  return (
   <div>
     <SH title="Digital Identity Determination" sub="NIST SP 800-63-3 IAL/AAL/FAL levels." />
     <AddedBanner tag="fedramp" ref="Appendix E / SP 800-63-3" text="FedRAMP/FISMA require IAL/AAL/FAL. Most federal requires AAL2 (MFA)." />
     <div style={G2}>
-      <FF label="IAL" req hint="Identity proofing">
+      <FF label="IAL" req hint="Identity proofing" error={err.get('ial')}>
         <Sel value={d.ial} onChange={(v) => sf('ial', v)} ph="Select" options={[
           { v: '1', l: 'IAL1 — Self-asserted' },
           { v: '2', l: 'IAL2 — Remote/in-person proofing' },
           { v: '3', l: 'IAL3 — In-person + verification' },
         ]} />
       </FF>
-      <FF label="AAL" req hint="Authentication">
+      <FF label="AAL" req hint="Authentication" error={err.get('aal')}>
         <Sel value={d.aal} onChange={(v) => sf('aal', v)} ph="Select" options={[
           { v: '1', l: 'AAL1 — Single-factor' },
           { v: '2', l: 'AAL2 — MFA' },
@@ -104,7 +111,8 @@ export const IdentitySec: React.FC<Props> = ({ d, sf }) => (
       <TA value={d.idNarr} onChange={(v) => sf('idNarr', v)} rows={4} placeholder="AAL2 multi-factor authentication with TOTP + WebAuthn…" />
     </FF>
   </div>
-);
+  );
+};
 
 // Section 14: Separation of Duties
 export const SepDutySec: React.FC<Props> = ({ d, sf }) => {
