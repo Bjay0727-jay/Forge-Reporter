@@ -4,22 +4,8 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { C } from '../config/colors';
-
-type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-interface ToastMessage {
-  id: number;
-  text: string;
-  type: ToastType;
-}
-
-let nextId = 0;
-let globalShow: ((text: string, type?: ToastType) => void) | null = null;
-
-/** Fire a toast from anywhere (after ToastContainer is mounted). */
-export function showToast(text: string, type: ToastType = 'info') {
-  globalShow?.(text, type);
-}
+import type { ToastType, ToastMessage } from '../utils/showToast';
+import { registerToastHandler, unregisterToastHandler, nextToastId } from '../utils/showToast';
 
 const TYPE_COLORS: Record<ToastType, { bg: string; border: string; color: string }> = {
   success: { bg: `${C.success}14`, border: `${C.success}40`, color: C.success },
@@ -90,11 +76,11 @@ export const ToastContainer: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    globalShow = (text: string, type: ToastType = 'info') => {
-      const id = nextId++;
+    registerToastHandler((text: string, type: ToastType = 'info') => {
+      const id = nextToastId();
       setToasts((prev) => [...prev, { id, text, type }]);
-    };
-    return () => { globalShow = null; };
+    });
+    return () => { unregisterToastHandler(); };
   }, []);
 
   if (toasts.length === 0) return null;

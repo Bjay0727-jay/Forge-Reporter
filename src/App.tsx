@@ -7,7 +7,7 @@ import { C, lightTheme, darkTheme, type ThemeMode, getThemeMode, setThemeMode, s
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
 import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary, ToastContainer } from './components';
-import { showToast } from './components/Toast';
+import { showToast } from './utils/showToast';
 import { SectionSkeleton } from './components/SectionSkeleton';
 import { SECTION_RENDERERS } from './sections';
 import { validateSSP, type ValidationResult } from './utils/validation';
