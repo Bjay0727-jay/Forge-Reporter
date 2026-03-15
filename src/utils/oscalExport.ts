@@ -80,7 +80,10 @@ export function generateOscalSSP(options: OscalExportOptions): OscalSSPDocument 
 
   // Determine impact level for profile reference
   const impactLevel = determineImpactLevel(data);
-  const defaultProfileRef = profileRef || `#nist-sp-800-53-rev5-${impactLevel}`;
+  // NIST OSCAL 1.1.2 uses resolvable URIs for import-profile.
+  // The official NIST SP 800-53 Rev 5 baselines live in the OSCAL content repo.
+  const defaultProfileRef = profileRef ||
+    `https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_${impactLevel.toUpperCase()}-baseline_profile.json`;
 
   const ssp: OscalSystemSecurityPlan = {
     uuid: generateUUID(),

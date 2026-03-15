@@ -475,21 +475,34 @@ The boundary is demarcated by [describe network boundaries]. Components within s
   };
 }
 
+/** Max length for individual system context values substituted into prompts. */
+const MAX_CONTEXT_VALUE_LENGTH = 200;
+
+/**
+ * Sanitize a single system context value before prompt interpolation.
+ * Applies the same injection-stripping rules as sanitizePromptInput but with
+ * a shorter length limit appropriate for metadata fields.
+ */
+function sanitizeContextValue(value: string | undefined, fallback: string): string {
+  if (!value) return fallback;
+  return sanitizePromptInput(value, MAX_CONTEXT_VALUE_LENGTH) || fallback;
+}
+
 /**
  * Substitute template variables in prompt
  */
 function substituteVariables(template: string, context: SystemContext): string {
   const vars: Record<string, string> = {
-    systemName: context.systemName || '[System Name]',
-    systemAcronym: context.systemAcronym || '[Acronym]',
-    impactLevel: context.impactLevel || 'Moderate',
-    orgName: context.orgName || '[Organization]',
-    authType: context.authType || 'FISMA Agency ATO',
-    cloudModel: context.cloudModel || 'cloud',
-    deployModel: context.deployModel || 'cloud',
-    conf: context.impactLevel || 'Moderate',
-    integ: context.impactLevel || 'Moderate',
-    avail: context.impactLevel || 'Moderate',
+    systemName: sanitizeContextValue(context.systemName, '[System Name]'),
+    systemAcronym: sanitizeContextValue(context.systemAcronym, '[Acronym]'),
+    impactLevel: sanitizeContextValue(context.impactLevel, 'Moderate'),
+    orgName: sanitizeContextValue(context.orgName, '[Organization]'),
+    authType: sanitizeContextValue(context.authType, 'FISMA Agency ATO'),
+    cloudModel: sanitizeContextValue(context.cloudModel, 'cloud'),
+    deployModel: sanitizeContextValue(context.deployModel, 'cloud'),
+    conf: sanitizeContextValue(context.impactLevel, 'Moderate'),
+    integ: sanitizeContextValue(context.impactLevel, 'Moderate'),
+    avail: sanitizeContextValue(context.impactLevel, 'Moderate'),
   };
 
   let result = template;
