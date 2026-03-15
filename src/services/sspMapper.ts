@@ -754,6 +754,18 @@ export async function saveSSPToBackend(sspId: string, data: SSPData, previousDat
 // =============================================================================
 
 /**
+ * Result of a collection sync operation, surfacing whether deletes
+ * were propagated and how many items were successfully posted.
+ */
+export interface CollectionSyncResult {
+  endpoint: string;
+  deleteSupported: boolean;
+  itemsSent: number;
+  itemsFailed: number;
+  failedErrors: string[];
+}
+
+/**
  * Returns true if the error is a 409 Conflict (duplicate), which is safe
  * to ignore during sync. All other errors are re-thrown.
  */
@@ -786,18 +798,21 @@ async function postIgnoringDuplicates(url: string, body: Record<string, unknown>
  * Delete all remote items for a resource and re-create from local state.
  * Falls back to add-only if the DELETE endpoint returns 404/405 (not implemented).
  *
- * LIMITATION: When the backend does not support bulk DELETE (404/405),
- * items removed locally will NOT be removed from the server. The sync
- * becomes add/update-only. This is a known limitation documented in
- * Architecture Finding #4. A future backend version should support
- * DELETE for full CRUD sync.
+ * Returns a CollectionSyncResult so callers can surface partial-failure
+ * information instead of silently swallowing it.
  */
 async function replaceRemoteCollection(
   sspId: string,
   endpoint: string,
   items: Array<Record<string, unknown>>,
-): Promise<void> {
-  let deleteSupported = true;
+): Promise<CollectionSyncResult> {
+  const result: CollectionSyncResult = {
+    endpoint,
+    deleteSupported: true,
+    itemsSent: 0,
+    itemsFailed: 0,
+    failedErrors: [],
+  };
 
   // Attempt to clear existing remote items first
   try {
@@ -806,7 +821,7 @@ async function replaceRemoteCollection(
     // If DELETE not supported (404/405), fall back to add-only
     const msg = error instanceof Error ? error.message : '';
     if (msg.includes('404') || msg.includes('405')) {
-      deleteSupported = false;
+      result.deleteSupported = false;
       console.warn(
         `[SSP Mapper] DELETE not supported for ${endpoint}. ` +
         `Falling back to add-only sync — remote deletions will not propagate.`
@@ -816,17 +831,37 @@ async function replaceRemoteCollection(
     }
   }
 
-  // Re-create all local items
-  for (const item of items) {
-    await postIgnoringDuplicates(`/api/v1/ssp/${sspId}/${endpoint}`, item);
+  // Re-create all local items — use allSettled so one POST failure
+  // doesn't abandon the remaining items
+  const postResults = await Promise.allSettled(
+    items.map((item) =>
+      postIgnoringDuplicates(`/api/v1/ssp/${sspId}/${endpoint}`, item)
+    )
+  );
+
+  for (const r of postResults) {
+    if (r.status === 'fulfilled') {
+      result.itemsSent++;
+    } else {
+      result.itemsFailed++;
+      result.failedErrors.push(r.reason instanceof Error ? r.reason.message : String(r.reason));
+    }
   }
 
-  if (!deleteSupported && items.length === 0) {
+  if (!result.deleteSupported && items.length === 0) {
     console.warn(
       `[SSP Mapper] Local ${endpoint} is empty but remote items may still exist ` +
       `(DELETE not supported). Remote cleanup requires manual intervention.`
     );
   }
+
+  if (result.itemsFailed > 0) {
+    throw new Error(
+      `[${endpoint}] ${result.itemsFailed}/${items.length} items failed to sync: ${result.failedErrors[0]}`
+    );
+  }
+
+  return result;
 }
 
 /**
