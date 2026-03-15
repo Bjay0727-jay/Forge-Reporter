@@ -184,6 +184,14 @@ export const CompletionIcon: React.FC<{ color: string }> = ({ color }) => (
   </svg>
 );
 
+/** Half-filled circle icon shown when a section is partially complete (1–99%) */
+export const PartialIcon: React.FC<{ color: string }> = ({ color }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" strokeOpacity="0.35" />
+    <circle cx="12" cy="12" r="4" fill={color} fillOpacity="0.6" />
+  </svg>
+);
+
 /** Chevron icon for collapse toggle */
 export const CollapseIcon: React.FC<{ collapsed: boolean }> = ({ collapsed }) => (
   <svg
