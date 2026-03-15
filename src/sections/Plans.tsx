@@ -7,10 +7,13 @@ import { FF, TI, Sel, SH, Div, G2, SubH, TAAI } from '../components/FormComponen
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import type { SystemContext } from '../services/ai';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
 // Helper to build system context
@@ -24,7 +27,8 @@ const useSystemContext = (d: SSPData): SystemContext => {
 };
 
 // Section 19: Contingency Plan
-export const ConPlanSec: React.FC<Props> = ({ d, sf }) => {
+export const ConPlanSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'contingency_plan');
   const systemContext = useSystemContext(d);
 
   return (
@@ -57,11 +61,11 @@ export const ConPlanSec: React.FC<Props> = ({ d, sf }) => {
       <Div />
       <SubH>Recovery Objectives</SubH>
       <div style={G2}>
-        <FF label="RTO" req>
-          <TI value={d.rto} onChange={(v) => sf('rto', v)} placeholder="e.g., 4 hours" />
+        <FF label="RTO" req error={err.get('rto')}>
+          <TI value={d.rto} onChange={(v) => sf('rto', v)} placeholder="e.g., 4 hours" error={err.has('rto')} />
         </FF>
-        <FF label="RPO" req>
-          <TI value={d.rpo} onChange={(v) => sf('rpo', v)} placeholder="e.g., 1 hour" />
+        <FF label="RPO" req error={err.get('rpo')}>
+          <TI value={d.rpo} onChange={(v) => sf('rpo', v)} placeholder="e.g., 1 hour" error={err.has('rpo')} />
         </FF>
         <FF label="MTD">
           <TI value={d.mtd} onChange={(v) => sf('mtd', v)} placeholder="e.g., 24 hours" />
@@ -93,7 +97,8 @@ export const ConPlanSec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 20: Incident Response
-export const IRPlanSec: React.FC<Props> = ({ d, sf }) => {
+export const IRPlanSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'incident_response');
   const irSeverity = useDT(d, 'irSeverity', sf);
   const systemContext = useSystemContext(d);
 
@@ -101,7 +106,7 @@ export const IRPlanSec: React.FC<Props> = ({ d, sf }) => {
     <div>
       <SH title="Incident Response Plan" sub="SP 800-61 Rev3 — Appendix I. Tested annually. US-CERT reporting required." />
       <div style={G2}>
-        <FF label="Purpose" req>
+        <FF label="Purpose" req error={err.get('irPurpose')}>
           <TAAI
             value={d.irPurpose}
             onChange={(v) => sf('irPurpose', v)}

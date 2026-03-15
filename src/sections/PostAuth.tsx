@@ -10,11 +10,14 @@ import { C } from '../config/colors';
 import type { SystemContext } from '../services/ai';
 import { isOnlineMode } from '../services/api';
 import { fetchScanFindings, mergeScanFindings } from '../services/sspMapper';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
   sspId?: string;
+  validation?: ValidationResult;
 }
 
 // Helper to build system context
@@ -150,7 +153,8 @@ export const AuthorizeSec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 24: Continuous Monitoring & ISCM
-export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
+export const ConMonSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'continuous_monitoring');
   const cmTools = useDT(d, 'cmTools', sf);
   const systemContext = useSystemContext(d);
 
@@ -192,7 +196,7 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
         </div>
       </div>
       <div style={G2}>
-        <FF label="ISCM Strategy Type" req>
+        <FF label="ISCM Strategy Type" req error={err.get('iscmType')}>
           <Sel value={d.iscmType} onChange={(v) => sf('iscmType', v)} ph="Select" options={[
             { v: 'ongoing', l: 'Ongoing Authorization (continuous)' },
             { v: '3yr', l: '3-Year ATO with Annual Assessment' },

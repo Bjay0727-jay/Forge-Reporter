@@ -5,8 +5,10 @@
 import React from 'react';
 import type { SSPData } from '../types';
 
+import type { ValidationResult } from '../utils/validation';
+
 // Section renderer type
-export type SectionRenderer = React.FC<{ d: SSPData; sf: (key: string, value: unknown) => void; sspId?: string }>;
+export type SectionRenderer = React.FC<{ d: SSPData; sf: (key: string, value: unknown) => void; sspId?: string; validation?: ValidationResult }>;
 
 // Lazy-loaded section components
 const SystemInfoSec = React.lazy(() => import('./SystemInfo').then(m => ({ default: m.SystemInfoSec })));

@@ -7,10 +7,13 @@ import { FF, TI, Sel, SH, Div, G2, SubH, UploadZone, TAAI } from '../components/
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import type { SystemContext } from '../services/ai';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
 // Helper to build system context
@@ -27,7 +30,8 @@ const useSystemContext = (d: SSPData): SystemContext => {
 };
 
 // Section 6: Authorization Boundary
-export const BoundarySec: React.FC<Props> = ({ d, sf }) => {
+export const BoundarySec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'authorization_boundary');
   const bndComps = useDT(d, 'bndComps', sf);
   const assetRows = useDT(d, 'assetRows', sf);
   const systemContext = useSystemContext(d);
@@ -35,7 +39,7 @@ export const BoundarySec: React.FC<Props> = ({ d, sf }) => {
   return (
     <div>
       <SH title="Authorization Boundary" sub="All components within the scope of authorization. Must align with network diagram and data flow diagram." />
-      <FF label="Boundary Narrative" req span={2}>
+      <FF label="Boundary Narrative" req span={2} error={err.get('bndNarr')}>
         <TAAI
           value={d.bndNarr}
           onChange={(v) => sf('bndNarr', v)}
@@ -85,13 +89,14 @@ export const BoundarySec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 7: Data Flow
-export const DataFlowSec: React.FC<Props> = ({ d, sf }) => {
+export const DataFlowSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'data_flow');
   const systemContext = useSystemContext(d);
 
   return (
     <div>
       <SH title="Data Flow" sub="How federal data flows to, from, and within the system. Must align with Appendix Q DIT reference numbers." />
-      <FF label="Data Flow Narrative" req span={2}>
+      <FF label="Data Flow Narrative" req span={2} error={err.get('dfNarr')}>
         <TAAI
           value={d.dfNarr}
           onChange={(v) => sf('dfNarr', v)}
@@ -127,14 +132,15 @@ export const DataFlowSec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 8: Network Architecture
-export const NetworkSec: React.FC<Props> = ({ d, sf }) => {
+export const NetworkSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'network_architecture');
   const netZones = useDT(d, 'netZones', sf);
   const systemContext = useSystemContext(d);
 
   return (
     <div>
       <SH title="Network Architecture" sub="Network topology, zones, segmentation. Must align with ABD and DFD." />
-      <FF label="Network Narrative" req span={2}>
+      <FF label="Network Narrative" req span={2} error={err.get('netNarr')}>
         <TAAI
           value={d.netNarr}
           onChange={(v) => sf('netNarr', v)}

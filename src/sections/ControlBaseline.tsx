@@ -5,13 +5,17 @@ import React from 'react';
 import type { SSPData } from '../types';
 import { FF, TA, Sel, SH, Div, G2, SubH } from '../components/FormComponents';
 import { DT, useDT } from '../components/DynamicTable';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
-export const ControlBaselineSec: React.FC<Props> = ({ d, sf }) => {
+export const ControlBaselineSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'control_baseline');
   const tailorRows = useDT(d, 'tailorRows', sf);
 
   return (
@@ -21,7 +25,7 @@ export const ControlBaselineSec: React.FC<Props> = ({ d, sf }) => {
         sub="RMF Step 3: Select. Choose the applicable baseline and document any tailoring or overlays."
       />
       <div style={G2}>
-        <FF label="Control Baseline" req>
+        <FF label="Control Baseline" req error={err.get('ctrlBaseline')}>
           <Sel value={d.ctrlBaseline} onChange={(v) => sf('ctrlBaseline', v)} ph="Select" options={[
             { v: 'fedramp-low', l: 'FedRAMP Low (156)' },
             { v: 'fedramp-mod', l: 'FedRAMP Moderate (325)' },

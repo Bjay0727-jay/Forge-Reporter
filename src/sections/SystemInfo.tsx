@@ -7,13 +7,17 @@ import { FF, TI, Sel, SH, Div, G2, SubH, TAAI } from '../components/FormComponen
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import type { SystemContext } from '../services/ai';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
-export const SystemInfoSec: React.FC<Props> = ({ d, sf }) => {
+export const SystemInfoSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'system_info');
   const levAuths = useDT(d, 'levAuths', sf);
 
   // Build system context for AI
@@ -39,11 +43,11 @@ export const SystemInfoSec: React.FC<Props> = ({ d, sf }) => {
         text="Every authorization package starts here. Without system identification, the AO cannot issue an authorization decision."
       />
       <div style={G2}>
-        <FF label="System Name" req>
-          <TI value={d.sysName} onChange={(v) => sf('sysName', v)} placeholder="e.g., ForgeComply 360 Enterprise Platform" />
+        <FF label="System Name" req error={err.get('sysName')}>
+          <TI value={d.sysName} onChange={(v) => sf('sysName', v)} placeholder="e.g., ForgeComply 360 Enterprise Platform" error={err.has('sysName')} />
         </FF>
-        <FF label="System Acronym" req>
-          <TI value={d.sysAcronym} onChange={(v) => sf('sysAcronym', v)} placeholder="e.g., FC360" mono />
+        <FF label="System Acronym" req error={err.get('sysAcronym')}>
+          <TI value={d.sysAcronym} onChange={(v) => sf('sysAcronym', v)} placeholder="e.g., FC360" mono error={err.has('sysAcronym')} />
         </FF>
         <FF label="FISMA System ID" hint="eMASS or CSAM system identifier">
           <TI value={d.fismaId} onChange={(v) => sf('fismaId', v)} placeholder="e.g., eMASS-12345" mono />
@@ -51,14 +55,14 @@ export const SystemInfoSec: React.FC<Props> = ({ d, sf }) => {
         <FF label="FedRAMP ID" hint="If also pursuing FedRAMP">
           <TI value={d.fedrampId} onChange={(v) => sf('fedrampId', v)} placeholder="e.g., FR-2026-XXXXX" mono />
         </FF>
-        <FF label="Owning Agency / Organization" req>
-          <TI value={d.owningAgency} onChange={(v) => sf('owningAgency', v)} placeholder="e.g., Department of Homeland Security" />
+        <FF label="Owning Agency / Organization" req error={err.get('owningAgency')}>
+          <TI value={d.owningAgency} onChange={(v) => sf('owningAgency', v)} placeholder="e.g., Department of Homeland Security" error={err.has('owningAgency')} />
         </FF>
         <FF label="Agency Component">
           <TI value={d.agencyComp} onChange={(v) => sf('agencyComp', v)} placeholder="e.g., Cybersecurity and Infrastructure Security Agency (CISA)" />
         </FF>
       </div>
-      <FF label="System Description" req span={2} hint="Purpose, functions, data processed (min 200 words)">
+      <FF label="System Description" req span={2} hint="Purpose, functions, data processed (min 200 words)" error={err.get('sysDesc')}>
         <TAAI
           value={d.sysDesc}
           onChange={(v) => sf('sysDesc', v)}
@@ -89,7 +93,7 @@ export const SystemInfoSec: React.FC<Props> = ({ d, sf }) => {
             { v: 'on-prem', l: 'On-Premises / Air-Gapped' },
           ]} />
         </FF>
-        <FF label="Authorization Type" req>
+        <FF label="Authorization Type" req error={err.get('authType')}>
           <Sel value={d.authType} onChange={(v) => sf('authType', v)} ph="Select" options={[
             { v: 'fisma-agency', l: 'FISMA Agency ATO' },
             { v: 'fisma-ongoing', l: 'FISMA Ongoing Authorization' },

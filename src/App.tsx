@@ -729,7 +729,7 @@ function AppContent() {
             >
               {Renderer && (
                 <SectionErrorBoundary sectionName={currentSectionInfo?.label || 'Section'}>
-                  <Renderer d={data} sf={setField} sspId={syncState.sspId || undefined} />
+                  <Renderer d={data} sf={setField} sspId={syncState.sspId || undefined} validation={validation} />
                 </SectionErrorBoundary>
               )}
             </div>

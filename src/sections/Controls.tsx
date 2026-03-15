@@ -1,12 +1,13 @@
 /**
  * Controls & Policies Sections (15-18)
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import type { SSPData, ControlEntry } from '../types';
 import { FF, TI, TA, Sel, SH, Div, G2, SubH } from '../components/FormComponents';
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import { C } from '../config/colors';
+import { getCustomizedTemplates, getTemplateById, applyTemplate } from '../data/controlTemplates';
 
 interface Props {
   d: SSPData;
@@ -39,7 +40,42 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
     { c: 'SR', n: 'Supply Chain Risk Mgmt', t: 12 },
   ];
 
-  const cs = d.ctrlData || {};
+  const cs = useMemo(() => d.ctrlData || {}, [d.ctrlData]);
+  const sysName = d.sysName || '';
+
+  // Apply templates for an entire family (only fills empty controls)
+  const applyFamilyTemplates = useCallback((familyCode: string) => {
+    const templates = getCustomizedTemplates(familyCode, sysName);
+    const updated = { ...cs };
+    let applied = 0;
+    for (const t of templates) {
+      const existing = updated[t.id] as ControlEntry | undefined;
+      if (!existing?.implementation) {
+        updated[t.id] = {
+          ...existing,
+          status: existing?.status || t.status,
+          implementation: t.narrative,
+        };
+        applied++;
+      }
+    }
+    if (applied > 0) sf('ctrlData', updated);
+    return applied;
+  }, [cs, sysName, sf]);
+
+  // Apply a single control template
+  const applySingleTemplate = useCallback((controlId: string) => {
+    const tmpl = getTemplateById(controlId);
+    if (!tmpl) return;
+    const updated = { ...cs };
+    const existing = (updated[controlId] as ControlEntry) || {};
+    updated[controlId] = {
+      ...existing,
+      status: existing.status || tmpl.status,
+      implementation: applyTemplate(tmpl.narrative, sysName),
+    };
+    sf('ctrlData', updated);
+  }, [cs, sysName, sf]);
 
   // Review progress stats
   const allKeys = Object.keys(cs);
@@ -146,10 +182,33 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
             </div>
             {exp === f.c && (
               <div style={{ padding: '0 14px 14px', borderTop: `1px solid ${C.borderLight}` }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8 }}>
+                {/* Apply All Templates button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8, marginBottom: 4 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); applyFamilyTemplates(f.c); }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+                      color: C.primary, background: `${C.primary}10`,
+                      border: `1px solid ${C.primary}30`, borderRadius: 6,
+                      cursor: 'pointer', transition: 'all 0.15s ease',
+                    }}
+                    title="Fill empty controls with NIST-aligned narrative templates"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="12" y1="18" x2="12" y2="12" />
+                      <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Apply All Templates
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {Array.from({ length: f.t }, (_, i) => {
                     const id = `${f.c}-${i + 1}`;
                     const entry = (cs[id] as ControlEntry) || {};
+                    const hasTemplate = Boolean(getTemplateById(id));
                     return (
                       <div key={id} style={{ background: C.bg, borderRadius: 6, padding: '10px 12px', border: `1px solid ${C.borderLight}` }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -182,6 +241,21 @@ export const ControlsSec: React.FC<Props> = ({ d, sf }) => {
                           </select>
                           {entry.implementation && (
                             <span style={{ fontSize: 10, color: C.success, marginLeft: 'auto' }}>narrative</span>
+                          )}
+                          {!entry.implementation && hasTemplate && (
+                            <button
+                              onClick={() => applySingleTemplate(id)}
+                              style={{
+                                marginLeft: entry.implementation ? 6 : 'auto',
+                                padding: '2px 8px', fontSize: 10, fontWeight: 600,
+                                color: C.primary, background: `${C.primary}08`,
+                                border: `1px solid ${C.primary}25`, borderRadius: 4,
+                                cursor: 'pointer',
+                              }}
+                              title="Fill with NIST-aligned template narrative"
+                            >
+                              Use Template
+                            </button>
                           )}
                         </div>
                         <textarea

@@ -6,10 +6,13 @@ import type { SSPData } from '../types';
 import { FF, TI, Sel, SH, Div, G2, SubH, Chk } from '../components/FormComponents';
 import { AddedBanner } from '../components/AddedBanner';
 import { C } from '../config/colors';
+import type { ValidationResult } from '../utils/validation';
+import { useFieldErrors } from '../hooks/useFieldErrors';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  validation?: ValidationResult;
 }
 
 const RMF_STEPS = [
@@ -37,7 +40,9 @@ const ARTIFACTS = [
   'Rules of Behavior (ROB)',
 ];
 
-export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
+export const RMFLifecycleSec: React.FC<Props> = ({ d, sf, validation }) => {
+  const err = useFieldErrors(validation, 'rmf_lifecycle');
+
   return (
     <div>
       <SH
@@ -50,7 +55,7 @@ export const RMFLifecycleSec: React.FC<Props> = ({ d, sf }) => {
         text="FISMA requires explicit tracking of RMF lifecycle. The AO needs to see which step the system is in and what artifacts are complete before issuing an authorization decision."
       />
       <div style={G2}>
-        <FF label="Current RMF Step" req>
+        <FF label="Current RMF Step" req error={err.get('rmfCurrentStep')}>
           <Sel
             value={d.rmfCurrentStep}
             onChange={(v) => sf('rmfCurrentStep', v)}
