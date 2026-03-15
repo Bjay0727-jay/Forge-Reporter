@@ -140,6 +140,7 @@ function AppContent() {
           console.warn('[Reporter] App: No data received from server');
         }
         setInitialLoadDone(true);
+        skipDirtyRef.current = false;
       }).catch((err) => {
         console.error('[Reporter] App: Error loading from server:', err);
         skipDirtyRef.current = false;
@@ -210,15 +211,17 @@ function AppContent() {
       if (!sspId) return;
 
       try {
-        // Conflict detection: fetch server version and compare timestamps
+        // Conflict detection: fetch server version and compare fingerprint
         const serverRes = await syncActions.loadFromServer(sspId);
         if (serverRes && syncState.lastSyncedAt) {
-          // Compare key identity fields to detect external changes
-          const serverFingerprint = [serverRes.sysName, serverRes.sysDesc, serverRes.conf, serverRes.integ, serverRes.avail].join('|');
-          const localSnapshot = [data.sysName, data.sysDesc, data.conf, data.integ, data.avail].join('|');
+          // Compare key identity and security fields to detect external changes
+          const fingerprint = (d: SSPData) =>
+            [d.sysName, d.sysDesc, d.conf, d.integ, d.avail, d.ctrlBaseline, d.authType].join('|');
+          const serverFingerprint = fingerprint(serverRes);
+          const localFingerprint = fingerprint(data);
 
-          // Simple conflict: server data differs from both local edits AND what we expect
-          if (serverFingerprint !== localSnapshot && serverRes.sysName && data.sysName && serverRes.sysName !== data.sysName) {
+          // Conflict: server fingerprint differs from local (another client changed data)
+          if (serverFingerprint !== localFingerprint) {
             console.warn('[Reporter] Conflict detected — server has different data');
             setConflictData({ server: serverRes, local: data });
             return;

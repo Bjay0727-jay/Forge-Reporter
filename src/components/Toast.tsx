@@ -2,7 +2,7 @@
  * Lightweight toast notification component.
  * Replaces browser alert() with a non-blocking, auto-dismissing notification.
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { C } from '../config/colors';
 import type { ToastType, ToastMessage } from '../utils/showToast';
 import { registerToastHandler, unregisterToastHandler, nextToastId } from '../utils/showToast';
@@ -68,8 +68,6 @@ function ToastItem({ msg, onDismiss }: { msg: ToastMessage; onDismiss: () => voi
 
 export const ToastContainer: React.FC = () => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const toastsRef = useRef(toasts);
-  toastsRef.current = toasts;
 
   const dismiss = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
