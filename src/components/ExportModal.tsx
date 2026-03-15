@@ -20,7 +20,7 @@ const EXPORT_FORMATS: ExportFormat[] = [
   { format: 'OSCAL XML', icon: '< >', description: 'Alternative OSCAL format (NIST validated)', enabled: true },
   { format: 'OSCAL YAML', icon: '---', description: 'Human-readable', enabled: false },
   { format: 'PDF Report', icon: '📄', description: 'Print-ready SSP', enabled: true },
-  { format: 'Word (DOCX)', icon: '📝', description: 'Editable FISMA/FedRAMP template', enabled: false },
+  { format: 'Word (DOCX)', icon: '📝', description: 'Editable FISMA/FedRAMP template', enabled: true },
 ];
 
 interface ExportModalProps {

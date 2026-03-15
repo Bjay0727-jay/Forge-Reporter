@@ -402,6 +402,12 @@ function AppContent() {
       const blob = await generatePDF({ data, progress });
       const filename = `${data.sysAcronym || 'SSP'}_${new Date().toISOString().split('T')[0]}.pdf`;
       downloadPDF(blob, filename);
+    } else if (format === 'Word (DOCX)') {
+      // Generate DOCX
+      const { generateDOCX, downloadDOCX } = await import('./utils/docxExport');
+      const blob = await generateDOCX({ data, progress });
+      const filename = `${data.sysAcronym || 'SSP'}_SSP_${new Date().toISOString().split('T')[0]}.docx`;
+      downloadDOCX(blob, filename);
     } else {
       // Disabled format — should not reach here, but guard anyway
       showToast(`Export to ${format} coming soon!`, 'info');
