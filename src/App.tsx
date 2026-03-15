@@ -6,7 +6,8 @@ import { useState, useCallback, useMemo, useEffect, useRef, Suspense } from 'rea
 import { C, lightTheme, darkTheme, type ThemeMode, getThemeMode, setThemeMode, setCurrentMode } from './config/colors';
 import { SECTIONS } from './config/sections';
 import type { SSPData } from './types';
-import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary } from './components';
+import { Sidebar, Header, Footer, ExportModal, ImportModal, SectionErrorBoundary, ToastContainer } from './components';
+import { showToast } from './components/Toast';
 import { SectionSkeleton } from './components/SectionSkeleton';
 import { SECTION_RENDERERS } from './sections';
 import { validateSSP, type ValidationResult } from './utils/validation';
@@ -399,8 +400,8 @@ function AppContent() {
       const filename = `${data.sysAcronym || 'SSP'}_${new Date().toISOString().split('T')[0]}.pdf`;
       downloadPDF(blob, filename);
     } else {
-      // Other formats coming soon
-      alert(`Export to ${format} coming soon!`);
+      // Disabled format — should not reach here, but guard anyway
+      showToast(`Export to ${format} coming soon!`, 'info');
     }
   };
 
@@ -410,7 +411,7 @@ function AppContent() {
     setValidation(result);
 
     if (result.isValid) {
-      alert('All required fields are complete! Your SSP is ready for export.');
+      showToast('All required fields are complete! Your SSP is ready for export.', 'success');
     } else {
       // Navigate to first section with errors
       const firstErrorSection = result.errors[0]?.section;
@@ -433,7 +434,7 @@ function AppContent() {
         const sectionId = sectionMapping[firstErrorSection] || firstErrorSection;
         setCurrentSection(sectionId);
       }
-      alert(`${result.errorCount} required field(s) are missing. Please review the highlighted sections.`);
+      showToast(`${result.errorCount} required field(s) are missing. Please review the highlighted sections.`, 'warning');
     }
   };
 
@@ -493,6 +494,7 @@ function AppContent() {
       display: 'flex',
       transition: 'background-color 0.3s ease, color 0.3s ease',
     }}>
+      <ToastContainer />
       {/* Skip to main content link for keyboard users */}
       <a
         href="#ssp-editor-content"

@@ -2,7 +2,7 @@
  * Individual navigation item button in the sidebar.
  */
 import { C } from '../../config/colors';
-import { NavIcon, CompletionIcon } from './SidebarIcons';
+import { NavIcon, CompletionIcon, PartialIcon } from './SidebarIcons';
 
 interface NavItemProps {
   sectionId: string;
@@ -66,5 +66,6 @@ export const NavItem: React.FC<NavItemProps> = ({
       </span>
     )}
     {!collapsed && progress === 100 && <CompletionIcon color={C.success} />}
+    {!collapsed && progress > 0 && progress < 100 && <PartialIcon color={C.warning} />}
   </button>
 );

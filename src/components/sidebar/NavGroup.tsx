@@ -4,6 +4,7 @@
 import { C } from '../../config/colors';
 import type { Section } from '../../config/sections';
 import { NavItem } from './NavItem';
+import { CompletionIcon, PartialIcon } from './SidebarIcons';
 import { NAV_GROUPS, SECTION_LABELS } from './navConfig';
 
 interface NavGroupProps {
@@ -22,7 +23,12 @@ export const NavGroup: React.FC<NavGroupProps> = ({
   progress,
   collapsed,
   onSectionChange,
-}) => (
+}) => {
+  const sectionProgresses = group.sectionIds.map((id) => progress[id] || 0);
+  const allComplete = sectionProgresses.length > 0 && sectionProgresses.every((p) => p === 100);
+  const anyStarted = sectionProgresses.some((p) => p > 0);
+
+  return (
   <div style={{ marginBottom: 20 }}>
     {!collapsed && (
       <div
@@ -33,9 +39,14 @@ export const NavGroup: React.FC<NavGroupProps> = ({
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
           padding: '0 12px 8px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
         }}
       >
         {group.label}
+        {allComplete && <CompletionIcon color={C.success} />}
+        {!allComplete && anyStarted && <PartialIcon color={C.warning} />}
       </div>
     )}
     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -56,4 +67,5 @@ export const NavGroup: React.FC<NavGroupProps> = ({
       })}
     </div>
   </div>
-);
+  );
+};
