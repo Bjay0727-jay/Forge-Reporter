@@ -374,10 +374,21 @@ export async function api<T = unknown>(
 }
 
 /**
- * Parse connection info from URL hash
- * Format: #token=xxx&ssp=yyy&api=zzz
+ * Parsed URL hash parameters.
+ * `section` is optional and used for deep-linking to a specific Reporter section.
  */
-export function parseUrlHash(): { token?: string; sspId?: string; apiUrl?: string } | null {
+export interface HashParams {
+  token?: string;
+  sspId?: string;
+  apiUrl?: string;
+  section?: string;
+}
+
+/**
+ * Parse connection info from URL hash
+ * Format: #token=xxx&ssp=yyy&api=zzz&section=vulns
+ */
+export function parseUrlHash(): HashParams | null {
   const hash = window.location.hash;
   if (!hash || hash.length < 2) return null;
 
@@ -385,21 +396,46 @@ export function parseUrlHash(): { token?: string; sspId?: string; apiUrl?: strin
   const token = params.get('token') || undefined;
   const sspId = params.get('ssp') || undefined;
   const apiUrlParam = params.get('api') || undefined;
+  const section = params.get('section') || undefined;
 
-  if (!token && !sspId && !apiUrlParam) return null;
+  if (!token && !sspId && !apiUrlParam && !section) return null;
 
-  return { token, sspId, apiUrl: apiUrlParam };
+  return { token, sspId, apiUrl: apiUrlParam, section };
+}
+
+/**
+ * Build a deep-link URL to open the Reporter at a specific section.
+ * Used by FC360 to generate "Open in Reporter" links.
+ *
+ * @param baseUrl  Reporter origin (e.g. https://forge-reporter.pages.dev)
+ * @param options  Optional auth/section params
+ */
+export function buildReporterUrl(
+  baseUrl: string,
+  options: { token?: string; sspId?: string; apiUrl?: string; section?: string } = {},
+): string {
+  const params = new URLSearchParams();
+  if (options.token) params.set('token', options.token);
+  if (options.sspId) params.set('ssp', options.sspId);
+  if (options.apiUrl) params.set('api', options.apiUrl);
+  if (options.section) params.set('section', options.section);
+
+  const hash = params.toString();
+  return hash ? `${baseUrl}#${hash}` : baseUrl;
 }
 
 /**
  * Initialize connection from URL hash
  * Returns true if successfully connected
  */
-export function initFromUrlHash(): { connected: boolean; sspId?: string } {
+export function initFromUrlHash(): { connected: boolean; sspId?: string; section?: string } {
   const hashParams = parseUrlHash();
   if (!hashParams) {
     return { connected: false };
   }
+
+  // Preserve section for deep-linking (before clearing hash)
+  const section = hashParams.section;
 
   // Store API URL if provided (silently ignore untrusted domains)
   if (hashParams.apiUrl) {
@@ -414,7 +450,8 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
   if (hashParams.token) {
     if (isTokenExpired(hashParams.token, 60)) {
       console.warn('Token from URL is expired');
-      return { connected: false };
+      // Still return section so offline deep-linking works
+      return { connected: false, section };
     }
     setToken(hashParams.token);
   }
@@ -426,7 +463,7 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
     sspId = payload?.sspId;
   }
 
-  // Clear URL hash for security
+  // Clear URL hash for security (token removed, section preserved via return value)
   if (window.history.replaceState) {
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
   }
@@ -434,6 +471,7 @@ export function initFromUrlHash(): { connected: boolean; sspId?: string } {
   return {
     connected: isOnlineMode(),
     sspId,
+    section,
   };
 }
 

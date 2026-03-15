@@ -13,3 +13,4 @@ export * from './ImportModal';
 export * from './AIAssist';
 export * from './ErrorBoundary';
 export * from './Toast';
+export * from './OpenInReporterButton';

@@ -1,17 +1,20 @@
 /**
  * Post-Authorization Sections (22-23)
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import type { SSPData } from '../types';
 import { FF, TI, Sel, SH, Div, G2, SubH, Chk, TAAI } from '../components/FormComponents';
 import { DT, useDT } from '../components/DynamicTable';
 import { AddedBanner } from '../components/AddedBanner';
 import { C } from '../config/colors';
 import type { SystemContext } from '../services/ai';
+import { isOnlineMode } from '../services/api';
+import { fetchScanFindings, mergeScanFindings } from '../services/sspMapper';
 
 interface Props {
   d: SSPData;
   sf: (key: string, value: unknown) => void;
+  sspId?: string;
 }
 
 // Helper to build system context
@@ -284,15 +287,69 @@ export const ConMonSec: React.FC<Props> = ({ d, sf }) => {
 };
 
 // Section 24a: Vulnerability Findings
-export const VulnSec: React.FC<Props> = ({ d, sf }) => {
+export const VulnSec: React.FC<Props> = ({ d, sf, sspId }) => {
   const vulnFindings = useDT(d, 'vulnFindings', sf);
   const findings = d.vulnFindings || [];
   const bySev: Record<string, number> = {};
   for (const f of findings) { if (f.sev) bySev[f.sev] = (bySev[f.sev] || 0) + 1; }
 
+  // ForgeScan import state
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<string | null>(null);
+
+  const handleImportScan = useCallback(async () => {
+    if (!sspId || importing) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const scanFindings = await fetchScanFindings(sspId);
+      if (scanFindings.length === 0) {
+        setImportResult('No scan findings available for this SSP.');
+      } else {
+        const current = d.vulnFindings || [];
+        const { merged, added, updated } = mergeScanFindings(current, scanFindings);
+        sf('vulnFindings', merged);
+        setImportResult(`Imported ${added} new, updated ${updated} existing findings.`);
+      }
+    } catch (e) {
+      setImportResult(`Import failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    } finally {
+      setImporting(false);
+    }
+  }, [sspId, importing, d.vulnFindings, sf]);
+
   return (
     <div>
       <SH title="Vulnerability Findings" sub="Real scan results from Nessus/Qualys/Inspector. Critical+High findings generate POA&M items." />
+      {/* ForgeScan import button */}
+      {isOnlineMode() && sspId && (
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            onClick={handleImportScan}
+            disabled={importing}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '7px 14px', fontSize: 13, fontWeight: 500,
+              color: importing ? C.textMuted : C.primary,
+              background: C.primaryLight, border: `1px solid ${C.border}`,
+              borderRadius: 8, cursor: importing ? 'wait' : 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="21 8 21 21 3 21 3 8" />
+              <rect x="1" y="3" width="22" height="5" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+            </svg>
+            {importing ? 'Importing...' : 'Import from ForgeScan'}
+          </button>
+          {importResult && (
+            <span style={{ fontSize: 12, color: importResult.startsWith('Import failed') ? C.error : C.success }}>
+              {importResult}
+            </span>
+          )}
+        </div>
+      )}
       {findings.length > 0 && (
         <div style={{
           display: 'flex', gap: 12, marginBottom: 16, padding: '10px 16px',

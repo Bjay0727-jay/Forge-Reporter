@@ -6,7 +6,7 @@ import React from 'react';
 import type { SSPData } from '../types';
 
 // Section renderer type
-export type SectionRenderer = React.FC<{ d: SSPData; sf: (key: string, value: unknown) => void }>;
+export type SectionRenderer = React.FC<{ d: SSPData; sf: (key: string, value: unknown) => void; sspId?: string }>;
 
 // Lazy-loaded section components
 const SystemInfoSec = React.lazy(() => import('./SystemInfo').then(m => ({ default: m.SystemInfoSec })));

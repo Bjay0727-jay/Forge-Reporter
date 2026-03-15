@@ -1224,3 +1224,98 @@ export async function listSSPs(): Promise<SSPListItem[]> {
   const res = await api<{ documents: SSPListItem[] }>('/api/v1/ssp');
   return res.documents || [];
 }
+
+// =============================================================================
+// ForgeScan Integration
+// =============================================================================
+
+/** Raw scan finding from ForgeScan / FC360 scan-results endpoint. */
+export interface ForgeScanFinding {
+  id: string;
+  plugin_id?: string;
+  cve?: string;
+  title: string;
+  severity: 'Critical' | 'High' | 'Medium' | 'Low' | string;
+  asset_name?: string;
+  asset_id?: string;
+  status?: string;
+  first_seen?: string;
+  last_seen?: string;
+  remediation_due?: string;
+}
+
+/**
+ * Fetch vulnerability scan findings from ForgeScan via the FC360 backend.
+ * Endpoint: GET /api/v1/ssp/{sspId}/scan-findings
+ *
+ * Returns raw ForgeScan findings that can be merged into Reporter's
+ * VulnFinding[] via `mergeScanFindings()`.
+ */
+export async function fetchScanFindings(sspId: string): Promise<ForgeScanFinding[]> {
+  const res = await api<{ findings: ForgeScanFinding[] }>(
+    `/api/v1/ssp/${sspId}/scan-findings`
+  );
+  return res.findings || [];
+}
+
+/**
+ * Merge ForgeScan findings into existing Reporter VulnFindings.
+ *
+ * - New findings (by findingId/pluginId) are appended
+ * - Existing findings are updated with latest severity/status/dates
+ * - Manually-added findings (no pluginId) are preserved untouched
+ *
+ * Returns the merged array and counts of new/updated/unchanged findings.
+ */
+export function mergeScanFindings(
+  existing: VulnFinding[],
+  scanFindings: ForgeScanFinding[],
+): { merged: VulnFinding[]; added: number; updated: number; unchanged: number } {
+  // Index existing by findingId or pluginId for O(1) lookup
+  const byFindingId = new Map<string, number>();
+  const byPluginId = new Map<string, number>();
+  existing.forEach((v, i) => {
+    if (v.findingId) byFindingId.set(v.findingId, i);
+    if (v.pluginId) byPluginId.set(v.pluginId, i);
+  });
+
+  const merged = [...existing];
+  let added = 0;
+  let updated = 0;
+
+  for (const sf of scanFindings) {
+    // Try to match by finding ID first, then by plugin ID
+    const existingIdx = byFindingId.get(sf.id) ?? (sf.plugin_id ? byPluginId.get(sf.plugin_id) : undefined);
+
+    const mapped: VulnFinding = {
+      findingId: sf.id,
+      pluginId: sf.plugin_id,
+      cve: sf.cve,
+      title: sf.title,
+      sev: sf.severity,
+      asset: sf.asset_name || sf.asset_id,
+      status: sf.status || 'Open',
+      detected: sf.first_seen || sf.last_seen,
+      due: sf.remediation_due,
+    };
+
+    if (existingIdx !== undefined) {
+      // Preserve manually set fields (poamId, status overrides)
+      const prev = merged[existingIdx];
+      merged[existingIdx] = {
+        ...mapped,
+        // Keep user overrides if they exist
+        status: prev.status || mapped.status,
+        poamId: prev.poamId,
+        due: prev.due || mapped.due,
+      };
+      updated++;
+    } else {
+      merged.push(mapped);
+      added++;
+    }
+  }
+
+  const unchanged = existing.length - updated;
+  return { merged, added, updated, unchanged };
+}
