@@ -55,9 +55,18 @@ function AppContent() {
   const [authState, authActions] = useAuth();
   const [syncState, syncActions] = useSync(authState.isOnlineMode);
 
-  // Current section state — initialized from URL hash for deep linking
+  // Current section state — initialized from URL hash for deep linking.
+  // Supports both #section=xxx and #token=...&section=xxx formats.
   const [currentSection, setCurrentSectionRaw] = useState(() => {
     const hash = window.location.hash;
+    if (!hash || hash.length < 2) return 'sysinfo';
+    // Try URLSearchParams first (handles multi-param hash from FC360)
+    const params = new URLSearchParams(hash.slice(1));
+    const sectionParam = params.get('section');
+    if (sectionParam && SECTIONS.some((s) => s.id === sectionParam)) {
+      return sectionParam;
+    }
+    // Legacy fallback: #section=xxx
     const match = hash.match(/^#section=(.+)$/);
     if (match) {
       const sectionId = decodeURIComponent(match[1]);
@@ -720,7 +729,7 @@ function AppContent() {
             >
               {Renderer && (
                 <SectionErrorBoundary sectionName={currentSectionInfo?.label || 'Section'}>
-                  <Renderer d={data} sf={setField} />
+                  <Renderer d={data} sf={setField} sspId={syncState.sspId || undefined} />
                 </SectionErrorBoundary>
               )}
             </div>
