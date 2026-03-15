@@ -37,7 +37,7 @@ interface DocxOptions {
 export async function generateDOCX(options: DocxOptions): Promise<Blob> {
   const { data, progress } = options;
 
-  const children: Paragraph[] = [];
+  const children: (Paragraph | Table)[] = [];
 
   // ============================================
   // COVER PAGE
@@ -406,8 +406,8 @@ function tableFromRows(headers: string[], rows: string[][]): Table {
 /**
  * Render section-specific content as DOCX paragraphs
  */
-function renderSectionContent(sectionId: string, data: SSPData): Paragraph[] {
-  const result: Paragraph[] = [];
+function renderSectionContent(sectionId: string, data: SSPData): (Paragraph | Table)[] {
+  const result: (Paragraph | Table)[] = [];
 
   const field = (label: string, value: string | undefined) => {
     result.push(fieldParagraph(label, value));
@@ -496,8 +496,8 @@ function renderSectionContent(sectionId: string, data: SSPData): Paragraph[] {
 
     case 'intercon':
       if (data.icRows?.length) {
-        addTable(result, ['System', 'Organization', 'Type', 'Direction'],
-          data.icRows.map((r) => [r.system || '', r.org || '', r.type || '', r.dir || '']));
+        addTable(result, ['System', 'Organization', 'Connection', 'Direction'],
+          data.icRows.map((r) => [r.sys || '', r.org || '', r.conn || '', r.dir || '']));
       } else {
         field('Interconnections', undefined);
       }
@@ -657,11 +657,8 @@ function renderSectionContent(sectionId: string, data: SSPData): Paragraph[] {
  * Tables in docx must be section-level children — we work around the Paragraph[]
  * constraint by adding a placeholder. The caller collects these as section children.
  */
-function addTable(into: Paragraph[], headers: string[], rows: string[][]) {
-  // The `docx` library allows Tables as direct section children alongside Paragraphs.
-  // We cast here because our intermediate array is typed Paragraph[] but the final
-  // section.children accepts (Paragraph | Table)[].
-  (into as unknown as (Paragraph | Table)[]).push(tableFromRows(headers, rows));
+function addTable(into: (Paragraph | Table)[], headers: string[], rows: string[][]) {
+  into.push(tableFromRows(headers, rows));
 }
 
 /**
